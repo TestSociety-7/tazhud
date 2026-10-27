@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ProductEditor } from "@/components/admin/pages/product-editor";
 
-export const metadata: Metadata = { title: "Edit product" };
+export const metadata: Metadata = { title: "تعديل المنتج" };
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
   return (

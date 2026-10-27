@@ -7,13 +7,13 @@ export async function POST(request: Request) {
     const body = (await request.json()) as { passcode?: unknown };
     passcode = typeof body.passcode === "string" ? body.passcode : "";
   } catch {
-    return NextResponse.json({ ok: false, error: "Invalid request." }, { status: 400 });
+    return NextResponse.json({ ok: false, error: "طلب غير صالح." }, { status: 400 });
   }
 
   if (!passcode || !(await checkPasscode(passcode))) {
     // Small delay slows down guessing.
     await new Promise((r) => setTimeout(r, 600));
-    return NextResponse.json({ ok: false, error: "That passcode isn't right." }, { status: 401 });
+    return NextResponse.json({ ok: false, error: "كلمة المرور غير صحيحة." }, { status: 401 });
   }
 
   const { token, maxAge } = await createSessionToken();

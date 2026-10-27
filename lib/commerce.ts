@@ -2,12 +2,15 @@ import type { Bundle, Coupon, Product, StoreData, StoreSettings } from "./types"
 
 export function formatMoney(amount: number, settings: Pick<StoreSettings, "currency" | "locale">) {
   try {
-    return new Intl.NumberFormat(settings.locale || "en-US", {
+    return new Intl.NumberFormat(settings.locale || "ar-u-nu-latn", {
       style: "currency",
       currency: settings.currency || "USD",
       minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
       maximumFractionDigits: 2,
-    }).format(amount);
+    })
+      .format(amount)
+      // "US$" is a mixed-direction run that renders as "$US" inside Arabic text.
+      .replace("US$", "$");
   } catch {
     return `${settings.currency} ${amount.toFixed(2)}`;
   }
@@ -39,9 +42,9 @@ export function stockState(stock: number, lowThreshold: number): StockState {
 
 export function stockLabel(stock: number, lowThreshold: number) {
   const s = stockState(stock, lowThreshold);
-  if (s === "out") return "Sold out";
-  if (s === "low") return `Only ${stock} left`;
-  return "In stock";
+  if (s === "out") return "نفدت الكمية";
+  if (s === "low") return `بقي ${stock} فقط`;
+  return "متوفر";
 }
 
 export function visibleProducts(data: StoreData) {
@@ -77,26 +80,26 @@ export function evaluateCoupon(
 ): CouponResult {
   const normalized = code.trim().toUpperCase();
   const none = { ok: false, discount: 0, freeDelivery: false };
-  if (!normalized) return { ...none, message: "Enter a code." };
+  if (!normalized) return { ...none, message: "أدخلي رمز الخصم." };
   const coupon = coupons.find((c) => c.code.toUpperCase() === normalized);
-  if (!coupon || !coupon.active) return { ...none, message: "That code isn't valid." };
+  if (!coupon || !coupon.active) return { ...none, message: "رمز الخصم غير صحيح." };
   if (coupon.expiresOn) {
     const end = new Date(`${coupon.expiresOn}T23:59:59`);
-    if (!Number.isNaN(end.getTime()) && end < today) return { ...none, message: "That code has expired." };
+    if (!Number.isNaN(end.getTime()) && end < today) return { ...none, message: "انتهت صلاحية هذا الرمز." };
   }
   if (subtotal < coupon.minSubtotal) {
     return {
       ...none,
       coupon,
-      message: `Add ${formatMoney(roundMoney(coupon.minSubtotal - subtotal), settings)} more to use ${coupon.code}.`,
+      message: `أضيفي ${formatMoney(roundMoney(coupon.minSubtotal - subtotal), settings)} لاستخدام ${coupon.code}.`,
     };
   }
   if (coupon.type === "free_delivery") {
-    return { ok: true, coupon, discount: 0, freeDelivery: true, message: "Free delivery applied." };
+    return { ok: true, coupon, discount: 0, freeDelivery: true, message: "تم تفعيل التوصيل المجاني." };
   }
   const raw = coupon.type === "percent" ? (subtotal * coupon.value) / 100 : coupon.value;
   const discount = roundMoney(Math.min(subtotal, Math.max(0, raw)));
-  return { ok: true, coupon, discount, freeDelivery: false, message: `${coupon.code} applied.` };
+  return { ok: true, coupon, discount, freeDelivery: false, message: `تم تطبيق ${coupon.code}.` };
 }
 
 export function deliveryFor(
@@ -120,7 +123,8 @@ export function slugify(input: string) {
 }
 
 export function uniqueSlug(base: string, taken: string[]) {
-  const root = slugify(base) || "item";
+  // Arabic names have no Latin letters, so fall back to a short random slug.
+  const root = slugify(base) || `item-${Math.random().toString(36).slice(2, 7)}`;
   let slug = root;
   let n = 2;
   while (taken.includes(slug)) slug = `${root}-${n++}`;
@@ -133,4 +137,11 @@ export function newId(prefix: string) {
       ? crypto.randomUUID().slice(0, 8)
       : Math.random().toString(36).slice(2, 10);
   return `${prefix}-${rand}`;
+}
+
+/** Readable, practically unique order number, e.g. TZ-261027-4821. */
+export function newOrderNumber(date = new Date()) {
+  const ymd = date.toISOString().slice(2, 10).replace(/-/g, "");
+  const rand = Math.floor(1000 + Math.random() * 9000);
+  return `TZ-${ymd}-${rand}`;
 }

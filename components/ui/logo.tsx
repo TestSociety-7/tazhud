@@ -13,12 +13,13 @@ export function LogoMark({ className = "size-11" }: { className?: string }) {
   );
 }
 
-export function Logo({ name = "Tazhud", dark = false, href = "/" }: { name?: string; dark?: boolean; href?: string }) {
+export function Logo({ name = "تزهّد", dark = false, href = "/" }: { name?: string; dark?: boolean; href?: string }) {
   return (
-    <Link href={href} className="group flex items-center gap-2.5" aria-label={`${name} home`}>
+    <Link href={href} className="group flex items-center gap-2.5" aria-label={`${name}، الصفحة الرئيسية`}>
       <LogoMark className="size-10 transition-transform duration-700 group-hover:rotate-[24deg] sm:size-11" />
-      <span className={`font-display text-[1.6rem] leading-none tracking-wide ${dark ? "text-ivory" : "text-ink"}`}>
-        {name}
+      <span className="flex flex-col leading-none">
+        <span className={`font-display text-[1.55rem] leading-none font-semibold ${dark ? "text-ivory" : "text-ink"}`}>{name}</span>
+        <span className={`font-latin mt-1 text-[0.7rem] tracking-[0.3em] uppercase ${dark ? "text-gold-soft/80" : "text-gold-deep"}`}>Tazhud</span>
       </span>
     </Link>
   );

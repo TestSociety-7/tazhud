@@ -13,12 +13,12 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="font-display text-4xl leading-none text-ink sm:text-[2.75rem]">{title}</h1>
+        <h1 className="font-display text-3xl leading-tight text-ink sm:text-[2.6rem]">{title}</h1>
         {description && <p className="mt-2 max-w-2xl text-sm text-muted">{description}</p>}
       </div>
-      {actions && <div className="flex flex-wrap gap-2">{actions}</div>}
+      {actions && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{actions}</div>}
     </div>
   );
 }
@@ -107,7 +107,7 @@ export function Toggle({
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${checked ? "bg-forest" : "bg-line"}`}
       >
-        <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform duration-300 ${checked ? "translate-x-6" : "translate-x-1"}`} />
+        <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform duration-300 ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
       </button>
     </div>
   );
@@ -159,16 +159,16 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`m-auto max-h-[92dvh] w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-2xl bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/50 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up`}
+      className={`m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/50 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up`}
     >
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 className="font-display text-2xl text-ink">{title}</h2>
-        <button type="button" className="icon-btn -mr-2" onClick={onClose} aria-label="Close">
+        <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
       </div>
       <div className="flex-1 overflow-y-auto p-5">{children}</div>
-      {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-paper px-5 py-4">{footer}</div>}
+      {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-paper px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] [&>*]:flex-1 sm:[&>*]:flex-none">{footer}</div>}
     </dialog>
   );
 }
@@ -177,7 +177,7 @@ export function ConfirmDialog({
   open,
   title,
   body,
-  confirmLabel = "Delete",
+  confirmLabel = "حذف",
   tone = "danger",
   onConfirm,
   onCancel,
@@ -199,7 +199,7 @@ export function ConfirmDialog({
       footer={
         <>
           <button type="button" className="btn btn-ghost" onClick={onCancel}>
-            Cancel
+            إلغاء
           </button>
           <button type="button" className={`btn ${tone === "danger" ? "btn-danger" : "btn-primary"}`} onClick={onConfirm}>
             {confirmLabel}
@@ -226,12 +226,16 @@ export function StatCard({
   tone?: "default" | "dark";
 }) {
   return (
-    <div className={`rounded-2xl border p-5 ${tone === "dark" ? "on-dark border-ink bg-ink text-ivory" : "border-line bg-paper"}`}>
+    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${tone === "dark" ? "on-dark border-ink bg-ink text-ivory" : "border-line bg-paper"}`}>
       <div className="flex items-start justify-between gap-3">
-        <p className={`text-xs font-semibold tracking-wide uppercase ${tone === "dark" ? "text-gold" : "text-muted"}`}>{label}</p>
+        <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold" : "text-muted"}`}>{label}</p>
         {icon && <span className={tone === "dark" ? "text-gold" : "text-forest"}>{icon}</span>}
       </div>
-      <p className={`font-display mt-3 text-4xl leading-none ${tone === "dark" ? "text-ivory" : "text-ink"}`}>{value}</p>
+      <p
+        className={`font-display mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"} ${tone === "dark" ? "text-ivory" : "text-ink"}`}
+      >
+        {value}
+      </p>
       {hint && <p className={`mt-2 text-xs ${tone === "dark" ? "text-ivory/60" : "text-muted"}`}>{hint}</p>}
     </div>
   );

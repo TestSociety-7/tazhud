@@ -18,7 +18,7 @@ export function NewsletterForm({ dark = false }: { dark?: boolean }) {
     const value = email.trim().toLowerCase();
     if (!EMAIL_RE.test(value)) {
       setStatus("error");
-      setError("Please enter a valid email address.");
+      setError("يرجى إدخال بريد إلكتروني صحيح.");
       return;
     }
     setStatus("saving");
@@ -32,14 +32,14 @@ export function NewsletterForm({ dark = false }: { dark?: boolean }) {
       setEmail("");
     } else {
       setStatus("error");
-      setError(res.error ?? "Something went wrong. Please try again.");
+      setError(res.error ?? "حدث خطأ ما. حاولي مجددًا.");
     }
   }
 
   if (status === "done") {
     return (
       <p role="status" className={`flex items-center gap-2 text-sm ${dark ? "text-gold-soft" : "text-success"}`}>
-        <Check className="size-4" /> Thank you. You&apos;re on the list for new drops and restocks.
+        <Check className="size-4" /> شكرًا لكِ! ستصلكِ أخبار القطع الجديدة وعودة المنتجات.
       </p>
     );
   }
@@ -47,7 +47,7 @@ export function NewsletterForm({ dark = false }: { dark?: boolean }) {
   return (
     <form onSubmit={submit} noValidate className="w-full">
       <label htmlFor={id} className="sr-only">
-        Email address
+        البريد الإلكتروني
       </label>
       <div className="flex flex-col gap-2 sm:flex-row">
         <input
@@ -55,7 +55,7 @@ export function NewsletterForm({ dark = false }: { dark?: boolean }) {
           type="email"
           inputMode="email"
           autoComplete="email"
-          placeholder="Your email address"
+          placeholder="بريدكِ الإلكتروني"
           value={email}
           onChange={(e) => {
             setEmail(e.target.value);
@@ -66,7 +66,7 @@ export function NewsletterForm({ dark = false }: { dark?: boolean }) {
           className={`field flex-1 ${dark ? "!border-white/15 !bg-white/5 !text-ivory placeholder:!text-ivory/50 focus:!bg-white/10" : ""}`}
         />
         <button type="submit" className={`btn ${dark ? "btn-gold" : "btn-primary"}`} disabled={status === "saving"}>
-          {status === "saving" ? "Joining…" : "Join"}
+          {status === "saving" ? "جارٍ الاشتراك…" : "اشتركي"}
         </button>
       </div>
       {status === "error" && (

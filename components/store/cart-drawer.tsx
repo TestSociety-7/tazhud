@@ -24,17 +24,17 @@ export function CartDrawer() {
     <Sheet
       open={drawerOpen}
       onClose={close}
-      title={`Your bag${count ? ` (${count})` : ""}`}
+      title={`سلة التسوق${count ? ` (${count})` : ""}`}
       footer={
         lines.length > 0 ? (
           <div className="space-y-4">
             <OrderSummary />
             <div className="grid gap-2">
               <Link href="/checkout" onClick={close} className={`btn btn-primary w-full ${blocked ? "pointer-events-none opacity-50" : ""}`} aria-disabled={blocked}>
-                Checkout via WhatsApp
+                إتمام الطلب عبر واتساب
               </Link>
               <Link href="/cart" onClick={close} className="btn btn-ghost w-full">
-                View bag & apply code
+                عرض السلة وإضافة كود خصم
               </Link>
             </div>
           </div>
@@ -44,11 +44,11 @@ export function CartDrawer() {
       {lines.length === 0 ? (
         <EmptyState
           icon={<ShoppingBag className="size-6" />}
-          title="Your bag is empty"
-          body="Browse the collection and add a few pieces you love."
+          title="سلتكِ فارغة"
+          body="تصفّحي المجموعة وأضيفي القطع التي أحببتِها."
           action={
             <Link href="/shop" onClick={close} className="btn btn-primary">
-              Start shopping
+              ابدئي التسوق
             </Link>
           }
         />

@@ -16,7 +16,7 @@ export function SiteFooter() {
 
   return (
     <footer className="on-dark relative mt-24 overflow-hidden bg-ink text-ivory/80">
-      <Mandala className="pointer-events-none absolute -top-40 -right-40 size-[28rem] text-gold/15 motion-safe:animate-spin-slow" />
+      <Mandala className="pointer-events-none absolute -top-40 -end-40 size-[28rem] text-gold/15 motion-safe:animate-spin-slow" />
       <div className="container-x relative grid gap-12 py-16 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div>
           <div className="flex items-center gap-3">
@@ -25,14 +25,14 @@ export function SiteFooter() {
           </div>
           <p className="mt-4 max-w-xs text-sm leading-relaxed">{s.tagline}</p>
           <div className="mt-6 flex gap-2">
-            <a href={s.instagramUrl} target="_blank" rel="noopener noreferrer" className="icon-btn border border-white/15" aria-label={`Instagram ${s.instagramHandle}`}>
+            <a href={s.instagramUrl} target="_blank" rel="noopener noreferrer" className="icon-btn border border-white/15" aria-label={`إنستغرام ${s.instagramHandle}`}>
               <InstagramIcon className="size-5" />
             </a>
-            <a href={whatsappLink(s.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="icon-btn border border-white/15" aria-label="WhatsApp">
+            <a href={whatsappLink(s.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="icon-btn border border-white/15" aria-label="واتساب">
               <MessageCircle className="size-5" />
             </a>
             {s.email && (
-              <a href={`mailto:${s.email}`} className="icon-btn border border-white/15" aria-label="Email">
+              <a href={`mailto:${s.email}`} className="icon-btn border border-white/15" aria-label="البريد الإلكتروني">
                 <Mail className="size-5" />
               </a>
             )}
@@ -40,27 +40,27 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="eyebrow text-gold">Shop</h2>
+          <h2 className="eyebrow text-gold">تسوّقي</h2>
           <ul className="mt-4 space-y-1 text-sm">
-            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/shop">All pieces</Link></li>
+            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/shop">كل المنتجات</Link></li>
             {categories.map((c) => (
               <li key={c.id}>
                 <Link className="inline-flex min-h-9 items-center hover:text-ivory" href={`/shop?category=${c.slug}`}>{c.name}</Link>
               </li>
             ))}
-            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/shop?view=bundles">Bundles</Link></li>
+            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/shop?view=bundles">المجموعات</Link></li>
           </ul>
         </div>
 
         <div>
-          <h2 className="eyebrow text-gold">Help</h2>
+          <h2 className="eyebrow text-gold">المساعدة</h2>
           <ul className="mt-4 space-y-1 text-sm">
             {s.policies.map((p) => (
               <li key={p.id}>
                 <Link className="inline-flex min-h-9 items-center hover:text-ivory" href={`/policies#${p.id}`}>{p.title}</Link>
               </li>
             ))}
-            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/cart">Your bag</Link></li>
+            <li><Link className="inline-flex min-h-9 items-center hover:text-ivory" href="/cart">سلة التسوق</Link></li>
           </ul>
           {s.address && (
             <p className="mt-6 flex gap-2 text-sm">
@@ -70,15 +70,15 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <h2 className="eyebrow text-gold">Join the circle</h2>
-          <p className="mt-4 mb-4 text-sm">New drops, restocks and styling notes. No spam.</p>
+          <h2 className="eyebrow text-gold">انضمي إلينا</h2>
+          <p className="mt-4 mb-4 text-sm">أحدث القطع وعودة المنتجات ونصائح التنسيق. بدون رسائل مزعجة.</p>
           <NewsletterForm dark />
         </div>
       </div>
       <div className="border-t border-white/10">
         <div className="container-x flex flex-col gap-2 py-6 text-xs text-ivory/50 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {s.storeName}. All rights reserved.</p>
-          <p>Orders are placed and confirmed on WhatsApp. No online payment is taken on this site.</p>
+          <p>© {s.storeName}. جميع الحقوق محفوظة.</p>
+          <p>تُرسل الطلبات وتُؤكَّد عبر واتساب. لا يتم أي دفع إلكتروني على هذا الموقع.</p>
         </div>
       </div>
     </footer>

@@ -50,9 +50,9 @@ export function SiteHeader() {
 
   const categories = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
   const nav = [
-    { href: "/shop", label: "Shop all" },
+    { href: "/shop", label: "كل المنتجات" },
     ...categories.slice(0, 3).map((c) => ({ href: `/shop?category=${c.slug}`, label: c.name })),
-    { href: "/shop?view=bundles", label: "Bundles" },
+    { href: "/shop?view=bundles", label: "المجموعات" },
   ];
 
   return (
@@ -64,23 +64,23 @@ export function SiteHeader() {
       >
         <div className="container-x grid h-[var(--header-h)] grid-cols-[1fr_auto_1fr] items-center gap-2 lg:grid-cols-[auto_1fr_auto]">
           <div className="flex items-center lg:hidden">
-            <button type="button" className="icon-btn -ml-2" onClick={() => setMenuOpen(true)} aria-label="Open menu">
+            <button type="button" className="icon-btn -ms-2" onClick={() => setMenuOpen(true)} aria-label="فتح القائمة">
               <Menu className="size-5" />
             </button>
-            <button type="button" className="icon-btn" onClick={() => setSearchOpen(true)} aria-label="Search">
+            <button type="button" className="icon-btn" onClick={() => setSearchOpen(true)} aria-label="بحث">
               <Search className="size-5" />
             </button>
           </div>
 
           <Logo name={data.settings.storeName} />
 
-          <nav aria-label="Main" className="hidden justify-center lg:flex">
+          <nav aria-label="القائمة الرئيسية" className="hidden justify-center lg:flex">
             <ul className="flex items-center gap-1">
               {nav.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="relative rounded-full px-4 py-2 text-[0.85rem] font-medium text-text transition-colors after:absolute after:inset-x-4 after:bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-gold after:transition-transform after:duration-500 hover:text-ink hover:after:scale-x-100"
+                    className="relative rounded-full px-4 py-2 text-[0.85rem] font-medium text-text transition-colors after:absolute after:inset-x-4 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-gold after:transition-transform after:duration-500 hover:text-ink hover:after:scale-x-100"
                   >
                     {item.label}
                   </Link>
@@ -90,7 +90,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center justify-end">
-            <button type="button" className="icon-btn hidden lg:inline-grid" onClick={() => setSearchOpen(true)} aria-label="Search">
+            <button type="button" className="icon-btn hidden lg:inline-grid" onClick={() => setSearchOpen(true)} aria-label="بحث">
               <Search className="size-5" />
             </button>
             <a
@@ -98,19 +98,19 @@ export function SiteHeader() {
               target="_blank"
               rel="noopener noreferrer"
               className="icon-btn hidden sm:inline-grid"
-              aria-label={`Instagram ${data.settings.instagramHandle} (opens in a new tab)`}
+              aria-label={`إنستغرام ${data.settings.instagramHandle} (يفتح في نافذة جديدة)`}
             >
               <InstagramIcon className="size-5" />
             </a>
             <button
               type="button"
-              className="icon-btn relative -mr-2"
+              className="icon-btn relative -me-2"
               onClick={() => setDrawerOpen(true)}
-              aria-label={`Open bag, ${count} item${count === 1 ? "" : "s"}`}
+              aria-label={`فتح السلة، ${count} قطعة`}
             >
               <ShoppingBag className={`size-5 transition-transform ${bump ? "scale-125" : ""}`} />
               {hydrated && count > 0 && (
-                <span className="absolute top-1 right-0.5 grid min-w-[1.15rem] place-items-center rounded-full bg-forest px-1 text-[0.65rem] leading-[1.15rem] font-bold text-ivory">
+                <span className="absolute top-1 end-0.5 grid min-w-[1.15rem] place-items-center rounded-full bg-forest px-1 text-[0.65rem] leading-[1.15rem] font-bold text-ivory">
                   {count}
                 </span>
               )}
@@ -119,12 +119,12 @@ export function SiteHeader() {
         </div>
       </header>
 
-      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} side="left" title="Menu">
-        <nav aria-label="Mobile" className="px-5 py-4">
+      <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} side="start" title="القائمة">
+        <nav aria-label="قائمة الجوال" className="px-5 py-4">
           <ul className="space-y-1">
             <li>
               <Link href="/shop" className="flex min-h-12 items-center font-display text-2xl text-ink">
-                Shop all
+                كل المنتجات
               </Link>
             </li>
             {categories.map((c) => (
@@ -136,21 +136,21 @@ export function SiteHeader() {
             ))}
             <li>
               <Link href="/shop?view=bundles" className="flex min-h-12 items-center font-display text-2xl text-ink">
-                Bundles
+                المجموعات
               </Link>
             </li>
           </ul>
           <OrnamentDivider className="my-6" />
           <ul className="space-y-1 text-sm">
             <li>
-              <Link href="/cart" className="flex min-h-11 items-center">Your bag</Link>
+              <Link href="/cart" className="flex min-h-11 items-center">سلة التسوق</Link>
             </li>
             <li>
-              <Link href="/policies" className="flex min-h-11 items-center">Delivery & returns</Link>
+              <Link href="/policies" className="flex min-h-11 items-center">التوصيل والاستبدال</Link>
             </li>
             <li>
               <a href={whatsappLink(data.settings.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center">
-                Chat on WhatsApp
+                تواصلي معنا على واتساب
               </a>
             </li>
             <li>
@@ -166,7 +166,7 @@ export function SiteHeader() {
         </nav>
       </Sheet>
 
-      <Sheet open={searchOpen} onClose={() => setSearchOpen(false)} side="top" title="Search">
+      <Sheet open={searchOpen} onClose={() => setSearchOpen(false)} side="top" title="بحث">
         <SearchPanel onNavigate={() => setSearchOpen(false)} active={searchOpen} />
       </Sheet>
     </>

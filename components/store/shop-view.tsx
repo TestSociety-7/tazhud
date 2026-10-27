@@ -7,6 +7,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { effectivePrice, isOnSale, visibleProducts } from "@/lib/commerce";
 import { searchProducts } from "@/lib/search";
+import { piecesLabel } from "@/lib/arabic";
 import type { Product } from "@/lib/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Sheet } from "@/components/ui/sheet";
@@ -15,11 +16,11 @@ import { ProductGrid, ProductGridSkeleton } from "./product-card";
 import { BundleCard } from "./bundle-card";
 
 const SORTS = {
-  featured: "Featured",
-  newest: "Newest",
-  bestselling: "Bestselling",
-  "price-asc": "Price: low to high",
-  "price-desc": "Price: high to low",
+  featured: "المميزة",
+  newest: "الأحدث",
+  bestselling: "الأكثر مبيعًا",
+  "price-asc": "السعر: من الأقل للأعلى",
+  "price-desc": "السعر: من الأعلى للأقل",
 } as const;
 type SortKey = keyof typeof SORTS;
 
@@ -93,26 +94,26 @@ export function ShopView() {
 
   const bundles = data.bundles.filter((b) => b.active);
   const activeFilters = [
-    onlySale && { key: "sale", label: "On sale" },
-    inStock && { key: "stock", label: "In stock" },
+    onlySale && { key: "sale", label: "عليها خصم" },
+    inStock && { key: "stock", label: "متوفر" },
     colour && { key: "colour", label: colour },
-    q && { key: "q", label: `“${q}”` },
+    q && { key: "q", label: `«${q}»` },
   ].filter(Boolean) as { key: string; label: string }[];
 
-  const title = view === "bundles" ? "Bundles" : activeCategory?.name ?? (q ? "Search results" : "The collection");
+  const title = view === "bundles" ? "المجموعات" : activeCategory?.name ?? (q ? "نتائج البحث" : "المجموعة الكاملة");
   const description =
     view === "bundles"
-      ? "Thoughtfully paired sets at a better price."
-      : activeCategory?.description ?? "Hijabs, abayas and modest pieces in soft, considered fabrics.";
+      ? "أطقم منسّقة بعناية وبسعر أفضل."
+      : activeCategory?.description ?? "طرح وعبايات وقطع محتشمة بأقمشة ناعمة ومختارة بعناية.";
 
   const filterControls = (
     <div className="space-y-8">
       <fieldset>
-        <legend className="eyebrow mb-3 text-muted">Category</legend>
+        <legend className="eyebrow mb-3 text-muted">القسم</legend>
         <ul className="space-y-1">
           <li>
-            <button type="button" onClick={() => setParam({ category: null, view: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm ${!category && view !== "bundles" ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={!category && view !== "bundles"}>
-              All pieces <span className="text-xs text-muted">{base.length}</span>
+            <button type="button" onClick={() => setParam({ category: null, view: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${!category && view !== "bundles" ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={!category && view !== "bundles"}>
+              كل المنتجات <span className="text-xs text-muted">{base.length}</span>
             </button>
           </li>
           {categories.map((c) => {
@@ -120,15 +121,15 @@ export function ShopView() {
             const active = c.slug === category && view !== "bundles";
             return (
               <li key={c.id}>
-                <button type="button" onClick={() => setParam({ category: c.slug, view: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm ${active ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={active}>
+                <button type="button" onClick={() => setParam({ category: c.slug, view: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${active ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={active}>
                   {c.name} <span className="text-xs text-muted">{n}</span>
                 </button>
               </li>
             );
           })}
           <li>
-            <button type="button" onClick={() => setParam({ view: "bundles", category: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm ${view === "bundles" ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={view === "bundles"}>
-              Bundles <span className="text-xs text-muted">{bundles.length}</span>
+            <button type="button" onClick={() => setParam({ view: "bundles", category: null })} className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${view === "bundles" ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`} aria-pressed={view === "bundles"}>
+              المجموعات <span className="text-xs text-muted">{bundles.length}</span>
             </button>
           </li>
         </ul>
@@ -137,19 +138,19 @@ export function ShopView() {
       {view !== "bundles" && (
         <>
           <fieldset>
-            <legend className="eyebrow mb-3 text-muted">Refine</legend>
+            <legend className="eyebrow mb-3 text-muted">تصفية</legend>
             <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
               <input type="checkbox" className="size-4 accent-forest" checked={onlySale} onChange={(e) => setParam({ sale: e.target.checked ? "1" : null })} />
-              On sale
+              عليها خصم
             </label>
             <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
               <input type="checkbox" className="size-4 accent-forest" checked={inStock} onChange={(e) => setParam({ stock: e.target.checked ? "1" : null })} />
-              In stock only
+              المتوفر فقط
             </label>
           </fieldset>
           {allColours.length > 0 && (
             <fieldset>
-              <legend className="eyebrow mb-3 text-muted">Colour</legend>
+              <legend className="eyebrow mb-3 text-muted">اللون</legend>
               <div className="flex flex-wrap gap-2 px-1">
                 {allColours.map(([name, hex]) => (
                   <button
@@ -176,11 +177,11 @@ export function ShopView() {
     <div>
       <header className="border-b border-line bg-paper">
         <div className="container-x py-10 sm:py-14">
-          <nav aria-label="Breadcrumb" className="text-xs text-muted">
+          <nav aria-label="مسار التنقل" className="text-xs text-muted">
             <ol className="flex items-center gap-2">
-              <li><Link href="/" className="hover:text-ink">Home</Link></li>
+              <li><Link href="/" className="hover:text-ink">الرئيسية</Link></li>
               <li aria-hidden>/</li>
-              <li><Link href="/shop" className="hover:text-ink">Shop</Link></li>
+              <li><Link href="/shop" className="hover:text-ink">المتجر</Link></li>
               {activeCategory && (<><li aria-hidden>/</li><li aria-current="page" className="text-ink">{activeCategory.name}</li></>)}
             </ol>
           </nav>
@@ -198,23 +199,23 @@ export function ShopView() {
                 setParam({ q: query.trim() || null });
               }}
             >
-              <label htmlFor="shop-search" className="sr-only">Search the collection</label>
-              <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted" aria-hidden />
-              <input id="shop-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name, fabric or colour" className="field !rounded-full !pl-11" />
+              <label htmlFor="shop-search" className="sr-only">ابحثي في المجموعة</label>
+              <Search className="pointer-events-none absolute top-1/2 start-4 size-4 -translate-y-1/2 text-muted" aria-hidden />
+              <input id="shop-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="ابحثي بالاسم أو القماش أو اللون" className="field !rounded-full !ps-11" />
             </form>
           )}
         </div>
       </header>
 
       <div className="container-x grid gap-10 py-10 lg:grid-cols-[15rem_1fr]">
-        <aside className="hidden lg:block" aria-label="Filters">
+        <aside className="hidden lg:block" aria-label="عوامل التصفية">
           <div className="sticky top-[calc(var(--header-h)+1.5rem)]">{filterControls}</div>
         </aside>
 
         <div>
           {view === "bundles" ? (
             bundles.length === 0 ? (
-              <EmptyState title="No bundles right now" body="New curated sets are on the way." action={<Link href="/shop" className="btn btn-primary">Shop all pieces</Link>} />
+              <EmptyState title="لا توجد مجموعات حاليًا" body="مجموعات جديدة في الطريق." action={<Link href="/shop" className="btn btn-primary">تسوّقي كل المنتجات</Link>} />
             ) : (
               <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {bundles.map((b) => (
@@ -226,13 +227,13 @@ export function ShopView() {
             <>
               <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-sm text-muted" role="status" aria-live="polite">
-                  {results.length} {results.length === 1 ? "piece" : "pieces"}
+                  {piecesLabel(results.length)}
                 </p>
                 <div className="flex items-center gap-2">
                   <button type="button" className="btn btn-outline btn-sm border-line lg:hidden" onClick={() => setFiltersOpen(true)}>
-                    <SlidersHorizontal className="size-4" /> Filter
+                    <SlidersHorizontal className="size-4" /> تصفية
                   </button>
-                  <label htmlFor="sort" className="sr-only">Sort by</label>
+                  <label htmlFor="sort" className="sr-only">ترتيب حسب</label>
                   <select id="sort" value={sort} onChange={(e) => setParam({ sort: e.target.value === "featured" ? null : e.target.value })} className="field !min-h-9 !w-auto !rounded-full !py-1.5 !text-sm">
                     {Object.entries(SORTS).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
@@ -242,17 +243,17 @@ export function ShopView() {
               </div>
 
               {activeFilters.length > 0 && (
-                <ul className="mb-6 flex flex-wrap gap-2" aria-label="Active filters">
+                <ul className="mb-6 flex flex-wrap gap-2" aria-label="عوامل التصفية المفعّلة">
                   {activeFilters.map((f) => (
                     <li key={f.key}>
-                      <button type="button" onClick={() => setParam({ [f.key]: null })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-xs font-medium hover:bg-line" aria-label={`Remove filter ${f.label}`}>
+                      <button type="button" onClick={() => setParam({ [f.key]: null })} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-xs font-medium hover:bg-line" aria-label={`إزالة ${f.label}`}>
                         {f.label} <X className="size-3.5" />
                       </button>
                     </li>
                   ))}
                   <li>
                     <button type="button" onClick={() => setParam({ sale: null, stock: null, colour: null, q: null })} className="inline-flex min-h-9 items-center px-2 text-xs font-semibold text-forest underline-offset-4 hover:underline">
-                      Clear all
+                      مسح الكل
                     </button>
                   </li>
                 </ul>
@@ -262,9 +263,9 @@ export function ShopView() {
                 <ProductGridSkeleton />
               ) : results.length === 0 ? (
                 <EmptyState
-                  title="Nothing matches yet"
-                  body="Try removing a filter or searching for a different colour or fabric."
-                  action={<Link href="/shop" className="btn btn-primary">See all pieces</Link>}
+                  title="لا توجد نتائج مطابقة"
+                  body="جرّبي إزالة أحد عوامل التصفية أو البحث عن لون أو قماش آخر."
+                  action={<Link href="/shop" className="btn btn-primary">عرض كل المنتجات</Link>}
                 />
               ) : (
                 <ProductGrid products={results} priorityCount={4} />
@@ -274,9 +275,9 @@ export function ShopView() {
         </div>
       </div>
 
-      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} side="left" title="Filter" footer={
+      <Sheet open={filtersOpen} onClose={() => setFiltersOpen(false)} side="start" title="تصفية" footer={
         <button type="button" className="btn btn-primary w-full" onClick={() => setFiltersOpen(false)}>
-          Show {results.length} {results.length === 1 ? "piece" : "pieces"}
+          عرض {piecesLabel(results.length)}
         </button>
       }>
         <div className="p-5">{filterControls}</div>

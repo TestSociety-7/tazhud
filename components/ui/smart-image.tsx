@@ -43,7 +43,7 @@ export function SmartImage({ src, alt, className = "", imgClassName = "", priori
         <div className="pattern-geo absolute inset-0 grid place-items-center bg-sand text-muted" role="img" aria-label={alt}>
           <div className="flex flex-col items-center gap-2 px-4 text-center">
             <ImageOff className="size-6 opacity-60" aria-hidden />
-            <span className="font-display text-lg leading-tight">{fallbackLabel ?? "Image coming soon"}</span>
+            <span className="font-display text-lg leading-tight">{fallbackLabel ?? "الصورة قريبًا"}</span>
           </div>
         </div>
       ) : (

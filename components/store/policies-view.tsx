@@ -9,9 +9,9 @@ export function PoliciesView() {
   const s = data.settings;
   return (
     <div className="container-x max-w-3xl py-14">
-      <p className="eyebrow text-gold-deep">Help</p>
-      <h1 className="font-display mt-2 text-5xl text-ink">Store policies</h1>
-      <nav aria-label="Policies" className="mt-6 flex flex-wrap gap-2">
+      <p className="eyebrow text-gold-deep">المساعدة</p>
+      <h1 className="font-display mt-2 text-5xl text-ink">سياسات المتجر</h1>
+      <nav aria-label="السياسات" className="mt-6 flex flex-wrap gap-2">
         {s.policies.map((p) => (
           <a key={p.id} href={`#${p.id}`} className="btn btn-sm btn-outline border-line">{p.title}</a>
         ))}
@@ -25,11 +25,11 @@ export function PoliciesView() {
           </section>
         ))}
         <section className="card p-6">
-          <h2 className="font-display text-2xl text-ink">Still have a question?</h2>
+          <h2 className="font-display text-2xl text-ink">لديكِ سؤال آخر؟</h2>
           <p className="mt-2 text-sm text-muted">
-            Message us on{" "}
-            <a className="font-semibold text-forest underline underline-offset-4" href={whatsappLink(s.whatsappNumber)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
-            {s.email && (<>{" "}or email <a className="font-semibold text-forest underline underline-offset-4" href={`mailto:${s.email}`}>{s.email}</a></>)}. {s.hours}.
+            راسلينا على{" "}
+            <a className="font-semibold text-forest underline underline-offset-4" href={whatsappLink(s.whatsappNumber)} target="_blank" rel="noopener noreferrer">واتساب</a>
+            {s.email && (<>{" "}أو عبر البريد <a className="font-semibold text-forest underline underline-offset-4" href={`mailto:${s.email}`}>{s.email}</a></>)}. {s.hours}.
           </p>
         </section>
       </div>

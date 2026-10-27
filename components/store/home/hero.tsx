@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Mandala, Star8 } from "@/components/ui/mandala";
@@ -47,9 +47,9 @@ export function Hero() {
           <p className="eyebrow flex animate-fade-up items-center gap-2 text-gold">
             <Star8 className="size-3" /> {hero.eyebrow}
           </p>
-          <h1 className="font-display mt-5 animate-fade-up text-[2.9rem] leading-[0.98] text-balance text-ivory [animation-delay:120ms] sm:text-6xl lg:text-[5.2rem]">
+          <h1 className="font-display mt-5 animate-fade-up text-[2.6rem] leading-[1.25] text-balance text-ivory [animation-delay:120ms] sm:text-6xl lg:text-[4.6rem]">
             {hero.title}{" "}
-            <em className="font-display bg-gradient-to-r from-gold-bright via-gold-soft to-gold bg-clip-text font-medium text-transparent italic">
+            <em className="font-display bg-gradient-to-l from-gold-bright via-gold-soft to-gold bg-clip-text font-medium text-transparent italic">
               {hero.titleAccent}
             </em>
           </h1>
@@ -59,7 +59,7 @@ export function Hero() {
           <div className="mt-8 flex animate-fade-up flex-col gap-3 [animation-delay:360ms] sm:flex-row">
             <Link href={hero.primaryHref || "/shop"} className="btn btn-gold group/cta">
               {hero.primaryLabel}
-              <ArrowRight className="size-4 transition-transform group-hover/cta:translate-x-1" />
+              <ArrowLeft className="size-4 transition-transform group-hover/cta:-translate-x-1" />
             </Link>
             {hero.secondaryLabel && (
               <Link href={hero.secondaryHref || "/shop"} className="btn btn-outline text-ivory">
@@ -73,16 +73,16 @@ export function Hero() {
           <Mandala className="absolute top-1/2 left-1/2 -z-10 size-[135%] -translate-x-1/2 -translate-y-1/2 text-gold/25 motion-safe:animate-spin-slow" />
           <div ref={artRef} className="will-change-transform">
             <div className="arch-full relative aspect-[4/5] overflow-hidden ring-1 ring-gold/40 ring-offset-8 ring-offset-ink">
-              <SmartImage src={hero.image} alt="Featured modest fashion from the new collection" priority unveil className="absolute inset-0" />
+              <SmartImage src={hero.image} alt="أزياء محتشمة من المجموعة الجديدة" priority unveil className="absolute inset-0" />
             </div>
           </div>
           {hero.secondaryImage && (
-            <div ref={floatRef} className="absolute -bottom-6 -left-3 w-[40%] will-change-transform sm:-left-10">
+            <div ref={floatRef} className="absolute -bottom-6 -start-3 w-[40%] will-change-transform sm:-start-10">
               <div className="animate-fade-up rounded-[1.25rem] bg-ivory p-2 shadow-[var(--shadow-lift)] [animation-delay:600ms]">
                 <SmartImage src={hero.secondaryImage} alt="" className="aspect-square rounded-xl" />
                 {cheapestHijab != null && (
                   <p className="px-1.5 pt-2 pb-1 text-[0.7rem] leading-tight text-muted">
-                    Hijabs from <strong className="text-ink">{formatMoney(cheapestHijab, data.settings)}</strong>
+                    طرح ابتداءً من <strong className="text-ink">{formatMoney(cheapestHijab, data.settings)}</strong>
                   </p>
                 )}
               </div>

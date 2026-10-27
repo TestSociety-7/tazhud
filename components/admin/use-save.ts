@@ -10,9 +10,9 @@ export function useSave() {
   return async (mutate: (d: StoreData) => StoreData, success: string, opts?: { undo?: () => void }) => {
     const res = await update(mutate);
     if (res.ok) {
-      toast.success(success, opts?.undo ? { action: { label: "Undo", onClick: opts.undo } } : undefined);
+      toast.success(success, opts?.undo ? { action: { label: "تراجع", onClick: opts.undo } } : undefined);
     } else {
-      toast.error("Couldn't save", { description: res.error });
+      toast.error("تعذّر الحفظ", { description: res.error });
     }
     return res.ok;
   };

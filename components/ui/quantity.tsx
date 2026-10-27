@@ -7,7 +7,7 @@ export function QuantityControl({
   onChange,
   min = 1,
   max = 99,
-  label = "Quantity",
+  label = "الكمية",
   size = "md",
 }: {
   value: number;
@@ -26,7 +26,7 @@ export function QuantityControl({
         className={`grid ${h} ${w} place-items-center rounded-full text-ink transition-colors hover:bg-sand disabled:opacity-35`}
         onClick={() => onChange(Math.max(min, value - 1))}
         disabled={value <= min}
-        aria-label="Decrease quantity"
+        aria-label="إنقاص الكمية"
       >
         <Minus className="size-4" />
       </button>
@@ -38,7 +38,7 @@ export function QuantityControl({
         className={`grid ${h} ${w} place-items-center rounded-full text-ink transition-colors hover:bg-sand disabled:opacity-35`}
         onClick={() => onChange(Math.min(max, value + 1))}
         disabled={value >= max}
-        aria-label="Increase quantity"
+        aria-label="زيادة الكمية"
       >
         <Plus className="size-4" />
       </button>

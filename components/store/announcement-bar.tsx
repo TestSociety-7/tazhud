@@ -23,7 +23,7 @@ export function AnnouncementBar() {
 
   return (
     <div className="on-dark bg-ink text-gold-soft">
-      <div className="container-x flex min-h-9 items-center justify-center gap-3 py-2 text-center text-[0.78rem] tracking-wide">
+      <div className="container-x flex min-h-9 items-center justify-center gap-3 py-2 text-center text-[0.82rem]">
         <Star8 className="hidden size-2.5 shrink-0 text-gold sm:block" />
         <p aria-live="polite" key={current} className="animate-fade-up">
           {link ? (

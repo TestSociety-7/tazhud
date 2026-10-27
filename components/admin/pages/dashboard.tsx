@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, ArrowRight, CheckCircle2, Inbox, Mail, Package, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2, Inbox, Mail, Package, TrendingUp } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney, stockState } from "@/lib/commerce";
 import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
@@ -9,6 +9,7 @@ import { isValidWhatsappNumber } from "@/lib/whatsapp";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Badge, PageHeader, Panel, StatCard } from "../ui";
 import { STATUS_META } from "./orders";
+import { dateFormat, itemsLabel, ordersLabel } from "@/lib/arabic";
 
 const DAY = 24 * 60 * 60 * 1000;
 // Captured once per page load; only used after hydration (see `ready`).
@@ -54,40 +55,40 @@ export function Dashboard() {
   const setup = [
     {
       done: data.settings.whatsappNumber !== PLACEHOLDER_WHATSAPP && isValidWhatsappNumber(data.settings.whatsappNumber),
-      label: "Add your real WhatsApp number",
+      label: "أضف رقم واتساب الحقيقي",
       href: "/admin/settings#contact",
     },
-    { done: Boolean(data.settings.instagramUrl), label: "Link your Instagram profile", href: "/admin/settings#contact" },
+    { done: Boolean(data.settings.instagramUrl), label: "اربط حساب إنستغرام", href: "/admin/settings#contact" },
     {
       done: products.some((p) => p.images.some((i) => !i.startsWith("/art/"))),
-      label: "Upload real product photography",
+      label: "ارفع صور المنتجات الحقيقية",
       href: "/admin/products",
     },
-    { done: data.coupons.some((c) => c.active), label: "Create a promotion code", href: "/admin/coupons" },
+    { done: data.coupons.some((c) => c.active), label: "أنشئ كود خصم", href: "/admin/coupons" },
   ];
 
   return (
     <>
       <PageHeader
-        title="Assalamu alaikum"
-        description="Here's how the store is looking. Orders are completed with customers on WhatsApp; inquiries appear here when a customer sends their order from checkout in this browser."
+        title="السلام عليكم 👋"
+        description="نظرة سريعة على متجرك. يُكمل الزبائن طلباتهم معك عبر واتساب، وتظهر نسخة من كل طلب هنا."
         actions={
           <Link href="/admin/products/new" className="btn btn-primary">
-            Add product
+            إضافة منتج
           </Link>
         }
       />
 
       <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-        <StatCard tone="dark" label="New inquiries" value={newOrders.length} hint={`${orders.length} total`} icon={<Inbox className="size-5" />} />
-        <StatCard label="Inquiry value · 30d" value={money(last30.reduce((s, o) => s + o.total, 0))} hint={`${last30.length} inquiries`} icon={<TrendingUp className="size-5" />} />
-        <StatCard label="Products" value={published.length} hint={`${products.length - published.length} hidden`} icon={<Package className="size-5" />} />
-        <StatCard label="Low / sold out" value={low.length} hint={`Threshold: ${data.settings.lowStockThreshold}`} icon={<AlertTriangle className="size-5" />} />
+        <StatCard tone="dark" label="طلبات جديدة" value={newOrders.length} hint={`الإجمالي: ${ordersLabel(orders.length)}`} icon={<Inbox className="size-5" />} />
+        <StatCard label="قيمة الطلبات · 30 يومًا" value={money(last30.reduce((s, o) => s + o.total, 0))} hint={ordersLabel(last30.length)} icon={<TrendingUp className="size-5" />} />
+        <StatCard label="المنتجات المنشورة" value={published.length} hint={`${products.length - published.length} مخفي`} icon={<Package className="size-5" />} />
+        <StatCard label="مخزون منخفض / نافد" value={low.length} hint={`الحد: ${data.settings.lowStockThreshold}`} icon={<AlertTriangle className="size-5" />} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
-        <Panel title="Inquiries, last 14 days" description={`Confirmed and completed: ${money(confirmed.reduce((s, o) => s + o.total, 0))}`}>
-          <div className="flex h-44 items-end gap-1.5" role="img" aria-label="Bar chart of inquiry value per day over the last 14 days">
+        <Panel title="الطلبات خلال آخر 14 يومًا" description={`المؤكدة والمكتملة: ${money(confirmed.reduce((s, o) => s + o.total, 0))}`}>
+          <div className="flex h-44 items-end gap-1.5" role="img" aria-label="رسم بياني لقيمة الطلبات يوميًا خلال آخر 14 يومًا">
             {days.map((d) => (
               <div key={d.date.toISOString()} className="group relative flex h-full flex-1 flex-col justify-end">
                 <div
@@ -101,19 +102,19 @@ export function Dashboard() {
             ))}
           </div>
           <div className="mt-2 flex justify-between text-[0.65rem] text-muted">
-            <span>{days[0].date.toLocaleDateString(data.settings.locale, { month: "short", day: "numeric" })}</span>
-            <span>{days[13].date.toLocaleDateString(data.settings.locale, { month: "short", day: "numeric" })}</span>
+            <span>{dateFormat(days[0].date.toISOString(), { month: "short", day: "numeric" })}</span>
+            <span>{dateFormat(days[13].date.toISOString(), { month: "short", day: "numeric" })}</span>
           </div>
         </Panel>
 
-        <Panel title="Getting ready to launch">
+        <Panel title="استعداد للإطلاق">
           <ul className="space-y-2">
             {setup.map((s) => (
               <li key={s.label}>
                 <Link href={s.href} className="flex min-h-11 items-center gap-3 rounded-xl px-2 text-sm hover:bg-sand/60">
                   {s.done ? <CheckCircle2 className="size-5 text-success" /> : <span className="size-5 rounded-full border-2 border-gold" />}
                   <span className={s.done ? "text-muted line-through" : "font-medium text-ink"}>{s.label}</span>
-                  {!s.done && <ArrowRight className="ml-auto size-4 text-muted" />}
+                  {!s.done && <ArrowLeft className="ms-auto size-4 text-muted" />}
                 </Link>
               </li>
             ))}
@@ -122,9 +123,9 @@ export function Dashboard() {
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <Panel title="Recent inquiries" actions={<Link href="/admin/orders" className="text-xs font-semibold text-forest">View all</Link>}>
+        <Panel title="أحدث الطلبات" actions={<Link href="/admin/orders" className="text-xs font-semibold text-forest">عرض الكل</Link>}>
           {orders.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted">No inquiries yet. They appear when customers check out.</p>
+            <p className="py-6 text-center text-sm text-muted">لا توجد طلبات بعد. ستظهر هنا عندما يرسل الزبائن طلباتهم.</p>
           ) : (
             <ul className="divide-y divide-line">
               {orders.slice(0, 5).map((o) => (
@@ -132,12 +133,12 @@ export function Dashboard() {
                   <Link href={`/admin/orders?open=${o.id}`} className="flex min-h-14 items-center gap-3 py-2 hover:bg-sand/40">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink">
-                        {o.customer.name} <span className="text-xs font-normal text-muted">· {o.number}</span>
+                        {o.customer.name} <span className="ltr inline-block text-xs font-normal text-muted">{o.number}</span>
                       </p>
-                      <p className="text-xs text-muted">{new Date(o.createdAt).toLocaleDateString(data.settings.locale, { month: "short", day: "numeric" })} · {o.lines.length} item{o.lines.length === 1 ? "" : "s"}</p>
+                      <p className="text-xs text-muted">{dateFormat(o.createdAt, { month: "short", day: "numeric" })} · {itemsLabel(o.lines.length)}</p>
                     </div>
                     <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
-                    <span className="w-20 text-right text-sm font-semibold tabular-nums">{money(o.total)}</span>
+                    <span className="w-20 text-end text-sm font-semibold tabular-nums">{money(o.total)}</span>
                   </Link>
                 </li>
               ))}
@@ -145,9 +146,9 @@ export function Dashboard() {
           )}
         </Panel>
 
-        <Panel title="Stock to watch" actions={<Link href="/admin/products?stock=low" className="text-xs font-semibold text-forest">Manage</Link>}>
+        <Panel title="مخزون يحتاج متابعة" actions={<Link href="/admin/products?stock=low" className="text-xs font-semibold text-forest">إدارة</Link>}>
           {low.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted">Everything is well stocked.</p>
+            <p className="py-6 text-center text-sm text-muted">كل المنتجات متوفرة بكميات جيدة.</p>
           ) : (
             <ul className="divide-y divide-line">
               {low.slice(0, 6).map((p) => (
@@ -155,7 +156,7 @@ export function Dashboard() {
                   <Link href={`/admin/products/${p.id}`} className="flex min-h-14 items-center gap-3 py-2 hover:bg-sand/40">
                     <SmartImage src={p.images[0]} alt="" className="size-11 shrink-0 rounded-lg" />
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{p.name}</span>
-                    <Badge tone={p.stock <= 0 ? "red" : "gold"}>{p.stock <= 0 ? "Sold out" : `${p.stock} left`}</Badge>
+                    <Badge tone={p.stock <= 0 ? "red" : "gold"}>{p.stock <= 0 ? "نفدت" : `بقي ${p.stock}`}</Badge>
                   </Link>
                 </li>
               ))}
@@ -163,15 +164,15 @@ export function Dashboard() {
           )}
         </Panel>
 
-        <Panel title="Most requested pieces" description="From order inquiries, excluding cancelled">
+        <Panel title="القطع الأكثر طلبًا" description="من الطلبات، باستثناء الملغاة">
           {top.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted">No data yet.</p>
+            <p className="py-6 text-center text-sm text-muted">لا توجد بيانات بعد.</p>
           ) : (
             <ol className="space-y-3">
               {top.map((t, i) => (
                 <li key={t.name} className="text-sm">
                   <div className="flex justify-between gap-3">
-                    <span className="truncate"><span className="mr-2 text-muted">{i + 1}.</span>{t.name}</span>
+                    <span className="truncate"><span className="me-2 text-muted">{i + 1}.</span>{t.name}</span>
                     <span className="shrink-0 font-semibold tabular-nums">{money(t.value)}</span>
                   </div>
                   <div className="mt-1.5 h-1.5 rounded-full bg-sand">
@@ -183,20 +184,20 @@ export function Dashboard() {
           )}
         </Panel>
 
-        <Panel title="Mailing list" description="Emails collected from the storefront sign-up forms in this browser">
+        <Panel title="القائمة البريدية" description="البريد الإلكتروني المسجّل من نماذج الاشتراك في المتجر">
           <div className="flex items-center gap-4">
             <span className="grid size-12 place-items-center rounded-full bg-sand text-forest"><Mail className="size-5" /></span>
             <div>
               <p className="font-display text-4xl leading-none text-ink">{data.subscribers.length}</p>
-              <p className="text-xs text-muted">subscribers</p>
+              <p className="text-xs text-muted">مشترك</p>
             </div>
           </div>
           {data.subscribers.length > 0 && (
             <ul className="mt-4 max-h-40 space-y-1 overflow-y-auto text-sm">
               {data.subscribers.slice(0, 20).map((s) => (
                 <li key={s.email} className="flex justify-between gap-2 text-muted">
-                  <span className="truncate text-ink">{s.email}</span>
-                  <span className="shrink-0 text-xs">{new Date(s.createdAt).toLocaleDateString(data.settings.locale)}</span>
+                  <span className="ltr truncate text-ink">{s.email}</span>
+                  <span className="shrink-0 text-xs">{dateFormat(s.createdAt)}</span>
                 </li>
               ))}
             </ul>

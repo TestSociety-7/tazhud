@@ -21,37 +21,37 @@ export function buildOrderMessage(order: OrderInquiry, settings: StoreSettings) 
   const rule = "------------------------------";
   const lines: string[] = [];
 
-  lines.push(`Assalamu alaikum ${settings.storeName}, I'd like to place an order.`);
+  lines.push(`السلام عليكم ${settings.storeName}، أرغب بتأكيد هذا الطلب.`);
   lines.push("");
-  lines.push(`*Order ${order.number}*`);
+  lines.push(`*طلب رقم ${order.number}*`);
   lines.push(rule);
 
   order.lines.forEach((l, i) => {
     const options = [l.color, l.size].filter(Boolean).join(" / ");
-    lines.push(`${i + 1}. *${l.name}*${l.kind === "bundle" ? " (bundle)" : ""}`);
+    lines.push(`${i + 1}. *${l.name}*${l.kind === "bundle" ? " (مجموعة)" : ""}`);
     if (options) lines.push(`    ${options}`);
-    lines.push(`    ${l.quantity} x ${money(l.unitPrice)} = ${money(l.unitPrice * l.quantity)}`);
+    lines.push(`    ${l.quantity} × ${money(l.unitPrice)} = ${money(l.unitPrice * l.quantity)}`);
   });
 
   lines.push(rule);
-  lines.push(`Subtotal: ${money(order.subtotal)}`);
+  lines.push(`المجموع الفرعي: ${money(order.subtotal)}`);
   if (order.couponCode) {
     lines.push(
       order.discount > 0
-        ? `Coupon ${order.couponCode}: -${money(order.discount)}`
-        : `Coupon ${order.couponCode}: free delivery`,
+        ? `كود الخصم ${order.couponCode}: -${money(order.discount)}`
+        : `كود الخصم ${order.couponCode}: توصيل مجاني`,
     );
   }
-  lines.push(`Delivery: ${order.delivery > 0 ? money(order.delivery) : "Free"}`);
-  lines.push(`*Total: ${money(order.total)}*`);
+  lines.push(`التوصيل: ${order.delivery > 0 ? money(order.delivery) : "مجاني"}`);
+  lines.push(`*الإجمالي: ${money(order.total)}*`);
   lines.push("");
-  lines.push("*Delivery details*");
-  lines.push(`Name: ${order.customer.name}`);
-  lines.push(`Phone: ${order.customer.phone}`);
-  lines.push(`Address: ${order.customer.address}${order.customer.city ? `, ${order.customer.city}` : ""}`);
-  if (order.customer.notes) lines.push(`Notes: ${order.customer.notes}`);
+  lines.push("*بيانات التوصيل*");
+  lines.push(`الاسم: ${order.customer.name}`);
+  lines.push(`الهاتف: ${order.customer.phone}`);
+  lines.push(`العنوان: ${order.customer.address}${order.customer.city ? `، ${order.customer.city}` : ""}`);
+  if (order.customer.notes) lines.push(`ملاحظات: ${order.customer.notes}`);
   lines.push("");
-  lines.push("Please confirm availability, delivery time and payment. Thank you!");
+  lines.push("أرجو تأكيد التوفر وموعد التوصيل وطريقة الدفع. شكرًا لكم!");
 
   return lines.join("\n");
 }

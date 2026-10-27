@@ -1,8 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { getRepository } from "@/lib/repository";
-import { createSeedData } from "@/lib/seed";
+import { catalogToStoreData, createRepository, type Catalog } from "@/lib/repository";
 import type { StoreData } from "@/lib/types";
 
 type Mutator = (draft: StoreData) => StoreData;
@@ -24,22 +23,38 @@ interface StoreContextValue {
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
-export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const repo = getRepository();
-  // Server render and first client render use the starter content, so the
-  // markup matches; saved edits are applied right after hydration.
-  const [data, setData] = useState<StoreData>(createSeedData);
-  const [ready, setReady] = useState(false);
+interface StoreProviderProps {
+  children: React.ReactNode;
+  /** True when Vercel Blob storage is connected. */
+  shared: boolean;
+  scope: "store" | "admin";
+  /** Catalogue rendered by the server (shared mode only). */
+  initialCatalog?: Catalog | null;
+}
+
+export function StoreProvider({ children, shared, scope, initialCatalog = null }: StoreProviderProps) {
+  // Server render and first client render use the same data so the markup
+  // matches. In local mode, saved browser edits are applied after hydration.
+  const [initial] = useState(() => catalogToStoreData(initialCatalog));
+  const [repo] = useState(() => createRepository({ shared, scope, initial }));
+  const [data, setData] = useState<StoreData>(initial);
+  const [ready, setReady] = useState(shared && scope === "store");
   const dataRef = useRef(data);
 
   useEffect(() => {
     let alive = true;
-    repo.load().then((loaded) => {
-      if (!alive) return;
-      dataRef.current = loaded;
-      setData(loaded);
-      setReady(true);
-    });
+    repo
+      .load()
+      .then((loaded) => {
+        if (!alive) return;
+        dataRef.current = loaded;
+        setData(loaded);
+        setReady(true);
+      })
+      .catch((err) => {
+        console.error(err);
+        if (alive) setReady(true);
+      });
     const unsubscribe = repo.subscribe((next) => {
       dataRef.current = next;
       setData(next);
@@ -57,12 +72,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       dataRef.current = next;
       setData(next);
       try {
-        await repo.save(next);
+        await repo.save(next, previous);
         return { ok: true };
       } catch (err) {
         dataRef.current = previous;
         setData(previous);
-        return { ok: false, error: err instanceof Error ? err.message : "Could not save changes." };
+        return { ok: false, error: err instanceof Error ? err.message : "تعذّر حفظ التغييرات." };
       }
     },
     [repo],
@@ -70,12 +85,12 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const resetToDemo = useCallback(async (): Promise<SaveResult> => {
     try {
-      const seed = await repo.reset();
+      const seed = await repo.reset(dataRef.current);
       dataRef.current = seed;
       setData(seed);
       return { ok: true };
     } catch (err) {
-      return { ok: false, error: err instanceof Error ? err.message : "Could not reset." };
+      return { ok: false, error: err instanceof Error ? err.message : "تعذّرت إعادة الضبط." };
     }
   }, [repo]);
 

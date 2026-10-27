@@ -7,9 +7,9 @@ export default function StoreError({ reset }: { error: Error; reset: () => void 
     <div className="container-x py-16">
       <EmptyState
         as="h1"
-        title="Something went wrong"
-        body="Please try again. If the problem continues, message us on WhatsApp."
-        action={<button type="button" className="btn btn-primary" onClick={reset}>Try again</button>}
+        title="حدث خطأ ما"
+        body="حاولي مرة أخرى. إذا استمرت المشكلة راسلينا على واتساب."
+        action={<button type="button" className="btn btn-primary" onClick={reset}>حاولي مجددًا</button>}
       />
     </div>
   );

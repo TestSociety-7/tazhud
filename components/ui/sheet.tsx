@@ -10,7 +10,7 @@ import { X } from "lucide-react";
 export function Sheet({
   open,
   onClose,
-  side = "right",
+  side = "end",
   title,
   children,
   footer,
@@ -18,7 +18,8 @@ export function Sheet({
 }: {
   open: boolean;
   onClose: () => void;
-  side?: "left" | "right" | "top";
+  /** "start" opens from the reading side (right in Arabic), "end" from the other. */
+  side?: "start" | "end" | "top";
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -44,8 +45,8 @@ export function Sheet({
   }, []);
 
   const position = {
-    right: "ml-auto h-full max-h-none w-full max-w-md starting:translate-x-full",
-    left: "mr-auto h-full max-h-none w-[88%] max-w-sm starting:-translate-x-full",
+    end: "ms-auto h-full max-h-none w-full max-w-md starting:ltr:translate-x-full starting:rtl:-translate-x-full",
+    start: "me-auto h-full max-h-none w-[88%] max-w-sm starting:ltr:-translate-x-full starting:rtl:translate-x-full",
     top: "mx-auto mb-auto w-full max-w-none starting:-translate-y-full",
   }[side];
 
@@ -65,7 +66,7 @@ export function Sheet({
     >
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         <h2 className="font-display text-2xl text-ink">{title}</h2>
-        <button type="button" className="icon-btn -mr-2" onClick={onClose} aria-label="Close">
+        <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
       </div>

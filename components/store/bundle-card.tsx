@@ -27,8 +27,8 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
           fallbackLabel={bundle.name}
         />
         {savings > 0 && (
-          <span className="absolute top-3 left-3 rounded-full bg-ink px-3 py-1 text-[0.7rem] font-bold tracking-wider text-gold-soft">
-            Save {money(savings)}
+          <span className="absolute top-3 start-3 rounded-full bg-ink px-3 py-1 text-[0.7rem] font-bold tracking-wider text-gold-soft">
+            وفّري {money(savings)}
           </span>
         )}
       </div>
@@ -54,10 +54,10 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
             disabled={!available}
             onClick={() => {
               addBundle(bundle);
-              toast.success(`${bundle.name} added to your bag`, { action: { label: "View bag", onClick: () => setDrawerOpen(true) } });
+              toast.success(`أُضيفت ${bundle.name} إلى السلة`, { action: { label: "عرض السلة", onClick: () => setDrawerOpen(true) } });
             }}
           >
-            <ShoppingBag className="size-4" /> {available ? "Add bundle" : "Unavailable"}
+            <ShoppingBag className="size-4" /> {available ? "أضيفي المجموعة" : "غير متوفرة"}
           </button>
         </div>
       </div>

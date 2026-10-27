@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/cormorant-garamond/400.css";
+import "@fontsource-variable/el-messiri";
+import "@fontsource/ibm-plex-sans-arabic/400.css";
+import "@fontsource/ibm-plex-sans-arabic/500.css";
+import "@fontsource/ibm-plex-sans-arabic/600.css";
+import "@fontsource/ibm-plex-sans-arabic/700.css";
 import "@fontsource/cormorant-garamond/500.css";
-import "@fontsource/cormorant-garamond/500-italic.css";
 import "@fontsource/cormorant-garamond/600.css";
-import "@fontsource-variable/manrope";
 import "./globals.css";
 import { Toaster } from "sonner";
-import { StoreProvider } from "@/components/providers/store-provider";
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -14,14 +15,14 @@ export const metadata: Metadata = {
       (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
   ),
   title: {
-    default: "Tazhud | Modest fashion, hijabs & abayas",
-    template: "%s | Tazhud",
+    default: "تزهّد | أزياء محتشمة، طرح وعبايات",
+    template: "%s | تزهّد",
   },
-  description:
-    "Hijabs, abayas and modest clothing in soft, considered fabrics. Order easily on WhatsApp.",
+  description: "طرح وعبايات وأزياء محتشمة بأقمشة ناعمة ومختارة بعناية. اطلبي بسهولة عبر واتساب.",
   openGraph: {
     type: "website",
-    siteName: "Tazhud",
+    siteName: "تزهّد Tazhud",
+    locale: "ar_AR",
     images: ["/brand/tazhud-logo.jpg"],
   },
 };
@@ -34,10 +35,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="ar" dir="rtl" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <StoreProvider>{children}</StoreProvider>
+        {children}
         <Toaster
+          dir="rtl"
           position="bottom-center"
           toastOptions={{
             classNames: {

@@ -42,16 +42,16 @@ export function useDraft<T>(select: (d: StoreData) => T) {
 
 export function SaveBar({ dirty, saving, onDiscard }: { dirty: boolean; saving?: boolean; onDiscard: () => void }) {
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 backdrop-blur sm:-mx-8 sm:px-8">
-      <p className="text-sm text-muted" role="status">{dirty ? "Unsaved changes" : "All changes saved"}</p>
+    <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
+      <p className="text-sm text-muted" role="status">{dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}</p>
       <div className="flex gap-2">
         {dirty && (
           <button type="button" className="btn btn-ghost" onClick={onDiscard}>
-            Discard
+            تراجع
           </button>
         )}
         <button type="submit" className="btn btn-primary" disabled={!dirty || saving}>
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}
         </button>
       </div>
     </div>

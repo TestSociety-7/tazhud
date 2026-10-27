@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { newId, slugify, uniqueSlug } from "@/lib/commerce";
 import type { ColorOption, Product } from "@/lib/types";
+import { dateFormat } from "@/lib/arabic";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ImageListEditor } from "../image-input";
 import { ConfirmDialog, FormField, PageHeader, Panel, Toggle } from "../ui";
@@ -16,9 +17,9 @@ import { useProductActions } from "./products";
 const SIZE_PRESETS: Record<string, string[]> = {
   "XS–XL": ["XS", "S", "M", "L", "XL"],
   "S–XXL": ["S", "M", "L", "XL", "XXL"],
-  "S/M, L/XL": ["S/M", "L/XL"],
-  "One size": ["One size"],
-  Standard: ["Standard"],
+  "S/M، L/XL": ["S/M", "L/XL"],
+  "52–60": ["52", "54", "56", "58", "60"],
+  "مقاس واحد": ["مقاس واحد"],
 };
 
 type Draft = Omit<Product, "price" | "salePrice" | "stock" | "details"> & {
@@ -66,24 +67,28 @@ function blankProduct(categoryId: string): Product {
   };
 }
 
+/** Accepts numbers typed with Arabic-Indic digits too (٠١٢٣…). */
+const toLatinDigits = (v: string) =>
+  v.replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x0660)).replace(/[۰-۹]/g, (d) => String(d.charCodeAt(0) - 0x06f0)).replace("٫", ".").trim();
+
 type Errors = Partial<Record<"name" | "slug" | "price" | "salePrice" | "stock" | "categoryId", string>>;
 
 function validate(d: Draft, others: Product[]): Errors {
   const e: Errors = {};
-  if (!d.name.trim()) e.name = "Give the product a name.";
-  const slug = d.slug.trim() || slugify(d.name);
-  if (!slug) e.slug = "Add a URL slug.";
-  else if (others.some((p) => p.slug === slug)) e.slug = "Another product already uses this URL.";
-  const price = Number(d.price);
-  if (!d.price.trim() || !Number.isFinite(price) || price <= 0) e.price = "Enter a price above 0.";
+  if (!d.name.trim()) e.name = "أدخل اسم المنتج.";
+  // An empty slug (or an Arabic one) is generated automatically on save.
+  const slug = slugify(d.slug);
+  if (slug && others.some((p) => p.slug === slug)) e.slug = "هذا الرابط مستخدم لمنتج آخر.";
+  const price = Number(toLatinDigits(d.price));
+  if (!d.price.trim() || !Number.isFinite(price) || price <= 0) e.price = "أدخل سعرًا أكبر من 0.";
   if (d.salePrice.trim()) {
-    const sale = Number(d.salePrice);
-    if (!Number.isFinite(sale) || sale <= 0) e.salePrice = "Enter a valid sale price or leave it empty.";
-    else if (Number.isFinite(price) && sale >= price) e.salePrice = "Sale price must be lower than the regular price.";
+    const sale = Number(toLatinDigits(d.salePrice));
+    if (!Number.isFinite(sale) || sale <= 0) e.salePrice = "أدخل سعر تخفيض صحيحًا أو اتركه فارغًا.";
+    else if (Number.isFinite(price) && sale >= price) e.salePrice = "يجب أن يكون سعر التخفيض أقل من السعر الأصلي.";
   }
-  const stock = Number(d.stock);
-  if (!Number.isInteger(stock) || stock < 0) e.stock = "Stock must be a whole number, 0 or more.";
-  if (!d.categoryId) e.categoryId = "Choose a category.";
+  const stock = Number(toLatinDigits(d.stock));
+  if (!d.stock.trim() || !Number.isInteger(stock) || stock < 0) e.stock = "أدخل عددًا صحيحًا، 0 أو أكثر.";
+  if (!d.categoryId) e.categoryId = "اختر القسم.";
   return e;
 }
 
@@ -97,22 +102,22 @@ function ColorsEditor({ colors, onChange }: { colors: ColorOption[]; onChange: (
             value={/^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex : "#cccccc"}
             onChange={(e) => onChange(colors.map((x, j) => (j === i ? { ...x, hex: e.target.value } : x)))}
             className="size-11 shrink-0 cursor-pointer rounded-xl border border-line bg-paper p-1"
-            aria-label={`Swatch colour for ${c.name || `colour ${i + 1}`}`}
+            aria-label={`درجة ${c.name || `اللون ${i + 1}`}`}
           />
           <input
             className="field"
             value={c.name}
-            placeholder="Colour name, e.g. Sage"
+            placeholder="اسم اللون، مثال: زيتي"
             onChange={(e) => onChange(colors.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)))}
-            aria-label={`Colour ${i + 1} name`}
+            aria-label={`اسم اللون ${i + 1}`}
           />
-          <button type="button" className="icon-btn shrink-0 text-muted hover:text-danger" onClick={() => onChange(colors.filter((_, j) => j !== i))} aria-label={`Remove colour ${c.name || i + 1}`}>
+          <button type="button" className="icon-btn shrink-0 text-muted hover:text-danger" onClick={() => onChange(colors.filter((_, j) => j !== i))} aria-label={`حذف اللون ${c.name || i + 1}`}>
             <Trash2 className="size-4" />
           </button>
         </div>
       ))}
       <button type="button" className="btn btn-sm btn-outline border-line" onClick={() => onChange([...colors, { name: "", hex: "#9aaa8f" }])}>
-        <Plus className="size-4" /> Add colour
+        <Plus className="size-4" /> إضافة لون
       </button>
     </div>
   );
@@ -121,7 +126,7 @@ function ColorsEditor({ colors, onChange }: { colors: ColorOption[]; onChange: (
 function SizesEditor({ sizes, onChange }: { sizes: string[]; onChange: (s: string[]) => void }) {
   const [value, setValue] = useState("");
   const add = () => {
-    const parts = value.split(",").map((s) => s.trim()).filter(Boolean);
+    const parts = value.split(/[,،]/).map((s) => s.trim()).filter(Boolean);
     if (parts.length) onChange([...sizes, ...parts.filter((p) => !sizes.includes(p))]);
     setValue("");
   };
@@ -131,7 +136,7 @@ function SizesEditor({ sizes, onChange }: { sizes: string[]; onChange: (s: strin
         <ul className="flex flex-wrap gap-2">
           {sizes.map((s) => (
             <li key={s}>
-              <button type="button" onClick={() => onChange(sizes.filter((x) => x !== s))} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-sm hover:bg-line" aria-label={`Remove size ${s}`}>
+              <button type="button" onClick={() => onChange(sizes.filter((x) => x !== s))} className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-sm hover:bg-line" aria-label={`حذف المقاس ${s}`}>
                 {s} <X className="size-3.5" />
               </button>
             </li>
@@ -141,7 +146,7 @@ function SizesEditor({ sizes, onChange }: { sizes: string[]; onChange: (s: strin
       <div className="flex gap-2">
         <input
           className="field"
-          placeholder="Add sizes, comma separated"
+          placeholder="أضف مقاسات، افصل بينها بفاصلة"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={(e) => {
@@ -150,18 +155,18 @@ function SizesEditor({ sizes, onChange }: { sizes: string[]; onChange: (s: strin
               add();
             }
           }}
-          aria-label="Add sizes"
+          aria-label="إضافة مقاسات"
         />
-        <button type="button" className="btn btn-outline border-line" onClick={add}>Add</button>
+        <button type="button" className="btn btn-outline border-line" onClick={add}>إضافة</button>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        <span className="text-xs text-muted">Presets:</span>
+        <span className="text-xs text-muted">جاهزة:</span>
         {Object.entries(SIZE_PRESETS).map(([k, v]) => (
           <button key={k} type="button" onClick={() => onChange(v)} className="rounded-full px-2 text-xs font-semibold text-forest underline-offset-2 hover:underline">
             {k}
           </button>
         ))}
-        {sizes.length > 0 && <button type="button" onClick={() => onChange([])} className="rounded-full px-2 text-xs text-muted hover:underline">Clear</button>}
+        {sizes.length > 0 && <button type="button" onClick={() => onChange([])} className="rounded-full px-2 text-xs text-muted hover:underline">مسح</button>}
       </div>
     </div>
   );
@@ -206,7 +211,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
   if (productId && !existing) {
     return ready ? (
       <div className="card">
-        <EmptyState title="Product not found" body="It may have been deleted." action={<Link href="/admin/products" className="btn btn-primary">Back to products</Link>} />
+        <EmptyState title="المنتج غير موجود" body="ربما تم حذفه." action={<Link href="/admin/products" className="btn btn-primary">العودة إلى المنتجات</Link>} />
       </div>
     ) : (
       <div className="skeleton h-96 rounded-2xl" aria-busy="true" />
@@ -222,7 +227,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
     if (k in errors) setErrors((e) => ({ ...e, [k]: undefined }));
   };
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent, publish?: boolean) {
     e.preventDefault();
     const others = data.products.filter((p) => p.id !== draft.id);
     const errs = validate(draft, others);
@@ -237,13 +242,14 @@ export function ProductEditor({ productId }: { productId?: string }) {
     const product: Product = {
       ...rest,
       name: rest.name.trim(),
-      slug: rest.slug.trim() ? slugify(rest.slug) : uniqueSlug(rest.name, others.map((p) => p.slug)),
-      price: Math.round(Number(rest.price) * 100) / 100,
-      salePrice: rest.salePrice.trim() ? Math.round(Number(rest.salePrice) * 100) / 100 : null,
-      stock: Number(rest.stock),
+      slug: slugify(rest.slug) || uniqueSlug(rest.name, others.map((p) => p.slug)),
+      price: Math.round(Number(toLatinDigits(rest.price)) * 100) / 100,
+      salePrice: rest.salePrice.trim() ? Math.round(Number(toLatinDigits(rest.salePrice)) * 100) / 100 : null,
+      stock: Number(toLatinDigits(rest.stock)),
+      published: publish ?? rest.published,
       details: rest.details.split("\n").map((s) => s.trim()).filter(Boolean),
       colors: rest.colors.filter((c) => c.name.trim()).map((c) => ({ ...c, name: c.name.trim() })),
-      sku: rest.sku.trim() || `TZ-${slugify(rest.name).slice(0, 8).toUpperCase()}`,
+      sku: rest.sku.trim() || `TZ-${Date.now().toString(36).slice(-5).toUpperCase()}`,
       updatedAt: new Date().toISOString(),
     };
     const ok = await save(
@@ -257,7 +263,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
           return { ...b, items: want ? [...b.items, { productId: product.id, quantity: 1 }] : b.items.filter((it) => it.productId !== product.id) };
         }),
       }),
-      isNew ? `“${product.name}” created${product.published ? " and published" : " as a draft"}` : "Changes saved",
+      isNew ? (product.published ? `تم نشر «${product.name}» في المتجر` : `تم حفظ «${product.name}» كمسودة مخفية`) : "تم حفظ التغييرات",
     );
     setSaving(false);
     if (!ok) return;
@@ -272,16 +278,16 @@ export function ProductEditor({ productId }: { productId?: string }) {
   return (
     <form onSubmit={submit} noValidate>
       <Link href="/admin/products" className="mb-3 inline-flex min-h-10 items-center gap-2 text-sm text-muted hover:text-ink">
-        <ArrowLeft className="size-4" /> All products
+        <ArrowRight className="size-4" /> كل المنتجات
       </Link>
       <PageHeader
-        title={isNew ? "New product" : draft.name || "Untitled product"}
-        description={isNew ? "Fill in the details below. New products start hidden until you publish them." : `Last updated ${new Date(draft.updatedAt).toLocaleString(data.settings.locale, { dateStyle: "medium", timeStyle: "short" })}`}
+        title={isNew ? "منتج جديد" : draft.name || "منتج بدون اسم"}
+        description={isNew ? "ابدأ بالصور، ثم الاسم والسعر. يمكنك الحفظ كمسودة أو النشر مباشرة." : `آخر تحديث ${dateFormat(draft.updatedAt, { dateStyle: "medium", timeStyle: "short" })}`}
         actions={
           !isNew && (
             <>
               <a href={`/product/${draft.slug}`} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-outline border-line">
-                <ExternalLink className="size-4" /> View
+                <ExternalLink className="size-4" /> عرض
               </a>
               <button
                 type="button"
@@ -292,10 +298,10 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   if (copy) router.push(`/admin/products/${copy.id}`);
                 }}
               >
-                <Copy className="size-4" /> Duplicate
+                <Copy className="size-4" /> نسخ
               </button>
               <button type="button" className="btn btn-sm btn-ghost text-danger" onClick={() => setConfirmDelete(true)}>
-                <Trash2 className="size-4" /> Delete
+                <Trash2 className="size-4" /> حذف
               </button>
             </>
           )
@@ -304,80 +310,83 @@ export function ProductEditor({ productId }: { productId?: string }) {
 
       <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div className="space-y-6">
-          <Panel title="Basics">
+          <Panel title="الصور" description="رتّب الصور بالأسهم. الصورة الأولى هي الغلاف.">
+            <ImageListEditor images={draft.images} onChange={(imgs) => set("images", imgs)} />
+          </Panel>
+
+          <Panel title="المعلومات الأساسية">
             <div className="space-y-5">
-              <FormField label="Name" htmlFor="f-name" error={errors.name}>
-                <input id="f-name" className="field" value={draft.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!errors.name} />
+              <FormField label="اسم المنتج" htmlFor="f-name" error={errors.name}>
+                <input id="f-name" className="field" placeholder="مثال: عباية نور المفتوحة" value={draft.name} onChange={(e) => set("name", e.target.value)} aria-invalid={!!errors.name} />
               </FormField>
-              <FormField label="Tagline" htmlFor="f-tagline" hint="A short line shown under the name.">
+              <FormField label="وصف قصير" htmlFor="f-tagline" hint="سطر قصير يظهر تحت الاسم.">
                 <input id="f-tagline" className="field" value={draft.tagline} onChange={(e) => set("tagline", e.target.value)} />
               </FormField>
-              <FormField label="Description" htmlFor="f-description">
+              <FormField label="الوصف" htmlFor="f-description">
                 <textarea id="f-description" className="field" rows={5} value={draft.description} onChange={(e) => set("description", e.target.value)} />
               </FormField>
-              <FormField label="Details & care" htmlFor="f-details" hint="One point per line: fabric, measurements, fit, care.">
+              <FormField label="التفاصيل والعناية" htmlFor="f-details" hint="نقطة في كل سطر: القماش، القياسات، القصّة، العناية.">
                 <textarea id="f-details" className="field" rows={4} value={draft.details} onChange={(e) => set("details", e.target.value)} />
               </FormField>
             </div>
           </Panel>
 
-          <Panel title="Images" description="Drag order with the arrows. The first image is the cover.">
-            <ImageListEditor images={draft.images} onChange={(imgs) => set("images", imgs)} />
+
+          <Panel title="السعر والمخزون">
+            <div className="grid grid-cols-2 gap-4 sm:gap-5">
+              <FormField label={`السعر (${data.settings.currency})`} htmlFor="f-price" error={errors.price}>
+                <input id="f-price" className="field" inputMode="decimal" value={draft.price} onChange={(e) => set("price", e.target.value)} aria-invalid={!!errors.price} />
+              </FormField>
+              <FormField label="سعر التخفيض" htmlFor="f-salePrice" error={errors.salePrice} hint="اختياري.">
+                <input id="f-salePrice" className="field" inputMode="decimal" value={draft.salePrice} onChange={(e) => set("salePrice", e.target.value)} aria-invalid={!!errors.salePrice} />
+              </FormField>
+              <FormField label="الكمية المتوفرة" htmlFor="f-stock" error={errors.stock} hint={`يظهر «بقي القليل» عند ${data.settings.lowStockThreshold} أو أقل.`}>
+                <input id="f-stock" className="field" inputMode="numeric" value={draft.stock} onChange={(e) => set("stock", e.target.value)} aria-invalid={!!errors.stock} />
+              </FormField>
+              <FormField label="رمز المنتج" htmlFor="f-sku" hint="اتركه فارغًا ليُنشأ تلقائيًا.">
+                <input id="f-sku" className="field ltr" value={draft.sku} onChange={(e) => set("sku", e.target.value)} />
+              </FormField>
+            </div>
           </Panel>
 
-          <Panel title="Options">
+          <Panel title="الألوان والمقاسات">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <p className="label">Colours</p>
+                <p className="label">الألوان</p>
                 <ColorsEditor colors={draft.colors} onChange={(c) => set("colors", c)} />
               </div>
               <div>
-                <p className="label">Sizes</p>
+                <p className="label">المقاسات</p>
                 <SizesEditor sizes={draft.sizes} onChange={(s) => set("sizes", s)} />
               </div>
             </div>
           </Panel>
 
-          <Panel title="Pricing & stock">
-            <div className="grid gap-5 sm:grid-cols-2">
-              <FormField label={`Price (${data.settings.currency})`} htmlFor="f-price" error={errors.price}>
-                <input id="f-price" className="field" inputMode="decimal" value={draft.price} onChange={(e) => set("price", e.target.value)} aria-invalid={!!errors.price} />
-              </FormField>
-              <FormField label="Sale price (optional)" htmlFor="f-salePrice" error={errors.salePrice} hint="Leave empty for no sale.">
-                <input id="f-salePrice" className="field" inputMode="decimal" value={draft.salePrice} onChange={(e) => set("salePrice", e.target.value)} aria-invalid={!!errors.salePrice} />
-              </FormField>
-              <FormField label="Stock" htmlFor="f-stock" error={errors.stock} hint={`Shows “low stock” at ${data.settings.lowStockThreshold} or fewer.`}>
-                <input id="f-stock" className="field" inputMode="numeric" value={draft.stock} onChange={(e) => set("stock", e.target.value)} aria-invalid={!!errors.stock} />
-              </FormField>
-              <FormField label="SKU" htmlFor="f-sku" hint="Leave empty to generate one.">
-                <input id="f-sku" className="field" value={draft.sku} onChange={(e) => set("sku", e.target.value)} />
-              </FormField>
-            </div>
-          </Panel>
         </div>
 
         <div className="space-y-6">
-          <Panel title="Visibility">
+          <Panel title="الظهور">
             <div className="space-y-5">
-              <Toggle checked={draft.published} onChange={(v) => set("published", v)} label="Published" description="Visible to customers" />
-              <Toggle checked={draft.featured} onChange={(v) => set("featured", v)} label="Featured" description="Shown first in the shop" />
-              <Toggle checked={draft.newArrival} onChange={(v) => set("newArrival", v)} label="New arrival" description="Appears in New arrivals" />
-              <Toggle checked={draft.bestseller} onChange={(v) => set("bestseller", v)} label="Bestseller" description="Appears in Bestsellers" />
+              <Toggle checked={draft.published} onChange={(v) => set("published", v)} label="منشور" description="ظاهر للزبائن" />
+              <Toggle checked={draft.featured} onChange={(v) => set("featured", v)} label="مميز" description="يظهر أولًا في المتجر" />
+              <Toggle checked={draft.newArrival} onChange={(v) => set("newArrival", v)} label="وصل حديثًا" description="يظهر في قسم وصل حديثًا" />
+              <Toggle checked={draft.bestseller} onChange={(v) => set("bestseller", v)} label="الأكثر مبيعًا" description="يظهر في قسم الأكثر مبيعًا" />
             </div>
           </Panel>
 
-          <Panel title="Organisation">
+          <Panel title="التنظيم">
             <div className="space-y-5">
-              <FormField label="Category" htmlFor="f-categoryId" error={errors.categoryId}>
+              <FormField label="القسم" htmlFor="f-categoryId" error={errors.categoryId}>
                 <select id="f-categoryId" className="field" value={draft.categoryId} onChange={(e) => set("categoryId", e.target.value)} aria-invalid={!!errors.categoryId}>
-                  <option value="">Choose…</option>
+                  <option value="">اختر…</option>
                   {data.categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </FormField>
-              <FormField label="URL slug" htmlFor="f-slug" error={errors.slug} hint={`/product/${draft.slug || slugify(draft.name) || "…"}`}>
+              <FormField label="رابط المنتج (بالإنجليزية)" htmlFor="f-slug" error={errors.slug} hint={slugify(draft.slug) ? `/product/${slugify(draft.slug)}` : "اختياري، يُنشأ تلقائيًا. مثال: noor-abaya"}>
                 <input
                   id="f-slug"
-                  className="field"
+                  className="field ltr"
+                  placeholder="noor-abaya"
                   value={draft.slug}
                   onChange={(e) => {
                     setSlugTouched(true);
@@ -386,13 +395,13 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   aria-invalid={!!errors.slug}
                 />
               </FormField>
-              {category && <p className="text-xs text-muted">Shown under {category.name} in the shop.</p>}
+              {category && <p className="text-xs text-muted">يظهر ضمن قسم {category.name} في المتجر.</p>}
             </div>
           </Panel>
 
-          <Panel title="Bundles" description="Include this piece in curated bundles (quantity 1). Adjust quantities on the Bundles page.">
+          <Panel title="المجموعات" description="أضف هذه القطعة إلى مجموعات (بكمية 1). عدّل الكميات من صفحة المجموعات.">
             {data.bundles.length === 0 ? (
-              <p className="text-sm text-muted">No bundles yet.</p>
+              <p className="text-sm text-muted">لا توجد مجموعات بعد.</p>
             ) : (
               <ul className="space-y-2">
                 {data.bundles.map((b) => (
@@ -414,24 +423,35 @@ export function ProductEditor({ productId }: { productId?: string }) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 backdrop-blur sm:-mx-8 sm:px-8">
-        <p className="text-sm text-muted" role="status">{dirty ? "Unsaved changes" : "All changes saved"}</p>
-        <div className="flex gap-2">
-          {dirty && !isNew && (
-            <button type="button" className="btn btn-ghost" onClick={() => setDraft(JSON.parse(baseline))}>
-              Discard
+      <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
+        <p className="hidden text-sm text-muted sm:block" role="status">{dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}</p>
+        {isNew ? (
+          <div className="flex flex-1 gap-2 sm:flex-none">
+            <button type="submit" className="btn btn-outline flex-1 border-line" disabled={saving}>
+              حفظ كمسودة
             </button>
-          )}
-          <button type="submit" className="btn btn-primary" disabled={saving || (!dirty && !isNew)}>
-            {saving ? "Saving…" : isNew ? "Create product" : "Save changes"}
-          </button>
-        </div>
+            <button type="button" className="btn btn-primary flex-1" disabled={saving} onClick={(e) => submit(e, true)}>
+              {saving ? "جارٍ الحفظ…" : "حفظ ونشر"}
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-1 justify-end gap-2 sm:flex-none">
+            {dirty && (
+              <button type="button" className="btn btn-ghost" onClick={() => setDraft(JSON.parse(baseline))}>
+                تراجع
+              </button>
+            )}
+            <button type="submit" className="btn btn-primary flex-1 sm:flex-none" disabled={saving || !dirty}>
+              {saving ? "جارٍ الحفظ…" : "حفظ التغييرات"}
+            </button>
+          </div>
+        )}
       </div>
 
       <ConfirmDialog
         open={confirmDelete}
-        title="Delete product?"
-        body={<><strong>{draft.name}</strong> will be removed from the store and any bundles.</>}
+        title="حذف المنتج؟"
+        body={<>سيُحذف <strong>{draft.name}</strong> من المتجر ومن أي مجموعة.</>}
         onCancel={() => setConfirmDelete(false)}
         onConfirm={async () => {
           setConfirmDelete(false);

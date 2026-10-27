@@ -36,8 +36,8 @@ export function ProductCard({ product, priority = false }: { product: Product; p
   function quickAdd() {
     if (!simple) return;
     addProduct(product, { color: product.colors[0]?.name, size: product.sizes[0], quantity: 1 });
-    toast.success(`${product.name} added to your bag`, {
-      action: { label: "View bag", onClick: () => setDrawerOpen(true) },
+    toast.success(`أُضيفت ${product.name} إلى السلة`, {
+      action: { label: "عرض السلة", onClick: () => setDrawerOpen(true) },
     });
   }
 
@@ -66,13 +66,13 @@ export function ProductCard({ product, priority = false }: { product: Product; p
                 className="absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100 [@media(hover:none)]:hidden"
               />
             )}
-            <div className="absolute top-[18%] left-3 flex flex-col items-start gap-1.5">
-              {product.newArrival && <span className="rounded-full bg-ivory/95 px-2.5 py-1 text-[0.65rem] font-bold tracking-widest text-forest uppercase">New</span>}
+            <div className="absolute top-[18%] start-3 flex flex-col items-start gap-1.5">
+              {product.newArrival && <span className="rounded-full bg-ivory/95 px-2.5 py-1 text-[0.7rem] font-bold text-forest">جديد</span>}
               {isOnSale(product) && <span className="rounded-full bg-ink px-2.5 py-1 text-[0.65rem] font-bold tracking-widest text-gold-soft uppercase">−{discountPercent(product)}%</span>}
             </div>
             {state === "out" && (
               <div className="absolute inset-x-0 bottom-0 bg-ink/75 py-2 text-center text-xs font-semibold tracking-widest text-ivory uppercase backdrop-blur-sm">
-                Sold out
+                نفدت الكمية
               </div>
             )}
           </div>
@@ -82,18 +82,18 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             <button
               type="button"
               onClick={quickAdd}
-              className="absolute right-3 bottom-3 grid size-11 place-items-center rounded-full bg-ivory/95 text-ink shadow-[var(--shadow-soft)] transition-all duration-300 hover:bg-forest hover:text-ivory lg:translate-y-2 lg:opacity-0 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
-              aria-label={`Add ${product.name} to bag`}
+              className="absolute end-3 bottom-3 grid size-11 place-items-center rounded-full bg-ivory/95 text-ink shadow-[var(--shadow-soft)] transition-all duration-300 hover:bg-forest hover:text-ivory lg:translate-y-2 lg:opacity-0 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
+              aria-label={`أضيفي ${product.name} إلى السلة`}
             >
               <Plus className="size-5" />
             </button>
           ) : (
             <Link
               href={href}
-              className="absolute right-3 bottom-3 hidden rounded-full bg-ivory/95 px-4 py-2 text-xs font-semibold text-ink shadow-[var(--shadow-soft)] transition-all duration-300 hover:bg-forest hover:text-ivory lg:inline-flex lg:translate-y-2 lg:opacity-0 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
+              className="absolute end-3 bottom-3 hidden rounded-full bg-ivory/95 px-4 py-2 text-xs font-semibold text-ink shadow-[var(--shadow-soft)] transition-all duration-300 hover:bg-forest hover:text-ivory lg:inline-flex lg:translate-y-2 lg:opacity-0 lg:group-focus-within:translate-y-0 lg:group-focus-within:opacity-100 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
               tabIndex={-1}
             >
-              Choose options
+              اختاري الخيارات
             </Link>
           ))}
       </div>
@@ -109,15 +109,15 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         <div className="mt-2 flex items-center justify-between gap-2">
           <Price price={effectivePrice(product)} compareAt={product.price} size="sm" />
           {product.colors.length > 1 && (
-            <ul className="flex -space-x-1" aria-label={`${product.colors.length} colours`}>
+            <ul className="flex -space-x-1" aria-label={`${product.colors.length} ألوان`}>
               {product.colors.slice(0, 4).map((c) => (
                 <li key={c.name} className="size-4 rounded-full border-2 border-ivory" style={{ background: c.hex }} title={c.name} />
               ))}
-              {product.colors.length > 4 && <li className="pl-2 text-[0.65rem] text-muted">+{product.colors.length - 4}</li>}
+              {product.colors.length > 4 && <li className="ps-2 text-[0.65rem] text-muted">+{product.colors.length - 4}</li>}
             </ul>
           )}
         </div>
-        {state === "low" && <p className="mt-1 text-[0.7rem] font-semibold text-[#855a14]">Only {product.stock} left</p>}
+        {state === "low" && <p className="mt-1 text-[0.7rem] font-semibold text-[#855a14]">بقي {product.stock} فقط</p>}
       </div>
     </article>
   );
