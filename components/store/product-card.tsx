@@ -117,7 +117,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
             </ul>
           )}
         </div>
-        {state === "low" && <p className="mt-1 text-[0.7rem] font-semibold text-[#9a6a1f]">Only {product.stock} left</p>}
+        {state === "low" && <p className="mt-1 text-[0.7rem] font-semibold text-[#855a14]">Only {product.stock} left</p>}
       </div>
     </article>
   );

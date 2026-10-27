@@ -8,7 +8,7 @@ export function StockBadge({ stock, className = "" }: { stock: number; className
   const state = stockState(stock, data.settings.lowStockThreshold);
   const tone = {
     in: "text-success",
-    low: "text-[#9a6a1f]",
+    low: "text-[#855a14]",
     out: "text-danger",
   }[state];
   const dot = { in: "bg-success", low: "bg-[#c9922f]", out: "bg-danger" }[state];

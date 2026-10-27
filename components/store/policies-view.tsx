@@ -9,7 +9,7 @@ export function PoliciesView() {
   const s = data.settings;
   return (
     <div className="container-x max-w-3xl py-14">
-      <p className="eyebrow text-gold">Help</p>
+      <p className="eyebrow text-gold-deep">Help</p>
       <h1 className="font-display mt-2 text-5xl text-ink">Store policies</h1>
       <nav aria-label="Policies" className="mt-6 flex flex-wrap gap-2">
         {s.policies.map((p) => (

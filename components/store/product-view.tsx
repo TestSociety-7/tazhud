@@ -44,6 +44,9 @@ function Gallery({ product }: { product: Product }) {
       <div className="relative">
         <div
           ref={scroller}
+          tabIndex={0}
+          role="region"
+          aria-label={`${product.name} images, swipe or scroll to see more`}
           className="no-scrollbar arch flex aspect-[4/5] snap-x snap-mandatory overflow-x-auto bg-sand"
           onScroll={(e) => {
             const el = e.currentTarget;
@@ -162,6 +165,7 @@ export function ProductView({ slug }: { slug: string }) {
     return (
       <div className="container-x py-16">
         <EmptyState
+          as="h1"
           title="This piece isn't available"
           body="It may have sold out or been removed from the collection."
           action={<Link href="/shop" className="btn btn-primary">Browse the collection</Link>}
@@ -221,7 +225,7 @@ export function ProductView({ slug }: { slug: string }) {
         <Gallery product={product} />
 
         <div className="lg:pt-4">
-          {product.newArrival && <p className="eyebrow text-gold">New arrival</p>}
+          {product.newArrival && <p className="eyebrow text-gold-deep">New arrival</p>}
           <h1 className="font-display mt-2 text-4xl leading-[1.05] text-ink sm:text-5xl">{product.name}</h1>
           <p className="mt-2 text-muted">{product.tagline}</p>
           <div className="mt-5 flex flex-wrap items-center gap-4">

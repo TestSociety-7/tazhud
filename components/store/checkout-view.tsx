@@ -150,6 +150,7 @@ export function CheckoutView() {
     return (
       <div className="container-x py-16">
         <EmptyState
+          as="h1"
           icon={<ShoppingBag className="size-6" />}
           title="Nothing to check out yet"
           body="Add a few pieces to your bag first."

@@ -96,6 +96,7 @@ function UploadButton({ onAdd, multiple = true }: { onAdd: (urls: string[]) => v
         multiple={multiple}
         className="sr-only"
         tabIndex={-1}
+        aria-label="Upload images"
         onChange={async (e) => {
           const files = Array.from(e.target.files ?? []);
           e.target.value = "";

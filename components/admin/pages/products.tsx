@@ -160,7 +160,7 @@ export function ProductsPage() {
             const st = stockState(p.stock, data.settings.lowStockThreshold);
             return (
               <li key={p.id} className="flex items-center gap-3 p-3 sm:gap-4 sm:px-5">
-                <Link href={`/admin/products/${p.id}`} className="shrink-0">
+                <Link href={`/admin/products/${p.id}`} className="shrink-0" tabIndex={-1} aria-hidden>
                   <SmartImage src={p.images[0]} alt="" className={`h-16 w-13 rounded-lg ${p.published ? "" : "opacity-50"}`} />
                 </Link>
                 <div className="min-w-0 flex-1">

@@ -31,7 +31,7 @@ export function SectionHeading({
   return (
     <div className={`mb-8 flex items-end gap-4 sm:mb-10 ${center ? "flex-col items-center text-center" : "justify-between"}`}>
       <div>
-        {subtitle && <p className="eyebrow mb-2 flex items-center gap-2 text-gold"><Star8 className="size-2.5" />{subtitle}</p>}
+        {subtitle && <p className="eyebrow mb-2 flex items-center gap-2 text-gold-deep"><Star8 className="size-2.5" />{subtitle}</p>}
         <h2 className="font-display text-4xl leading-none text-ink sm:text-5xl">{title}</h2>
       </div>
       {href && (
@@ -198,7 +198,7 @@ export function StorySection({ section }: { section: HomeSection }) {
           <Mandala className="absolute -right-10 -bottom-10 size-40 text-gold/50" />
         </Reveal>
         <Reveal delay={120}>
-          <p className="eyebrow text-gold">{section.title}</p>
+          <p className="eyebrow text-gold-deep">{section.title}</p>
           <h2 className="font-display mt-3 text-4xl leading-tight text-ink sm:text-5xl">{story.title}</h2>
           <OrnamentDivider className="my-6 max-w-[12rem]" />
           <p className="max-w-lg leading-relaxed text-pretty text-muted">{story.body}</p>
@@ -222,7 +222,7 @@ export function FollowSection({ section }: { section: HomeSection }) {
       <div className="card overflow-hidden">
         <div className="grid lg:grid-cols-[1fr_1.15fr]">
           <div className="p-6 sm:p-10 lg:p-14">
-            {section.subtitle && <p className="eyebrow text-gold">{section.subtitle}</p>}
+            {section.subtitle && <p className="eyebrow text-gold-deep">{section.subtitle}</p>}
             <h2 className="font-display mt-3 text-4xl leading-tight text-ink sm:text-5xl">{section.title}</h2>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
               Follow {s.instagramHandle} for styling ideas and first looks, or join the list to hear about restocks before anyone else.

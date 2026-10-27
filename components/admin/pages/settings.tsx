@@ -175,7 +175,7 @@ export function SettingsPage() {
               <div className="flex flex-wrap gap-2">
                 <button type="button" className="btn btn-outline border-line" onClick={exportData}><Download className="size-4" /> Export data (JSON)</button>
                 <button type="button" className="btn btn-outline border-line" onClick={() => fileRef.current?.click()}><Upload className="size-4" /> Import data</button>
-                <input ref={fileRef} type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) importData(f); }} />
+                <input ref={fileRef} aria-label="Import data file" type="file" accept="application/json,.json" className="sr-only" tabIndex={-1} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) importData(f); }} />
                 <button type="button" className="btn btn-ghost text-danger" onClick={() => setConfirmReset(true)}><RotateCcw className="size-4" /> Reset to starter content</button>
               </div>
             </div>

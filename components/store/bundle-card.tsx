@@ -45,7 +45,7 @@ export function BundleCard({ bundle }: { bundle: Bundle }) {
             </li>
           ))}
         </ul>
-        {bundle.note && <p className="mt-3 text-xs text-gold">{bundle.note}</p>}
+        {bundle.note && <p className="mt-3 text-xs text-gold-deep">{bundle.note}</p>}
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
           <Price price={bundle.price} compareAt={value} />
           <button

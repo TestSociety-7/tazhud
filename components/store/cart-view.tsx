@@ -24,6 +24,7 @@ export function CartView() {
     return (
       <div className="container-x py-16">
         <EmptyState
+          as="h1"
           icon={<ShoppingBag className="size-6" />}
           title="Your bag is empty"
           body="When you add pieces, they'll appear here ready to send on WhatsApp."

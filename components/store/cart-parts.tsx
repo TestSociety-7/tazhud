@@ -24,7 +24,7 @@ export function CartLineItem({ line, compact = false, onNavigate }: { line: Reso
             <Link href={line.href} onClick={onNavigate} className="font-display text-xl leading-tight text-ink hover:underline">
               {line.name}
             </Link>
-            {line.kind === "bundle" && <p className="eyebrow mt-1 text-gold">Bundle</p>}
+            {line.kind === "bundle" && <p className="eyebrow mt-1 text-gold-deep">Bundle</p>}
             {options && <p className="mt-1 text-xs text-muted">{options}</p>}
           </div>
           <button
@@ -67,7 +67,7 @@ export function CouponForm() {
     return (
       <div className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-sm ${ok ? "border-sage bg-sage-soft/60" : "border-[#e2c58f] bg-[#fbf3e2]"}`}>
         <span className="flex min-w-0 items-center gap-2">
-          {ok ? <Check className="size-4 shrink-0 text-success" /> : <AlertCircle className="size-4 shrink-0 text-[#9a6a1f]" />}
+          {ok ? <Check className="size-4 shrink-0 text-success" /> : <AlertCircle className="size-4 shrink-0 text-[#855a14]" />}
           <span className="min-w-0">
             <strong className="font-semibold tracking-wide">{couponCode}</strong>
             <span className="block text-xs text-muted">{coupon?.message}</span>
