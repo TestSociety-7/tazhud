@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Gift, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
-import { bundleDetails, formatMoney, newId, slugify, uniqueSlug } from "@/lib/commerce";
-import type { Bundle, Category, Coupon, CouponType } from "@/lib/types";
+import { formatMoney, newId, slugify, uniqueSlug } from "@/lib/commerce";
+import type { Category, Coupon, CouponType } from "@/lib/types";
 import { SmartImage } from "@/components/ui/smart-image";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SingleImageInput } from "../image-input";
@@ -130,153 +130,6 @@ export function CategoriesPage() {
             }),
             `تم حذف «${target.name}»`,
           );
-        }}
-      />
-    </>
-  );
-}
-
-/* ----------------------------------- Bundles ----------------------------------- */
-
-export function BundlesPage() {
-  const { data } = useStore();
-  const save = useSave();
-  const money = (n: number) => formatMoney(n, data.settings);
-  const [editing, setEditing] = useState<(Omit<Bundle, "price"> & { price: string }) | null>(null);
-  const [errors, setErrors] = useState<{ name?: string; price?: string; items?: string }>({});
-  const [toDelete, setToDelete] = useState<Bundle | null>(null);
-
-  async function submit() {
-    if (!editing) return;
-    const e: typeof errors = {};
-    if (!editing.name.trim()) e.name = "اكتب اسم الباقة.";
-    const price = Number(editing.price);
-    if (!Number.isFinite(price) || price <= 0) e.price = "اكتب سعرًا أكبر من 0.";
-    if (editing.items.length === 0) e.items = "أضف منتجًا واحدًا على الأقل.";
-    setErrors(e);
-    if (Object.keys(e).length) return;
-    const isNew = !data.bundles.some((b) => b.id === editing.id);
-    const bundle: Bundle = {
-      ...editing,
-      name: editing.name.trim(),
-      price: Math.round(price * 100) / 100,
-      slug: uniqueSlug(editing.slug || editing.name, data.bundles.filter((b) => b.id !== editing.id).map((b) => b.slug)),
-    };
-    const ok = await save(
-      (d) => ({ ...d, bundles: isNew ? [...d.bundles, bundle] : d.bundles.map((b) => (b.id === bundle.id ? bundle : b)) }),
-      isNew ? `تم إنشاء «${bundle.name}»` : `تم حفظ «${bundle.name}»`,
-    );
-    if (ok) setEditing(null);
-  }
-
-  const preview = editing ? bundleDetails({ ...editing, price: Number(editing.price) || 0 }, data.products) : null;
-
-  return (
-    <>
-      <PageHeader
-        title="الباقات"
-        description="مجموعات مختارة تُباع بسعر واحد. تظهر في الصفحة الرئيسية وفي قسم الباقات بالمتجر."
-        actions={
-          <button type="button" className="btn btn-primary" onClick={() => { setErrors({}); setEditing({ id: newId("bdl"), slug: "", name: "", description: "", image: "", items: [], price: "", active: true, note: "اختاري الألوان عبر واتساب" }); }}>
-            <Plus className="size-4" /> باقة جديدة
-          </button>
-        }
-      />
-      {data.bundles.length === 0 ? (
-        <div className="card"><EmptyState icon={<Gift className="size-6" />} title="لا توجد باقات بعد" body="اجمع قطعًا متناسقة واعرضها بسعر أفضل." /></div>
-      ) : (
-        <ul className="grid gap-4 md:grid-cols-2">
-          {data.bundles.map((b) => {
-            const det = bundleDetails(b, data.products);
-            return (
-              <li key={b.id} className="card flex gap-4 p-4">
-                <SmartImage src={b.image} alt="" className="h-28 w-24 shrink-0 rounded-xl" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="font-display text-2xl leading-tight text-ink">{b.name}</p>
-                    <Badge tone={b.active ? "green" : "neutral"}>{b.active ? "ظاهرة" : "مخفية"}</Badge>
-                  </div>
-                  <p className="mt-1 text-sm">
-                    <strong>{money(b.price)}</strong> <span className="text-muted">· قيمتها {money(det.value)}</span>
-                    {det.savings > 0 && <span className="text-success"> · توفير {money(det.savings)}</span>}
-                  </p>
-                  <p className="mt-1 line-clamp-1 text-xs text-muted">{det.items.map((it) => `${it.quantity}× ${it.product.name}`).join("، ") || "لا توجد منتجات"}</p>
-                  {!det.available && b.active && <p className="mt-1 text-xs text-danger">غير متاحة: أحد المنتجات مخفي أو نفد من المخزون.</p>}
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    <button type="button" className="btn btn-sm btn-outline border-line" onClick={() => { setErrors({}); setEditing({ ...structuredClone(b), price: String(b.price) }); }}><Pencil className="size-3.5" /> تعديل</button>
-                    <button type="button" className="btn btn-sm btn-ghost" onClick={() => save((d) => ({ ...d, bundles: d.bundles.map((x) => (x.id === b.id ? { ...x, active: !x.active } : x)) }), b.active ? `تم إخفاء «${b.name}»` : `«${b.name}» ظاهرة الآن`)}>
-                      {b.active ? "إخفاء" : "نشر"}
-                    </button>
-                    <button type="button" className="btn btn-sm btn-ghost text-danger" onClick={() => setToDelete(b)}><Trash2 className="size-3.5" /> حذف</button>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-
-      {editing && (
-        <Modal
-          open
-          size="lg"
-          onClose={() => setEditing(null)}
-          title={data.bundles.some((b) => b.id === editing.id) ? "تعديل الباقة" : "باقة جديدة"}
-          footer={<><button type="button" className="btn btn-ghost" onClick={() => setEditing(null)}>إلغاء</button><button type="button" className="btn btn-primary" onClick={submit}>حفظ الباقة</button></>}
-        >
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-5">
-              <FormField label="الاسم" htmlFor="b-name" error={errors.name}>
-                <input id="b-name" className="field" value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} aria-invalid={!!errors.name} />
-              </FormField>
-              <FormField label="الوصف" htmlFor="b-desc">
-                <textarea id="b-desc" className="field" rows={3} value={editing.description} onChange={(e) => setEditing({ ...editing, description: e.target.value })} />
-              </FormField>
-              <FormField label="ملاحظة للعميلة" htmlFor="b-note" hint="مثلًا: طريقة اختيار الألوان أو المقاسات.">
-                <input id="b-note" className="field" value={editing.note} onChange={(e) => setEditing({ ...editing, note: e.target.value })} />
-              </FormField>
-              <FormField label={`سعر الباقة (${data.settings.currency})`} htmlFor="b-price" error={errors.price} hint={preview ? `قيمة القطع منفردة ${money(preview.value)}.` : undefined}>
-                <input id="b-price" className="field" inputMode="decimal" value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} aria-invalid={!!errors.price} />
-              </FormField>
-              <Toggle checked={editing.active} onChange={(v) => setEditing({ ...editing, active: v })} label="ظاهرة" description="عرض هذه الباقة في المتجر" />
-            </div>
-            <div className="space-y-5">
-              <div>
-                <p className="label">الصورة</p>
-                <SingleImageInput label="رابط صورة الباقة" value={editing.image} onChange={(v) => setEditing({ ...editing, image: v })} />
-              </div>
-              <div>
-                <p className="label">منتجات الباقة</p>
-                <ul className="space-y-2">
-                  {editing.items.map((it, i) => (
-                    <li key={i} className="flex items-center gap-2">
-                      <select className="field" value={it.productId} onChange={(e) => setEditing({ ...editing, items: editing.items.map((x, j) => (j === i ? { ...x, productId: e.target.value } : x)) })} aria-label={`المنتج ${i + 1}`}>
-                        {data.products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-                      </select>
-                      <input className="field !w-20" inputMode="numeric" value={it.quantity} onChange={(e) => setEditing({ ...editing, items: editing.items.map((x, j) => (j === i ? { ...x, quantity: Math.max(1, Number(e.target.value.replace(/\D/g, "")) || 1) } : x)) })} aria-label={`كمية المنتج ${i + 1}`} />
-                      <button type="button" className="icon-btn shrink-0 text-muted hover:text-danger" onClick={() => setEditing({ ...editing, items: editing.items.filter((_, j) => j !== i) })} aria-label={`إزالة المنتج ${i + 1}`}><Trash2 className="size-4" /></button>
-                    </li>
-                  ))}
-                </ul>
-                <button type="button" className="btn btn-sm btn-outline mt-3 border-line" disabled={!data.products.length} onClick={() => { setEditing({ ...editing, items: [...editing.items, { productId: data.products[0].id, quantity: 1 }] }); setErrors((x) => ({ ...x, items: undefined })); }}>
-                  <Plus className="size-4" /> إضافة منتج
-                </button>
-                {errors.items && <p className="error-text">{errors.items}</p>}
-              </div>
-            </div>
-          </div>
-        </Modal>
-      )}
-
-      <ConfirmDialog
-        open={!!toDelete}
-        title="حذف الباقة؟"
-        body={<>سيتم حذف «{toDelete?.name}». المنتجات نفسها لن تتأثر.</>}
-        onCancel={() => setToDelete(null)}
-        onConfirm={() => {
-          const t = toDelete;
-          setToDelete(null);
-          if (t) save((d) => ({ ...d, bundles: d.bundles.filter((b) => b.id !== t.id) }), `تم حذف «${t.name}»`);
         }}
       />
     </>

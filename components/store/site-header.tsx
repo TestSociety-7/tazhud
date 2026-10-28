@@ -8,7 +8,6 @@ import { Menu, Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { Logo, LogoMark } from "@/components/ui/logo";
-import { OrnamentDivider } from "@/components/ui/mandala";
 import { Sheet } from "@/components/ui/sheet";
 import { SearchPanel } from "./search-panel";
 import { whatsappLink } from "@/lib/whatsapp";
@@ -52,7 +51,6 @@ export function SiteHeader() {
   const nav = [
     { href: "/shop", label: "كل المنتجات" },
     ...categories.slice(0, 3).map((c) => ({ href: `/shop?category=${c.slug}`, label: c.name })),
-    { href: "/shop?view=bundles", label: "المجموعات" },
   ];
 
   return (
@@ -134,13 +132,8 @@ export function SiteHeader() {
                 </Link>
               </li>
             ))}
-            <li>
-              <Link href="/shop?view=bundles" className="flex min-h-12 items-center font-display text-2xl text-ink">
-                المجموعات
-              </Link>
-            </li>
           </ul>
-          <OrnamentDivider className="my-6" />
+          <hr className="my-6 border-line" />
           <ul className="space-y-1 text-sm">
             <li>
               <Link href="/cart" className="flex min-h-11 items-center">سلة التسوق</Link>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useStore } from "@/components/providers/store-provider";
-import { OrnamentDivider } from "@/components/ui/mandala";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export function PoliciesView() {
@@ -16,7 +15,7 @@ export function PoliciesView() {
           <a key={p.id} href={`#${p.id}`} className="btn btn-sm btn-outline border-line">{p.title}</a>
         ))}
       </nav>
-      <OrnamentDivider className="my-10" />
+      <hr className="my-8 border-line" />
       <div className="space-y-12">
         {s.policies.map((p) => (
           <section key={p.id} id={p.id} className="scroll-mt-28">

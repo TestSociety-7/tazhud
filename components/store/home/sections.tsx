@@ -1,79 +1,26 @@
 "use client";
 
-import { InstagramIcon } from "@/components/ui/brand-icons";
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowLeft, Check, Copy, HeartHandshake, MessageCircle, RefreshCcw, Truck } from "lucide-react";
+import { ArrowLeft, Check, Copy } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
-import { Reveal } from "@/components/ui/reveal";
 import { SmartImage } from "@/components/ui/smart-image";
-import { Mandala, OrnamentDivider, Star8 } from "@/components/ui/mandala";
 import { formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
-import { whatsappLink } from "@/lib/whatsapp";
 import type { HomeSection, Product } from "@/lib/types";
 import { ProductCard } from "../product-card";
-import { BundleCard } from "../bundle-card";
-import { NewsletterForm } from "../newsletter-form";
 
-export function SectionHeading({
-  title,
-  subtitle,
-  href,
-  linkLabel = "عرض الكل",
-  center = false,
-}: {
-  title: string;
-  subtitle?: string;
-  href?: string;
-  linkLabel?: string;
-  center?: boolean;
-}) {
+export function SectionHeading({ title, href, linkLabel = "عرض الكل" }: { title: string; href?: string; linkLabel?: string }) {
   return (
-    <div className={`mb-8 flex items-end gap-4 sm:mb-10 ${center ? "flex-col items-center text-center" : "justify-between"}`}>
-      <div>
-        {subtitle && <p className="eyebrow mb-2 flex items-center gap-2 text-gold-deep"><Star8 className="size-2.5" />{subtitle}</p>}
-        <h2 className="font-display text-4xl leading-tight text-ink sm:text-5xl">{title}</h2>
-      </div>
+    <div className="mb-6 flex items-end justify-between gap-4">
+      <h2 className="font-display text-3xl leading-tight text-ink sm:text-4xl">{title}</h2>
       {href && (
-        <Link href={href} className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-forest">
+        <Link href={href} className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-forest">
           {linkLabel}
-          <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
+          <ArrowLeft className="size-4" />
         </Link>
       )}
     </div>
-  );
-}
-
-export function ValueStrip() {
-  const { data } = useStore();
-  const s = data.settings;
-  const items = [
-    { icon: MessageCircle, title: "اطلبي عبر واتساب", body: "تأكيد شخصي بدون بطاقة دفع" },
-    {
-      icon: Truck,
-      title: s.freeDeliveryThreshold > 0 ? `توصيل مجاني فوق ${formatMoney(s.freeDeliveryThreshold, s)}` : "توصيل سريع",
-      body: "عادةً خلال 2 إلى 4 أيام عمل",
-    },
-    { icon: RefreshCcw, title: "استبدال سهل", body: "خلال 7 أيام للقطع غير المستخدمة" },
-    { icon: HeartHandshake, title: "صُنعت بعناية", body: "أقمشة مختارة لانسدالها وراحتها" },
-  ];
-  return (
-    <section aria-label="لماذا تتسوقين معنا" className="border-b border-line bg-paper">
-      <ul className="container-x no-scrollbar flex snap-x gap-6 overflow-x-auto py-6 lg:grid lg:grid-cols-4 lg:overflow-visible">
-        {items.map(({ icon: Icon, title, body }) => (
-          <li key={title} className="flex min-w-[15rem] snap-start items-center gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-sand text-forest">
-              <Icon className="size-5" />
-            </span>
-            <span>
-              <span className="block text-sm font-semibold text-ink">{title}</span>
-              <span className="block text-xs text-muted">{body}</span>
-            </span>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -82,19 +29,19 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
   const cats = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
   const counts = (id: string) => visibleProducts(data).filter((p) => p.categoryId === id).length;
   return (
-    <section className="container-x pt-20 sm:pt-24">
-      <SectionHeading title={section.title} subtitle={section.subtitle} href="/shop" linkLabel="كل المنتجات" />
-      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-6">
-        {cats.map((c, i) => (
-          <Reveal as="li" key={c.id} delay={i * 70} className="w-[42%] shrink-0 snap-start sm:w-auto">
-            <Link href={`/shop?category=${c.slug}`} className="group block text-center">
-              <div className="arch-full relative aspect-[3/4] overflow-hidden bg-sand ring-1 ring-line transition-shadow duration-500 group-hover:shadow-[var(--shadow-lift)]">
-                <SmartImage src={c.image} alt="" className="absolute inset-0" imgClassName="transition-transform duration-[1.4s] ease-[var(--ease-soft)] group-hover:scale-[1.06]" fallbackLabel={c.name} />
+    <section className="container-x pt-14 sm:pt-20">
+      <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
+      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-5 sm:overflow-visible sm:px-0 lg:grid-cols-6">
+        {cats.map((c) => (
+          <li key={c.id} className="w-[40%] shrink-0 snap-start sm:w-auto">
+            <Link href={`/shop?category=${c.slug}`} className="group block">
+              <div className="relative aspect-[3/4] overflow-hidden rounded-2xl bg-sand">
+                <SmartImage src={c.image} alt="" className="absolute inset-0" imgClassName="transition-transform duration-500 group-hover:scale-[1.03]" fallbackLabel={c.name} />
               </div>
-              <p className="font-display mt-3 text-xl text-ink">{c.name}</p>
+              <p className="mt-2 font-semibold text-ink">{c.name}</p>
               <p className="text-xs text-muted">{piecesLabel(counts(c.id))}</p>
             </Link>
-          </Reveal>
+          </li>
         ))}
       </ul>
     </section>
@@ -104,13 +51,13 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
 export function ProductRail({ section, products, href }: { section: HomeSection; products: Product[]; href: string }) {
   if (products.length === 0) return null;
   return (
-    <section className="container-x pt-20 sm:pt-24">
-      <SectionHeading title={section.title} subtitle={section.subtitle} href={href} />
-      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-        {products.slice(0, 8).map((p, i) => (
-          <Reveal as="li" key={p.id} delay={(i % 4) * 80} className="w-[68%] shrink-0 snap-start sm:w-auto">
+    <section className="container-x pt-14 sm:pt-20">
+      <SectionHeading title={section.title} href={href} />
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-8 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4">
+        {products.slice(0, 8).map((p) => (
+          <li key={p.id}>
             <ProductCard product={p} />
-          </Reveal>
+          </li>
         ))}
       </ul>
     </section>
@@ -122,6 +69,7 @@ export function PromoSection() {
   const promo = data.homepage.promo;
   const coupon = data.coupons.find((c) => c.code === promo.couponCode && c.active);
   const [copied, setCopied] = useState(false);
+  if (!promo.title) return null;
 
   async function copy() {
     try {
@@ -134,131 +82,25 @@ export function PromoSection() {
   }
 
   return (
-    <section className="container-x pt-20 sm:pt-24">
-      <Reveal className="on-dark relative overflow-hidden rounded-[2rem] bg-ink px-6 py-14 text-center text-ivory sm:px-12 sm:py-20">
-        <div className="pattern-geo absolute inset-0 opacity-[0.08]" aria-hidden />
-        <Mandala className="pointer-events-none absolute -bottom-32 -start-32 size-96 text-gold/20 motion-safe:animate-spin-slow" />
-        <Mandala className="pointer-events-none absolute -top-32 -end-32 size-96 text-gold/20 motion-safe:animate-spin-slow" />
-        <div className="relative mx-auto max-w-xl">
-          <p className="eyebrow text-gold">{promo.eyebrow}</p>
-          <h2 className="font-display mt-4 text-4xl leading-tight text-balance sm:text-6xl">{promo.title}</h2>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ivory/75 sm:text-base">{promo.body}</p>
-          {promo.couponCode && (
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={copy}
-                className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-dashed border-gold/70 px-6 font-mono text-lg tracking-[0.2em] text-gold-soft transition-colors hover:bg-white/5"
-                aria-label={`نسخ الكود ${promo.couponCode}`}
-              >
-                {promo.couponCode}
-                {copied ? <Check className="size-4 text-gold" /> : <Copy className="size-4 opacity-70 group-hover:opacity-100" />}
-              </button>
-              <Link href={promo.ctaHref || "/shop"} className="btn btn-gold">
-                {promo.ctaLabel}
-              </Link>
-            </div>
-          )}
-          <p className="mt-4 h-4 text-xs text-ivory/50" role="status">
-            {copied ? "تم نسخ الكود" : coupon?.minSubtotal ? `للطلبات فوق ${formatMoney(coupon.minSubtotal, data.settings)}` : ""}
-          </p>
+    <section className="container-x pt-14 sm:pt-20">
+      <div className="on-dark flex flex-col items-start gap-5 rounded-3xl bg-ink px-6 py-8 text-ivory sm:flex-row sm:items-center sm:justify-between sm:px-10">
+        <div>
+          <h2 className="font-display text-2xl leading-tight sm:text-3xl">{promo.title}</h2>
+          {promo.body && <p className="mt-1 text-sm text-ivory/70">{promo.body}</p>}
+          {coupon?.minSubtotal ? <p className="mt-1 text-xs text-ivory/50">للطلبات فوق {formatMoney(coupon.minSubtotal, data.settings)}</p> : null}
         </div>
-      </Reveal>
-    </section>
-  );
-}
-
-export function BundlesSection({ section }: { section: HomeSection }) {
-  const { data } = useStore();
-  const bundles = data.bundles.filter((b) => b.active);
-  if (!bundles.length) return null;
-  return (
-    <section className="container-x pt-20 sm:pt-24">
-      <SectionHeading title={section.title} subtitle={section.subtitle} href="/shop?view=bundles" />
-      <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {bundles.map((b, i) => (
-          <Reveal as="li" key={b.id} delay={i * 90}>
-            <BundleCard bundle={b} />
-          </Reveal>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export function StorySection({ section }: { section: HomeSection }) {
-  const { data } = useStore();
-  const story = data.homepage.story;
-  return (
-    <section className="container-x overflow-x-clip pt-20 sm:pt-28">
-      <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-20">
-        <Reveal className="relative mx-auto w-full max-w-md">
-          <div className="arch-full aspect-[4/5] overflow-hidden ring-1 ring-line">
-            <SmartImage src={story.image} alt="عينات أقمشة في استوديو تزهّد" className="h-full w-full" />
-          </div>
-          <Mandala className="absolute -end-10 -bottom-10 size-40 text-gold/50" />
-        </Reveal>
-        <Reveal delay={120}>
-          <p className="eyebrow text-gold-deep">{section.title}</p>
-          <h2 className="font-display mt-3 text-4xl leading-tight text-ink sm:text-5xl">{story.title}</h2>
-          <OrnamentDivider className="my-6 max-w-[12rem]" />
-          <p className="max-w-lg leading-relaxed text-pretty text-muted">{story.body}</p>
-          <Link href="/shop" className="btn btn-primary mt-8">
-            اكتشفي المجموعة
-          </Link>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-export function FollowSection({ section }: { section: HomeSection }) {
-  const { data } = useStore();
-  const s = data.settings;
-  const tiles = visibleProducts(data)
-    .filter((p) => p.images[0])
-    .slice(0, 6);
-  return (
-    <section className="container-x pt-20 sm:pt-28">
-      <div className="card overflow-hidden">
-        <div className="grid lg:grid-cols-[1fr_1.15fr]">
-          <div className="p-6 sm:p-10 lg:p-14">
-            {section.subtitle && <p className="eyebrow text-gold-deep">{section.subtitle}</p>}
-            <h2 className="font-display mt-3 text-4xl leading-tight text-ink sm:text-5xl">{section.title}</h2>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-muted">
-              تابعي <span className="ltr inline-block">{s.instagramHandle}</span> لأفكار التنسيق وأول نظرة على القطع الجديدة، أو اشتركي لتعرفي بعودة المنتجات قبل الجميع.
-            </p>
-            <div className="mt-8 max-w-md">
-              <NewsletterForm />
-            </div>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a href={s.instagramUrl} target="_blank" rel="noopener noreferrer" className="btn btn-outline">
-                <InstagramIcon className="size-4" /> تابعينا على إنستغرام
-              </a>
-              <a href={whatsappLink(s.whatsappNumber, `السلام عليكم ${s.storeName}، لدي سؤال.`)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
-                <MessageCircle className="size-4" /> تواصلي معنا
-              </a>
-            </div>
-          </div>
-          <ul className="grid grid-cols-3 gap-1 bg-line p-1">
-            {tiles.map((p) => (
-              <li key={p.id}>
-                <a
-                  href={s.instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative block aspect-square overflow-hidden"
-                  aria-label={`${p.name} على إنستغرام`}
-                >
-                  <SmartImage src={p.images[0]} alt="" className="h-full w-full" imgClassName="transition-transform duration-700 group-hover:scale-110" />
-                  <span className="absolute inset-0 grid place-items-center bg-ink/0 text-ivory opacity-0 transition-all duration-300 group-hover:bg-ink/40 group-hover:opacity-100">
-                    <InstagramIcon className="size-6" />
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {promo.couponCode && coupon && (
+          <button
+            type="button"
+            onClick={copy}
+            className="ltr inline-flex min-h-12 shrink-0 items-center gap-3 rounded-full border border-dashed border-gold/70 px-6 font-mono text-lg tracking-[0.15em] text-gold-soft hover:bg-white/5"
+            aria-label={`نسخ الكود ${promo.couponCode}`}
+          >
+            {promo.couponCode}
+            {copied ? <Check className="size-4 text-gold" /> : <Copy className="size-4 opacity-70" />}
+          </button>
+        )}
+        <span className="sr-only" role="status">{copied ? "تم نسخ الكود" : ""}</span>
       </div>
     </section>
   );

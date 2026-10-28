@@ -256,6 +256,72 @@ input[type="url"],
   text-align: right;
 }
 
+/* ----------------------------- Admin motion ----------------------------- */
+@keyframes admin-enter {
+  from { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.99); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes coin-turn {
+  0%, 55% { transform: rotateY(0deg); }
+  85%, 100% { transform: rotateY(360deg); }
+}
+@keyframes float-soft {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -6px, 0); }
+}
+@keyframes sheen {
+  from { transform: translateX(120%) skewX(-20deg); }
+  to { transform: translateX(-220%) skewX(-20deg); }
+}
+.admin-enter { animation: admin-enter 0.45s var(--ease-soft) both; }
+.stagger > * { animation: admin-enter 0.55s var(--ease-soft) both; }
+.stagger > :nth-child(2) { animation-delay: 60ms; }
+.stagger > :nth-child(3) { animation-delay: 120ms; }
+.stagger > :nth-child(4) { animation-delay: 180ms; }
+.stagger > :nth-child(5) { animation-delay: 240ms; }
+.stagger > :nth-child(n + 6) { animation-delay: 300ms; }
+
+/* A gold coin that turns over now and then: the logo on the front, a star on the back. */
+.coin { perspective: 600px; }
+.coin-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: coin-turn 7s var(--ease-soft) infinite;
+}
+.coin-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  backface-visibility: hidden;
+  box-shadow: 0 0 0 2px rgb(201 162 74 / 0.7), 0 14px 30px -12px rgb(201 162 74 / 0.6);
+}
+.coin-back { transform: rotateY(180deg); }
+.float-soft { animation: float-soft 5s ease-in-out infinite; }
+
+/* Cards that lean towards the pointer. --rx/--ry are set from JS. */
+.tilt {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0);
+  transform-style: preserve-3d;
+  transition: transform 0.35s var(--ease-soft), box-shadow 0.35s var(--ease-soft);
+  will-change: transform;
+}
+.tilt:hover { box-shadow: 0 22px 40px -24px rgb(15 18 15 / 0.45); }
+.tilt-pop { transform: translateZ(28px); }
+.press { transition: transform 0.15s ease; }
+.press:active { transform: scale(0.96); }
+.sheen { position: relative; overflow: hidden; }
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.18), transparent);
+  animation: sheen 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -266,5 +332,7 @@ input[type="url"],
     scroll-behavior: auto !important;
   }
   [data-reveal] { opacity: 1; transform: none; }
+  .tilt { transform: none !important; }
+  .sheen::after { display: none; }
   .unveil { clip-path: none; }
 }

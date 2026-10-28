@@ -14,7 +14,6 @@ import { Price, useMoney } from "@/components/ui/price";
 import { QuantityControl } from "@/components/ui/quantity";
 import { StockBadge } from "@/components/ui/stock-badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { OrnamentDivider } from "@/components/ui/mandala";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { ProductCard } from "./product-card";
 
@@ -236,7 +235,7 @@ export function ProductView({ slug }: { slug: string }) {
           </div>
           {isOnSale(product) && <p className="mt-1 text-xs text-success">توفّرين {money(product.price - effectivePrice(product))}</p>}
 
-          <OrnamentDivider className="my-7" />
+          <hr className="my-7 border-line" />
 
           <div ref={buyRef} className="space-y-6">
             {product.colors.length > 0 && (

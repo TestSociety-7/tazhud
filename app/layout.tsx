@@ -8,12 +8,10 @@ import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ??
-      (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000"),
-  ),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "تزهّد | أزياء محتشمة، طرح وعبايات",
     template: "%s | تزهّد",

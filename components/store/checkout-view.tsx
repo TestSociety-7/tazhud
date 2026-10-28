@@ -12,7 +12,6 @@ import type { OrderInquiry } from "@/lib/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SmartImage } from "@/components/ui/smart-image";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
-import { Mandala } from "@/components/ui/mandala";
 import { useMoney } from "@/components/ui/price";
 import { CouponForm, OrderSummary } from "./cart-parts";
 
@@ -122,7 +121,6 @@ export function CheckoutView() {
     return (
       <div className="container-x py-14">
         <div className="card relative mx-auto max-w-xl overflow-hidden px-6 py-12 text-center sm:px-12">
-          <Mandala className="pointer-events-none absolute -top-24 left-1/2 size-56 -translate-x-1/2 text-gold/25" />
           <CheckCircle2 className="relative mx-auto size-12 text-success" />
           <h1 className="font-display relative mt-4 text-4xl text-ink">بقيت خطوة واحدة يا {sent.order.customer.name.split(" ")[0]}</h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-muted" role="status">

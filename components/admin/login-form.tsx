@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Lock } from "lucide-react";
-import { LogoMark } from "@/components/ui/logo";
-import { Mandala } from "@/components/ui/mandala";
+import { LogoCoin } from "./fx";
 
 export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
   const router = useRouter();
@@ -47,14 +46,14 @@ export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
   return (
     <div className="on-dark relative grid min-h-dvh place-items-center overflow-hidden bg-ink px-4 py-12 text-ivory">
       <div className="pattern-geo absolute inset-0 opacity-[0.07]" aria-hidden />
-      <Mandala className="pointer-events-none absolute top-1/2 left-1/2 size-[46rem] -translate-x-1/2 -translate-y-1/2 text-gold/15 motion-safe:animate-spin-slow" />
-      <main className="relative w-full max-w-sm">
+      <div className="pointer-events-none absolute top-1/3 left-1/2 size-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/15 blur-3xl" aria-hidden />
+      <main className="admin-enter relative w-full max-w-sm">
         <div className="flex flex-col items-center text-center">
-          <LogoMark className="size-20" />
+          <LogoCoin className="size-24" />
           <h1 className="font-display mt-5 text-4xl">لوحة التحكم</h1>
           <p className="mt-2 text-sm text-ivory/60">سجّل الدخول لإدارة المنتجات والطلبات وواجهة المتجر.</p>
         </div>
-        <form onSubmit={submit} noValidate className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+        <form onSubmit={submit} noValidate className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_60px_-30px_rgb(0_0_0/0.8)] backdrop-blur">
           <label htmlFor="passcode" className="label !text-ivory">كلمة المرور</label>
           <div className="relative">
             <Lock className="pointer-events-none absolute top-1/2 start-3 size-4 -translate-y-1/2 text-ivory/40" aria-hidden />

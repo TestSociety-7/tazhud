@@ -175,9 +175,7 @@ export function ProductsPage() {
                     </span>
                     {!p.published && <Badge>مخفي</Badge>}
                     <span className="sm:hidden"><Badge tone={st === "out" ? "red" : st === "low" ? "gold" : "neutral"}>{st === "out" ? "نفد" : `المخزون ${p.stock}`}</Badge></span>
-                    {p.featured && <Badge tone="gold">مميز</Badge>}
                     {p.newArrival && <Badge tone="blue">جديد</Badge>}
-                    {p.bestseller && <Badge tone="green">الأكثر مبيعًا</Badge>}
                   </div>
                 </div>
                 <div className="hidden w-24 text-end sm:block">

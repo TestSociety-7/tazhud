@@ -22,7 +22,10 @@ export interface StoreRepository {
   subscribe(onChange: (data: StoreData) => void): () => void;
 }
 
-const STORAGE_KEY = "tazhud:store:v2";
+const STORAGE_KEY = "tazhud:store:v3";
+
+/** Homepage sections the storefront still renders. */
+const HOME_SECTIONS = new Set(["categories", "newArrivals", "promo"]);
 
 /** Fills in fields added in later versions so older saved data keeps working. */
 export function normalizeStoreData(input: Partial<StoreData> | null | undefined): StoreData {
@@ -31,7 +34,8 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
   return {
     ...seed,
     ...input,
-    settings: { ...seed.settings, ...input.settings },
+    // The store sells in shekel only; older saves may still say USD.
+    settings: { ...seed.settings, ...input.settings, currency: "ILS", locale: "ar-u-nu-latn" },
     homepage: {
       ...seed.homepage,
       ...input.homepage,
@@ -39,7 +43,7 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       hero: { ...seed.homepage.hero, ...input.homepage?.hero },
       promo: { ...seed.homepage.promo, ...input.homepage?.promo },
       story: { ...seed.homepage.story, ...input.homepage?.story },
-      sections: input.homepage?.sections?.length ? input.homepage.sections : seed.homepage.sections,
+      sections: (input.homepage?.sections?.length ? input.homepage.sections : seed.homepage.sections).filter((x) => HOME_SECTIONS.has(x.key)),
     },
     categories: input.categories ?? seed.categories,
     products: input.products ?? seed.products,
@@ -188,9 +192,6 @@ class SharedRepository implements StoreRepository {
     for (const order of b.orders) {
       if (!kept.has(order.id)) tasks.push(send("DELETE", `/api/admin/orders/${encodeURIComponent(order.id)}`));
     }
-
-    const known = new Set(b.subscribers.map((s) => s.email));
-    for (const sub of a.subscribers) if (!known.has(sub.email)) tasks.push(send("POST", "/api/subscribe", sub));
 
     await Promise.all(tasks);
   }

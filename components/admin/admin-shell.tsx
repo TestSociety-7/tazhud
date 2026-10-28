@@ -14,23 +14,21 @@ import {
   Plus,
   Settings,
   Shapes,
-  Gift,
   TicketPercent,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
-import { LogoMark } from "@/components/ui/logo";
 import { Sheet } from "@/components/ui/sheet";
+import { LogoCoin } from "./fx";
 
 const NAV = [
   { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, exact: true },
   { href: "/admin/orders", label: "الطلبات", icon: Inbox },
   { href: "/admin/products", label: "المنتجات", icon: Package },
   { href: "/admin/categories", label: "الأقسام", icon: Shapes },
-  { href: "/admin/bundles", label: "المجموعات", icon: Gift },
   { href: "/admin/coupons", label: "أكواد الخصم", icon: TicketPercent },
-  { href: "/admin/homepage", label: "الصفحة الرئيسية للمتجر", icon: Home },
-  { href: "/admin/settings", label: "إعدادات المتجر", icon: Settings },
+  { href: "/admin/homepage", label: "واجهة المتجر", icon: Home },
+  { href: "/admin/settings", label: "الإعدادات", icon: Settings },
 ];
 
 function NavList({ onNavigate }: { onNavigate?: () => void }) {
@@ -47,8 +45,10 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
               href={href}
               onClick={onNavigate}
               aria-current={active ? "page" : undefined}
-              className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-colors ${
-                active ? "bg-white/10 font-semibold text-ivory" : "text-ivory/70 hover:bg-white/5 hover:text-ivory"
+              className={`press relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-all duration-300 ${
+                active
+                  ? "bg-gradient-to-l from-gold/25 to-white/5 font-semibold text-ivory shadow-[inset_0_0_0_1px_rgb(201_162_74/0.35)]"
+                  : "text-ivory/70 hover:-translate-x-0.5 hover:bg-white/5 hover:text-ivory"
               }`}
             >
               <Icon className={`size-[1.1rem] ${active ? "text-gold" : ""}`} />
@@ -76,7 +76,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <div className="on-dark flex h-full flex-col bg-ink p-4 text-ivory">
       <Link href="/admin" onClick={onNavigate} className="mb-8 flex items-center gap-3 px-2 pt-2">
-        <LogoMark className="size-10" />
+        <LogoCoin className="size-11" />
         <span>
           <span className="font-display block text-2xl leading-none">{data.settings.storeName}</span>
           <span className="text-xs text-gold">لوحة التحكم</span>
@@ -116,14 +116,17 @@ function BottomBar({ onMore }: { onMore: () => void }) {
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`relative flex min-h-16 flex-col items-center justify-center gap-1 text-[0.7rem] ${active ? "text-gold" : "text-ivory/70"}`}
+              className={`press relative flex min-h-16 flex-col items-center justify-center gap-1 text-[0.7rem] transition-colors ${active ? "text-gold" : "text-ivory/70"}`}
             >
               {primary ? (
-                <span className="grid size-10 place-items-center rounded-full bg-gold text-ink shadow-lg">
-                  <Icon className="size-5" />
+                <span className="sheen -mt-6 grid size-14 place-items-center rounded-full bg-gradient-to-br from-gold-bright via-gold to-gold-deep text-ink shadow-[0_10px_24px_-8px_rgb(201_162_74/0.8),inset_0_-3px_0_rgb(0_0_0/0.15)] ring-4 ring-ink">
+                  <Icon className="size-6" strokeWidth={2.5} />
                 </span>
               ) : (
-                <Icon className="size-5" />
+                <>
+                  <span className={`absolute top-1.5 h-1 rounded-full bg-gold transition-all duration-300 ${active ? "w-6 opacity-100" : "w-0 opacity-0"}`} />
+                  <Icon className={`size-5 transition-transform duration-300 ${active ? "-translate-y-0.5 scale-110" : ""}`} />
+                </>
               )}
               <span className={primary ? "sr-only" : ""}>{label}</span>
               {badge ? (
@@ -165,7 +168,7 @@ export function AdminShell({ children, demoPasscode }: { children: React.ReactNo
             <Menu className="size-5" />
           </button>
           <Link href="/admin" className="flex items-center gap-2">
-            <LogoMark className="size-8" />
+            <LogoCoin className="size-8" />
             <span className="font-display text-xl">لوحة التحكم</span>
           </Link>
           <a href="/" target="_blank" rel="noopener noreferrer" className="icon-btn" aria-label="عرض المتجر">
@@ -178,13 +181,17 @@ export function AdminShell({ children, demoPasscode }: { children: React.ReactNo
             <strong>{storageLabel}.</strong>{" "}
             {isLocalOnly && "التغييرات تُحفظ في هذا المتصفح فقط، ولا تظهر للزبائن أو على الأجهزة الأخرى حتى يتم ربط التخزين المشترك في Vercel. "}
             {demoPasscode && "لوحة التحكم تستخدم كلمة المرور التجريبية. اضبط ADMIN_PASSCODE في Vercel قبل مشاركة الموقع. "}
-            <Link href="/admin/settings#data" className="font-semibold underline underline-offset-2">التفاصيل</Link>
+            <Link href="/admin/settings" className="font-semibold underline underline-offset-2">التفاصيل</Link>
           </div>
         )}
 
         <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
           {/* Admin screens read the current time and browser storage, so they render on request. */}
-          <Suspense fallback={<div className="skeleton h-96 rounded-2xl" aria-busy="true" />}>{children}</Suspense>
+          <Suspense fallback={<div className="skeleton h-96 rounded-2xl" aria-busy="true" />}>
+            <div key={pathname} className="admin-enter">
+              {children}
+            </div>
+          </Suspense>
         </main>
       </div>
 

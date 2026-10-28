@@ -33,8 +33,8 @@ Requires Node.js 20.9 or newer.
 ## What's included
 
 ### Storefront
-- **Home:** rotating announcement bar, black-and-gold hero with parallax and mandala, value strip, shop-by-category, new arrivals, bestsellers, promotion banner with copyable code, curated bundles, brand story, email sign-up and Instagram/WhatsApp follow section. Section order, titles and visibility are editable in the admin.
-- **Shop** (`/shop`): category filters, search, sort (featured, newest, bestselling, price), on-sale / in-stock / colour filters, bundles view, mobile filter sheet. Filters live in the URL so they can be shared.
+- **Home:** announcement bar, hero image and headline, categories, new arrivals and an optional promotion banner with a copyable code. Section order, titles and visibility are editable in the admin.
+- **Shop** (`/shop`): category filters, search, sort (suggested, newest, price), on-sale / in-stock / colour filters, mobile filter sheet. Filters live in the URL so they can be shared.
 - **Product pages** (`/product/[slug]`): swipeable gallery with thumbnails and hover zoom, colour and size selection with validation, stock status, quantity, sale pricing, “Ask on WhatsApp”, details accordions, related products and a sticky mobile add-to-bag bar.
 - **Bag** (`/cart`) and slide-out bag drawer: quantity updates, remove, coupon codes (percent, fixed, free delivery, minimum spend, expiry), free-delivery progress, order summary.
 - **Checkout** (`/checkout`): name, phone, address, city and notes with accessible validation. On submit WhatsApp opens with a formatted order message, and the inquiry is saved for the admin.
@@ -42,13 +42,13 @@ Requires Node.js 20.9 or newer.
 - Accessible by design: semantic landmarks, skip link, labelled controls, visible gold focus rings, native `<dialog>` sheets with focus trapping, 44px touch targets, `prefers-reduced-motion` support, loading / empty / error / success states and image fallbacks.
 
 ### Admin (`/admin`)
-- **Dashboard:** new inquiries, inquiry value (30 days), product count, low-stock items, a 14-day inquiry chart, most requested pieces, mailing-list sign-ups and a launch checklist.
+- **Dashboard:** greeting with the logo as a turning 3D coin, quick actions, animated counters for new orders, 30-day sales, products and low stock (cards tilt in 3D under the mouse), latest orders and low-stock items. Motion is switched off for visitors who ask for reduced motion.
 - **Order inquiries:** filter by status, search, detail view with items and totals, status workflow (new → contacted → confirmed → completed / cancelled), internal notes, “Message customer” on WhatsApp, copy order text, delete. Customers always complete the order on WhatsApp.
 - **Phone-first layout:** bottom tab bar (home, orders, quick “add product”, products, more), bottom-sheet dialogs, sticky save bar and large touch targets.
-- **Products:** create, edit, duplicate, publish/unpublish, delete (with undo). “Save as draft” or “Save and publish”. Name, tagline, description, details, price, sale price, images (upload several at once from the gallery or camera, or paste a URL; reorderable), category, sizes (with presets), colours (with swatches), stock, SKU, featured / new arrival / bestseller flags and bundle membership. Unsaved-changes guard.
-- **Categories, Bundles, Coupons:** full create / edit / delete with confirmations.
-- **Homepage:** announcement messages, hero copy, buttons and images, promotion banner and its coupon, brand story, section order and visibility.
-- **Store settings:** store name, tagline, address, hours, **WhatsApp number** (with test link), **Instagram link**, email, currency and number format, delivery fee, free-delivery threshold, low-stock threshold and store policies. Export / import all data as JSON and reset to starter content.
+- **Products:** create, edit, duplicate, publish/unpublish, delete (with undo). “Save as draft” or “Save and publish”. Name, tagline, description, details, price, sale price, images (upload several at once from the gallery or camera, or paste a URL; reorderable), category, sizes (with presets), colours (with swatches), stock, SKU and a “new arrival” flag. Unsaved-changes guard.
+- **Categories, Coupons:** full create / edit / delete with confirmations.
+- **Storefront (واجهة المتجر):** hero image, headline and button, announcement messages, promotion banner and its coupon, section order and visibility.
+- **Settings:** store name, **WhatsApp number** (with test link), **Instagram link**, delivery fee, free-delivery threshold, delivery note and store policies. A banner shows whether shared storage is on. Prices are always in Israeli shekel (₪).
 
 Every save, delete and publish action shows a confirmation toast; destructive actions ask first.
 
@@ -71,7 +71,7 @@ This is a simple single-passcode gate, **not** full production authentication: t
 | `ADMIN_PASSCODE` | Strongly recommended | Admin passcode. Unset = demo passcode `tazhud-demo`. |
 | `ADMIN_SESSION_SECRET` | Recommended | Long random string used to sign the admin cookie (`openssl rand -base64 32`). |
 | `BLOB_READ_WRITE_TOKEN` | For launch | Added automatically when you connect a Vercel Blob store to the project. Turns on shared storage. |
-| `NEXT_PUBLIC_SITE_URL` | Optional | Canonical URL for social sharing metadata. On Vercel the production URL is detected automatically. |
+| `NEXT_PUBLIC_SITE_URL` | Optional | Public address used for sharing previews and the sitemap. Defaults to `https://tazhud.store`. |
 
 Set them in **Vercel → Project → Settings → Environment Variables**, then redeploy. Never commit real values; `.env*` files are git-ignored except `.env.example`.
 
@@ -89,9 +89,9 @@ All store data goes through one interface, `StoreRepository` in `lib/repository.
 
 ### Shared storage (Vercel Blob), used when `BLOB_READ_WRITE_TOKEN` is set
 
-- **Catalogue** (products, categories, bundles, coupons, homepage, settings) is one JSON file, `store/catalog.json`. The storefront reads it on the server (cached, refreshed by tag as soon as the admin saves, so changes show within about a minute at most).
+- **Catalogue** (products, categories, coupons, homepage, settings) is one JSON file, `store/catalog.json`. The storefront reads it on the server (cached, refreshed by tag as soon as the admin saves, so changes show within about a minute at most).
 - **Product photos** upload straight from the admin to Blob (`/api/admin/upload`, admin session required; JPEG, PNG, WebP, AVIF or GIF up to 15 MB).
-- **Order inquiries** from checkout and **email sign-ups** are saved one file each in a folder whose name is derived from `ADMIN_SESSION_SECRET`, and are read only through the admin API. Customers still complete every order on WhatsApp, which stays the source of truth.
+- **Order inquiries** from checkout are saved one file each in a folder whose name is derived from `ADMIN_SESSION_SECRET`, and are read only through the admin API. Customers still complete every order on WhatsApp, which stays the source of truth.
 - Blob stores are public-read: anyone who knows a file's exact URL can open it. Order files sit under an unguessable folder name, but do not treat this as encrypted storage. Keep `ADMIN_SESSION_SECRET` secret and stable (changing it hides earlier orders).
 - Until the admin saves for the first time, visitors see the starter catalogue in `lib/seed.ts`.
 
@@ -99,11 +99,11 @@ All store data goes through one interface, `StoreRepository` in `lib/repository.
 
 ### Local demo mode, used when there is no Blob token
 
-- Data is kept in the visiting browser's `localStorage` under `tazhud:store:v2`. The bag is stored under `tazhud:cart:v1`.
+- Data is kept in the visiting browser's `localStorage` under `tazhud:store:v3`. The bag is stored under `tazhud:cart:v1`.
 - Customers see the starter catalogue. Admin edits appear only in the same browser. This is **not** shared, backed up or secure.
 - Uploaded images are kept as data URLs in the browser (roughly 5 MB total), so this mode is only for trying things out.
 
-Use **Store settings → Export data** to keep a JSON backup in either mode. Importing in shared mode replaces the catalogue but keeps existing orders.
+Back up shared data from **Vercel → Storage → your Blob store**, where every file can be downloaded.
 
 ## Product photography
 
@@ -129,7 +129,7 @@ app/
   admin/login/      admin sign-in
   admin/(panel)/    admin routes behind proxy.ts
   api/admin/        login, logout, data, catalogue, orders and image-upload routes (admin only)
-  api/orders, api/subscribe   public checkout inquiry and email sign-up
+  api/orders        public checkout inquiry
 components/
   providers/        StoreProvider (data) and CartProvider (bag)
   store/            storefront UI
