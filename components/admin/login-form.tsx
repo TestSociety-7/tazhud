@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Lock } from "lucide-react";
-import { LogoCoin } from "./fx";
+import { LogoCoin } from "@/components/ui/fx";
 
 export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
   const router = useRouter();

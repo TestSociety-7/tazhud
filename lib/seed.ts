@@ -129,7 +129,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "الشيفون المميز لدينا منسوج بكثافة تجعله غير شفاف تمامًا مع خفة تشبه النسيم. ملمسه المطفي يثبت دون أن ينزلق، فتبقى اللفة كما هي من الصباح حتى المساء.",
     details: ["180 × 70 سم", "شيفون فاخر مزدوج النسج", "أطراف ملفوفة بتشطيب يدوي", "غسيل يدوي بماء بارد"],
-    price: 18,
+    price: 65,
     salePrice: null,
     categoryId: "cat-hijabs",
     sizes: [ONE],
@@ -150,7 +150,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "جيرسي مودال يسمح بمرور الهواء مع مرونة كافية لتلتف وتثبت. ناعمة على البشرة، لا تتجعد، وتحافظ على شكلها بعد كل غسلة.",
     details: ["180 × 75 سم", "92% مودال، 8% إيلاستين", "تثبت دون دبابيس", "غسيل آلي على دورة لطيفة"],
-    price: 22,
+    price: 79,
     salePrice: null,
     categoryId: "cat-hijabs",
     sizes: [ONE],
@@ -170,8 +170,8 @@ const productSeeds: ProductSeed[] = [
     description:
       "ساتان انسيابي بلمعة هادئة تعكس الضوء دون بريق مبالغ. الوجه الداخلي مصقول ليثبت فوق البونيه بشكل جميل.",
     details: ["180 × 70 سم", "ساتان بملمس الحرير، وجه داخلي مصقول", "يُفضّل مع بونيه البامبو", "غسيل يدوي بماء بارد"],
-    price: 26,
-    salePrice: 21,
+    price: 95,
+    salePrice: 75,
     categoryId: "cat-hijabs",
     sizes: [ONE],
     colors: [c("شامبين", "#d6c3a0"), c("زمردي", "#2f5c4a"), c("برقوقي", "#6b3f50")],
@@ -191,7 +191,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "قطن خالص بتجعيدة طبيعية تمنح حجمًا وتخفي التجاعيد، مع أطراف مهدّبة لإطلالة عفوية وسهلة.",
     details: ["190 × 80 سم", "قطن فوال 100%", "أطراف مهدّبة", "غسيل آلي بماء بارد"],
-    price: 16,
+    price: 59,
     salePrice: null,
     categoryId: "cat-hijabs",
     sizes: [ONE],
@@ -211,7 +211,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "طرحة جيرسي جاهزة الشكل مع بونيه مدمج وتغطية واسعة للصدر. مثالية للمدرسة والرياضة والسفر.",
     details: ["بونيه مدمج", "جيرسي ناعم يسمح بمرور الهواء", "مقاسان لملاءمة أفضل", "غسيل آلي على دورة لطيفة"],
-    price: 24,
+    price: 89,
     salePrice: null,
     categoryId: "cat-hijabs",
     sizes: ["S/M", "L/XL"],
@@ -231,7 +231,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "مصنوعة من كريب ثقيل ينسدل بخط نظيف، بأكتاف منسدلة وأكمام واسعة وحافة أمامية بخياطة بارزة. البسيها مفتوحة فوق فستان أو أغلقيها بالأربطة الداخلية.",
     details: ["كريب ثقيل بلمسة مطفية", "أربطة داخلية للإغلاق", "جيبان جانبيان", "العارضة طولها 168 سم وترتدي مقاس S"],
-    price: 89,
+    price: 320,
     salePrice: null,
     categoryId: "cat-abayas",
     sizes: ["XS", "S", "M", "L", "XL"],
@@ -252,8 +252,8 @@ const productSeeds: ProductSeed[] = [
     description:
       "كسرات دقيقة من الكتف حتى الأسفل تمنح حركة لطيفة دون حجم زائد. الكسرات ثابتة، فتُحمل في السفر وتخرج جاهزة للبس.",
     details: ["جورجيت بكسرات ثابتة", "أزرار كبس أمامية", "حزام مطابق", "يُنصح بالتنظيف الجاف"],
-    price: 119,
-    salePrice: 99,
+    price: 429,
+    salePrice: 359,
     categoryId: "cat-abayas",
     sizes: ["S", "M", "L", "XL"],
     colors: [c("عاجي", "#ebe2d2"), c("مريمية", "#a3b096")],
@@ -272,7 +272,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "عباية مغلقة بسيطة من قماش الندى المقاوم للتجعد. قصّة مريحة مع كم يضيق قليلًا عند المعصم لسهولة الحركة.",
     details: ["ندى فاخر", "مقاومة للتجعد", "تُلبس من الرأس", "غسيل آلي على دورة لطيفة"],
-    price: 74,
+    price: 269,
     salePrice: null,
     categoryId: "cat-abayas",
     sizes: ["S", "M", "L", "XL", "XXL"],
@@ -292,7 +292,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "عباية مفتوحة بأكمام كيمونو من الكتان المغسول. تزداد نعومة مع الاستعمال وتُنسّق بسهولة فوق الفساتين والأطقم.",
     details: ["كتان مغسول 100%", "أكمام كيمونو", "حزام من نفس القماش", "غسيل آلي بماء بارد"],
-    price: 95,
+    price: 345,
     salePrice: null,
     categoryId: "cat-abayas",
     sizes: ["S/M", "L/XL"],
@@ -313,7 +313,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "فستان طويل بتنورة مكشكشة بنعومة وأكمام طويلة بأساور وحزام مطابق. مبطّن بالكامل فلا يحتاج إلى قطعة داخلية.",
     details: ["كريب مع بطانة كاملة", "سحاب جانبي مخفي", "حزام مطابق", "غسيل آلي على دورة لطيفة"],
-    price: 68,
+    price: 249,
     salePrice: null,
     categoryId: "cat-dresses",
     sizes: ["XS", "S", "M", "L", "XL"],
@@ -332,7 +332,7 @@ const productSeeds: ProductSeed[] = [
     tagline: "ثلاث طبقات ناعمة من قطن البوبلين",
     description: "فستان صفا بياقة عالية وأكمام واسعة وثلاث طبقات مكشكشة تمنح حركة دون حجم عند الخصر.",
     details: ["قطن بوبلين", "أساور بأزرار", "جيوب جانبية", "غسيل آلي بماء بارد"],
-    price: 82,
+    price: 299,
     salePrice: null,
     categoryId: "cat-dresses",
     sizes: ["S", "M", "L"],
@@ -353,7 +353,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "فستان رانيا يلتف بسخاء مع لوح أمامي ممتد فلا ينفتح أبدًا. كريب بظهر ساتان يمنح لمعة خفيفة للمناسبات.",
     details: ["كريب بظهر ساتان", "لفّة عميقة مع كبسة داخلية", "أكمام طويلة مُحددة", "يُنصح بالتنظيف الجاف"],
-    price: 76,
+    price: 275,
     salePrice: null,
     categoryId: "cat-dresses",
     sizes: ["S", "M", "L", "XL"],
@@ -373,7 +373,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "تونيك بطول الورك مع فتحات جانبية وبنطال واسع بخصر مطاطي. البسيهما معًا أو نسّقي كل قطعة مع ملابسكِ الأخرى.",
     details: ["مزيج كتان وفسكوز", "خصر مطاطي للبنطال", "تونيك بفتحات جانبية", "غسيل آلي بماء بارد"],
-    price: 92,
+    price: 335,
     salePrice: null,
     categoryId: "cat-coords",
     sizes: ["S", "M", "L", "XL"],
@@ -393,8 +393,8 @@ const productSeeds: ProductSeed[] = [
     description:
       "بلوزة طويلة من التريكو المضلّع مع بنطال مستقيم مطابق. دافئ دون ثقل، ومريح بما يكفي لأيام السفر.",
     details: ["تريكو فسكوز مضلّع", "بلوزة طويلة", "بنطال مستقيم", "غسيل يدوي بماء بارد، يجفف مفرودًا"],
-    price: 105,
-    salePrice: 88,
+    price: 379,
+    salePrice: 319,
     categoryId: "cat-coords",
     sizes: ["S/M", "L/XL"],
     colors: [c("كريمي", "#efe6d6"), c("فحمي", "#45454a")],
@@ -414,7 +414,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "خمار بطبقتين من جيرسي خفيف ينسدل لما بعد الخصر. يُطوى داخل حقيبته الخاصة، فيبقى معكِ في الحقيبة أو السيارة.",
     details: ["جيرسي خفيف", "طبقتان بطول بعد الخصر", "مع حقيبة حفظ", "غسيل آلي على دورة لطيفة"],
-    price: 38,
+    price: 139,
     salePrice: null,
     categoryId: "cat-prayer",
     sizes: [ONE],
@@ -434,7 +434,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "بونيه أنبوبي من البامبو المضلّع يثبّت الشعر ويمنع انزلاق الطرحة. يسمح بمرور الهواء ولطيف على مقدمة الشعر.",
     details: ["فسكوز بامبو مضلّع", "تصميم أنبوبي", "مقاس واحد يناسب الأغلبية", "غسيل آلي بماء بارد"],
-    price: 9,
+    price: 35,
     salePrice: null,
     categoryId: "cat-essentials",
     sizes: [ONE],
@@ -454,7 +454,7 @@ const productSeeds: ProductSeed[] = [
     description:
       "مغناطيس قوي وآمن على الأقمشة بلمسة معدنية مصقولة. يثبّت الطبقات دون أن يثقب الشيفون أو الساتان الرقيق.",
     details: ["طقم من 4 قطع", "مغناطيس آمن على الأقمشة", "تشطيب معدني مصقول", "يُحفظ بعيدًا عن البطاقات والأجهزة"],
-    price: 12,
+    price: 45,
     salePrice: null,
     categoryId: "cat-essentials",
     sizes: [],
@@ -473,7 +473,7 @@ const productSeeds: ProductSeed[] = [
     tagline: "دبابيس كلاسيكية برأس لؤلؤي. علبة من 12 قطعة.",
     description: "دبابيس رفيعة من الستانلس ستيل برأس لؤلؤي زجاجي سهل الإمساك وسهل الإيجاد.",
     details: ["علبة من 12 قطعة", "ستانلس ستيل", "رؤوس لؤلؤ زجاجية"],
-    price: 7,
+    price: 25,
     salePrice: null,
     categoryId: "cat-essentials",
     sizes: [],
@@ -593,13 +593,13 @@ export const seedHomepage: HomepageContent = {
     link: "/shop",
   },
   hero: {
-    eyebrow: "",
+    eyebrow: "أزياء محتشمة · طرح وعبايات",
     title: "أناقة هادئة،",
     titleAccent: "لكل أيامكِ.",
     subtitle: "طرح وعبايات وملابس محتشمة. اختاري قطعتكِ وأرسلي طلبكِ عبر واتساب.",
     primaryLabel: "تسوّقي الآن",
     primaryHref: "/shop",
-    secondaryLabel: "",
+    secondaryLabel: "اكتشفي الطرح",
     secondaryHref: "/shop?category=hijabs",
     image: "/art/hero.svg",
     secondaryImage: "",

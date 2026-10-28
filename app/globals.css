@@ -256,6 +256,21 @@ input[type="url"],
   text-align: right;
 }
 
+/* ----------------------------- Storefront motion ----------------------------- */
+@keyframes line-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.line-grow { transform-origin: right; animation: line-grow 1.1s var(--ease-soft) both; }
+.reveal-line { transform: scaleX(0); transform-origin: right; transition: transform 0.9s var(--ease-soft) 0.25s; }
+[data-reveal="shown"] .reveal-line { transform: scaleX(1); }
+.text-gold-gradient {
+  background: linear-gradient(100deg, var(--color-gold-deep), var(--color-gold-bright) 45%, var(--color-gold) 70%, var(--color-gold-soft));
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gold-shift 6s ease-in-out infinite alternate;
+}
+@keyframes gold-shift { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
 /* ----------------------------- Admin motion ----------------------------- */
 @keyframes admin-enter {
   from { opacity: 0; transform: translate3d(0, 14px, 0) scale(0.99); }
@@ -334,5 +349,6 @@ input[type="url"],
   [data-reveal] { opacity: 1; transform: none; }
   .tilt { transform: none !important; }
   .sheen::after { display: none; }
+  .reveal-line { transform: none; }
   .unveil { clip-path: none; }
 }

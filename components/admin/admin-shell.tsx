@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
 import { Sheet } from "@/components/ui/sheet";
-import { LogoCoin } from "./fx";
+import { LogoCoin } from "@/components/ui/fx";
 
 const NAV = [
   { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, exact: true },

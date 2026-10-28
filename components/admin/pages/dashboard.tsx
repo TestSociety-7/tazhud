@@ -8,7 +8,7 @@ import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber } from "@/lib/whatsapp";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Badge, Panel } from "../ui";
-import { CountUp, LogoCoin, Tilt } from "../fx";
+import { CountUp, LogoCoin, Tilt } from "@/components/ui/fx";
 import { STATUS_META } from "./orders";
 import { dateFormat, itemsLabel } from "@/lib/arabic";
 

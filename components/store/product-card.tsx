@@ -10,6 +10,7 @@ import { discountPercent, effectivePrice, isOnSale, stockState } from "@/lib/com
 import type { Product } from "@/lib/types";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Price } from "@/components/ui/price";
+import { Reveal } from "@/components/ui/reveal";
 
 export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const { data } = useStore();
@@ -49,7 +50,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
         onPointerLeave={onLeave}
         className="relative transition-transform duration-500 ease-[var(--ease-soft)] will-change-transform"
       >
-        <Link href={href} className="block" aria-label={product.name}>
+        <Link href={href} className="press block" aria-label={product.name}>
           <div className="arch relative aspect-[4/5] overflow-hidden bg-sand shadow-[var(--shadow-soft)] transition-shadow duration-500 group-hover:shadow-[var(--shadow-lift)]">
             <SmartImage
               src={product.images[0]}
@@ -127,9 +128,9 @@ export function ProductGrid({ products, priorityCount = 0 }: { products: Product
   return (
     <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-3 xl:grid-cols-4">
       {products.map((p, i) => (
-        <li key={p.id}>
+        <Reveal as="li" key={p.id} delay={(i % 4) * 70}>
           <ProductCard product={p} priority={i < priorityCount} />
-        </li>
+        </Reveal>
       ))}
     </ul>
   );

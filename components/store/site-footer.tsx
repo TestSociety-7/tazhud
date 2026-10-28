@@ -31,7 +31,6 @@ export function SiteFooter() {
           )}
         </nav>
       </div>
-      <p className="container-x border-t border-white/10 py-4 text-xs text-ivory/60">© {s.storeName}</p>
     </footer>
   );
 }
