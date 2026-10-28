@@ -4,7 +4,7 @@ import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { InstagramIcon } from "@/components/ui/brand-icons";
 import { useStore } from "@/components/providers/store-provider";
-import { LogoMark } from "@/components/ui/logo";
+import { LogoCoin } from "@/components/ui/fx";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export function SiteFooter() {
@@ -13,9 +13,9 @@ export function SiteFooter() {
 
   return (
     <footer className="on-dark mt-20 bg-ink text-sm text-ivory/70">
-      <div className="container-x flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between">
+      <div className="container-x flex flex-col gap-5 pt-8 pb-24 sm:flex-row sm:pb-8 sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <LogoMark className="size-10" />
+          <LogoCoin float={false} className="size-10" />
           <p className="font-display text-xl text-ivory">{s.storeName}</p>
         </div>
         <nav aria-label="روابط أسفل الصفحة" className="flex flex-wrap items-center gap-x-5 gap-y-1">

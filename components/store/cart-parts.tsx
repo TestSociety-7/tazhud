@@ -58,10 +58,12 @@ export function CartLineItem({ line, compact = false, onNavigate }: { line: Reso
 }
 
 export function CouponForm() {
+  const { data } = useStore();
   const { applyCoupon, coupon, couponCode, removeCoupon } = useCart();
   const [code, setCode] = useState("");
   const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
 
+  if (!data.settings.couponsEnabled) return null;
   if (couponCode) {
     const ok = Boolean(coupon?.ok);
     return (

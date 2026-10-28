@@ -180,7 +180,7 @@ export function CheckoutView() {
                 <input id={fid("name")} className="field" autoComplete="name" value={fields.name} onChange={set("name")} aria-invalid={!!errors.name} aria-describedby={describedBy("name")} required />
               </Field>
               <Field id={fid("phone")} label="رقم الهاتف (واتساب)" error={errors.phone} hint="سنؤكد طلبكِ على هذا الرقم.">
-                <input id={fid("phone")} className="field" type="tel" inputMode="tel" autoComplete="tel" placeholder="+1 555 010 1234" value={fields.phone} onChange={set("phone")} aria-invalid={!!errors.phone} aria-describedby={describedBy("phone", true)} required />
+                <input id={fid("phone")} className="field" type="tel" inputMode="tel" autoComplete="tel" placeholder="+972 50 123 4567" value={fields.phone} onChange={set("phone")} aria-invalid={!!errors.phone} aria-describedby={describedBy("phone", true)} required />
               </Field>
             </div>
             <Field id={fid("address")} label="عنوان التوصيل" error={errors.address}>

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
 import { Sheet } from "@/components/ui/sheet";
 import { LogoCoin } from "@/components/ui/fx";
+import { InstallAppButton } from "@/components/ui/install-app";
 
 const NAV = [
   { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, exact: true },
@@ -31,7 +32,10 @@ const NAV = [
   { href: "/admin/settings", label: "الإعدادات", icon: Settings },
 ];
 
-function NavList({ onNavigate }: { onNavigate?: () => void }) {
+/** Screens that live in the phone bottom bar (so the "more" sheet leaves them out). */
+const BOTTOM_HREFS = new Set(["/admin", "/admin/orders", "/admin/products"]);
+
+function NavList() {
   const pathname = usePathname();
   const { data } = useStore();
   const newOrders = data.orders.filter((o) => o.status === "new").length;
@@ -43,7 +47,6 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
           <li key={href}>
             <Link
               href={href}
-              onClick={onNavigate}
               aria-current={active ? "page" : undefined}
               className={`press relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-all duration-300 ${
                 active
@@ -64,33 +67,77 @@ function NavList({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+async function logout(router: ReturnType<typeof useRouter>) {
+  await fetch("/api/admin/logout", { method: "POST" });
+  toast.success("تم تسجيل الخروج");
+  router.replace("/admin/login");
+  router.refresh();
+}
+
+/** Desktop sidebar: every screen in one list. */
+function Sidebar() {
   const router = useRouter();
   const { data } = useStore();
-  async function logout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    toast.success("تم تسجيل الخروج");
-    router.replace("/admin/login");
-    router.refresh();
-  }
   return (
     <div className="on-dark flex h-full flex-col bg-ink p-4 text-ivory">
-      <Link href="/admin" onClick={onNavigate} className="mb-8 flex items-center gap-3 px-2 pt-2">
-        <LogoCoin className="size-11" />
+      <Link href="/admin" className="mb-8 flex items-center gap-3 px-2 pt-2">
+        <LogoCoin float={false} className="size-11" />
         <span>
           <span className="font-display block text-2xl leading-none">{data.settings.storeName}</span>
           <span className="text-xs text-gold">لوحة التحكم</span>
         </span>
       </Link>
       <nav aria-label="قائمة لوحة التحكم" className="flex-1 overflow-y-auto">
-        <NavList onNavigate={onNavigate} />
+        <NavList />
       </nav>
       <div className="space-y-1 border-t border-white/10 pt-4">
         <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
           <ExternalLink className="size-[1.1rem]" /> عرض المتجر
         </a>
-        <button type="button" onClick={logout} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
+        <button type="button" onClick={() => logout(router)} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
           <LogOut className="size-[1.1rem]" /> تسجيل الخروج
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Phone "more" sheet: only the screens that are not already in the bottom bar. */
+function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const tiles = NAV.filter((n) => !BOTTOM_HREFS.has(n.href));
+  return (
+    <div className="on-dark flex h-full flex-col gap-6 bg-ink p-5 text-ivory">
+      <ul className="stagger grid grid-cols-2 gap-3">
+        {tiles.map(({ href, label, icon: Icon }) => {
+          const active = pathname.startsWith(href);
+          return (
+            <li key={href}>
+              <Link
+                href={href}
+                onClick={onNavigate}
+                aria-current={active ? "page" : undefined}
+                className={`press flex aspect-[4/3] flex-col justify-between rounded-2xl border p-4 transition-colors ${
+                  active ? "border-gold/60 bg-gold/15" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
+                }`}
+              >
+                <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-gold-bright to-gold-deep text-ink shadow-[0_8px_18px_-8px_rgb(201_162_74/0.7)]">
+                  <Icon className="size-5" />
+                </span>
+                <span className="text-sm font-semibold">{label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <InstallAppButton className="press btn sheen w-full border border-gold/50 bg-gold/10 text-gold-soft" />
+      <div className="mt-auto grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-white/20 text-ivory">
+          <ExternalLink className="size-4" /> عرض المتجر
+        </a>
+        <button type="button" onClick={() => logout(router)} className="press btn btn-outline border-white/20 text-ivory/80">
+          <LogOut className="size-4" /> خروج
         </button>
       </div>
     </div>
@@ -147,6 +194,7 @@ function BottomBar({ onMore }: { onMore: () => void }) {
 }
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
+  const { data } = useStore();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [lastPath, setLastPath] = useState(pathname);
@@ -158,21 +206,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-ivory lg:grid lg:grid-cols-[16.5rem_1fr]">
       <aside className="sticky top-0 hidden h-dvh lg:block">
-        <SidebarContent />
+        <Sidebar />
       </aside>
 
       <div className="min-w-0">
-        <header className="on-dark sticky top-0 z-30 flex h-14 items-center justify-between bg-ink px-3 text-ivory lg:hidden">
-          <button type="button" className="icon-btn" onClick={() => setOpen(true)} aria-label="فتح القائمة">
-            <Menu className="size-5" />
-          </button>
-          <Link href="/admin" className="flex items-center gap-2">
-            <LogoCoin className="size-8" />
-            <span className="font-display text-xl">لوحة التحكم</span>
+        <header className="on-dark sticky top-0 z-30 flex h-14 items-center justify-center bg-ink/95 px-3 text-ivory backdrop-blur-md lg:hidden">
+          <Link href="/admin" className="flex items-center gap-2.5">
+            <LogoCoin float={false} className="size-8" />
+            <span className="font-display text-xl">{data.settings.storeName}</span>
+            <span className="rounded-full border border-gold/40 px-2 py-0.5 text-[0.65rem] text-gold">الإدارة</span>
           </Link>
-          <a href="/" target="_blank" rel="noopener noreferrer" className="icon-btn" aria-label="عرض المتجر">
-            <ExternalLink className="size-5" />
-          </a>
         </header>
 
         <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
@@ -187,8 +230,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
       <BottomBar onMore={() => setOpen(true)} />
 
-      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="القائمة" className="!bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory">
-        <SidebarContent onNavigate={() => setOpen(false)} />
+      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="!bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory">
+        <MoreSheet onNavigate={() => setOpen(false)} />
       </Sheet>
     </div>
   );

@@ -109,7 +109,7 @@ export function HomepageEditor() {
           </div>
         </Panel>
 
-        <Panel title="شريط العرض" description="يظهر مع كود خصم تختاره من صفحة أكواد الخصم.">
+        <Panel title="شريط العرض" description={data.settings.couponsEnabled ? "يظهر مع كود خصم تختاره من صفحة أكواد الخصم." : "مخفي الآن لأن أكواد الخصم متوقفة من الإعدادات."}>
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="العنوان" htmlFor="p-t">
               <input id="p-t" className="field" value={h.promo.title} onChange={(e) => patch("promo", { title: e.target.value })} />

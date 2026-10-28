@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ReturnSpotKeeper } from "@/components/store/return-spot";
 import { CartProvider } from "@/components/providers/cart-provider";
 import { StoreProvider } from "@/components/providers/store-provider";
 import { AnnouncementBar } from "@/components/store/announcement-bar";
@@ -27,6 +29,9 @@ export default async function StoreLayout({ children }: { children: React.ReactN
         <SiteFooter />
         <CartDrawer />
         <WhatsappFab />
+        <Suspense>
+          <ReturnSpotKeeper />
+        </Suspense>
       </CartProvider>
     </StoreProvider>
   );

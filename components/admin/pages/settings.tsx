@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ExternalLink, Plus, Trash2 } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber, normalizeWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import type { StoreSettings } from "@/lib/types";
-import { FormField, PageHeader, Panel } from "../ui";
+import { FormField, PageHeader, Panel, Toggle } from "../ui";
 import { useSave } from "../use-save";
 import { SaveBar, useDraft } from "../use-draft";
 
@@ -65,7 +65,7 @@ export function SettingsPage() {
 
   return (
     <form onSubmit={submit} noValidate>
-      <PageHeader title="الإعدادات" description="رقم واتساب، إنستغرام، التوصيل والسياسات." />
+      <PageHeader title="الإعدادات" description="رقم واتساب، إنستغرام والتوصيل." />
 
       <div className="stagger space-y-6">
         <Panel title="المتجر والتواصل">
@@ -106,6 +106,15 @@ export function SettingsPage() {
           </div>
         </Panel>
 
+        <Panel title="أكواد الخصم">
+          <Toggle
+            checked={s.couponsEnabled}
+            onChange={(v) => set("couponsEnabled", v)}
+            label="تفعيل أكواد الخصم"
+            description="عند الإيقاف يختفي إعلان الخصم من الصفحة الرئيسية وخانة الكود من السلة."
+          />
+        </Panel>
+
         <Panel title="التوصيل" description="المبالغ بالشيكل (₪).">
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField label="رسوم التوصيل" htmlFor="s-deliveryFee" error={errors.deliveryFee}>
@@ -131,45 +140,6 @@ export function SettingsPage() {
             <FormField label="ملاحظة التوصيل" htmlFor="s-deliveryNote" className="sm:col-span-2" hint="تظهر للزبونة عند إتمام الطلب.">
               <input id="s-deliveryNote" className="field" value={s.deliveryNote} onChange={(e) => set("deliveryNote", e.target.value)} />
             </FormField>
-          </div>
-        </Panel>
-
-        <Panel title="السياسات" description="تظهر في صفحة «التوصيل والاستبدال».">
-          <div className="space-y-4">
-            {s.policies.map((p, i) => (
-              <div key={p.id} className="rounded-xl border border-line p-3 sm:p-4">
-                <div className="flex gap-2">
-                  <input
-                    className="field font-semibold"
-                    value={p.title}
-                    onChange={(e) => set("policies", s.policies.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))}
-                    aria-label={`عنوان السياسة ${i + 1}`}
-                  />
-                  <button
-                    type="button"
-                    className="icon-btn shrink-0 text-muted hover:text-danger"
-                    onClick={() => set("policies", s.policies.filter((_, j) => j !== i))}
-                    aria-label={`حذف ${p.title}`}
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
-                </div>
-                <textarea
-                  className="field mt-2"
-                  rows={3}
-                  value={p.body}
-                  onChange={(e) => set("policies", s.policies.map((x, j) => (j === i ? { ...x, body: e.target.value } : x)))}
-                  aria-label={`نص ${p.title}`}
-                />
-              </div>
-            ))}
-            <button
-              type="button"
-              className="press btn btn-sm btn-outline border-line"
-              onClick={() => set("policies", [...s.policies, { id: `pol-${Date.now().toString(36)}`, title: "سياسة جديدة", body: "" }])}
-            >
-              <Plus className="size-4" /> إضافة سياسة
-            </button>
           </div>
         </Panel>
       </div>

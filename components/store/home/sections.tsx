@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { readListState, saveListState } from "@/lib/return-spot";
 import { ArrowLeft, Check, Copy } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { Reveal } from "@/components/ui/reveal";
@@ -83,7 +84,7 @@ export function PromoSection() {
   const promo = data.homepage.promo;
   const coupon = data.coupons.find((c) => c.code === promo.couponCode && c.active);
   const [copied, setCopied] = useState(false);
-  if (!promo.title) return null;
+  if (!promo.title || !data.settings.couponsEnabled) return null;
 
   async function copy() {
     try {
@@ -128,6 +129,16 @@ export function AllProductsSection() {
   const { data } = useStore();
   const [category, setCategory] = useState("");
   const [limit, setLimit] = useState(8);
+
+  // Coming back from a product keeps the same tab and the same number of products shown.
+  useEffect(() => {
+    const saved = readListState<{ category: string; limit: number }>("home-products");
+    if (!saved) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- restoring per-tab state after hydration
+    setCategory(saved.category);
+    setLimit(saved.limit);
+  }, []);
+  useEffect(() => saveListState("home-products", { category, limit }), [category, limit]);
   const cats = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
   const all = visibleProducts(data);
   const list = category ? all.filter((p) => p.categoryId === category) : all;

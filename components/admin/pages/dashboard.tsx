@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, ExternalLink, Inbox, Package, Plus, TrendingUp } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Inbox, Package, TrendingUp } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney, stockState } from "@/lib/commerce";
 import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
@@ -47,6 +47,13 @@ function Stat({
   );
 }
 
+function greeting(hour: number) {
+  if (hour < 0) return "مرحبًا";
+  if (hour < 12) return "صباح الخير";
+  if (hour < 18) return "نهارك سعيد";
+  return "مساء الخير";
+}
+
 export function Dashboard() {
   const { data, ready } = useStore();
   const money = (n: number) => formatMoney(n, data.settings);
@@ -62,23 +69,17 @@ export function Dashboard() {
   return (
     <>
       <section className="on-dark relative mb-6 overflow-hidden rounded-3xl bg-ink p-5 text-ivory sm:p-8">
+        <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
         <div className="pointer-events-none absolute -top-20 -end-16 size-56 rounded-full bg-gold/20 blur-3xl" aria-hidden />
         <div className="relative flex items-center gap-4 sm:gap-6">
           <LogoCoin className="size-16 sm:size-20" />
           <div className="min-w-0">
-            <h1 className="font-display text-3xl leading-tight sm:text-4xl">أهلًا بك</h1>
+            <p className="text-sm text-gold">{greeting(ready ? new Date(CLIENT_NOW).getHours() : -1)}</p>
+            <h1 className="font-display mt-0.5 text-3xl leading-tight sm:text-4xl">أهلًا بك في {data.settings.storeName}</h1>
             <p className="mt-1 text-sm text-ivory/70">
               {newOrders.length > 0 ? `عندك ${newOrders.length} ${newOrders.length === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك.` : "لا توجد طلبات جديدة الآن."}
             </p>
           </div>
-        </div>
-        <div className="relative mt-6 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
-          <Link href="/admin/products/new" className="press btn btn-gold sheen">
-            <Plus className="size-4" /> إضافة منتج
-          </Link>
-          <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-white/25 text-ivory">
-            <ExternalLink className="size-4" /> عرض المتجر
-          </a>
         </div>
       </section>
 

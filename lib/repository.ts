@@ -35,7 +35,14 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
     ...seed,
     ...input,
     // The store sells in shekel only; older saves may still say USD.
-    settings: { ...seed.settings, ...input.settings, currency: "ILS", locale: "ar-u-nu-latn" },
+    settings: {
+      ...seed.settings,
+      ...input.settings,
+      currency: "ILS",
+      locale: "ar-u-nu-latn",
+      // Policies are no longer edited in the admin; never show an empty policies page.
+      policies: input.settings?.policies?.length ? input.settings.policies : seed.settings.policies,
+    },
     homepage: {
       ...seed.homepage,
       ...input.homepage,

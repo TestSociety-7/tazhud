@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney } from "@/lib/commerce";
 import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
-import { dateFormat } from "@/lib/arabic";
+import { dateFormat, ordersLabel, piecesLabel } from "@/lib/arabic";
 import type { OrderInquiry, OrderStatus } from "@/lib/types";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -107,12 +107,24 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
               <p className="mt-2 text-muted">{order.customer.address}{order.customer.city ? `، ${order.customer.city}` : ""}</p>
               {order.customer.notes && <p className="mt-2 rounded-lg bg-paper p-2 text-xs">«{order.customer.notes}»</p>}
             </div>
-            <div>
-              <label htmlFor="order-status" className="label">الحالة</label>
-              <select id="order-status" className="field" value={order.status} onChange={(e) => setStatus(e.target.value as OrderStatus)}>
-                {Object.entries(STATUS_META).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
-              </select>
-            </div>
+            <fieldset>
+              <legend className="label">الحالة</legend>
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.keys(STATUS_META) as OrderStatus[]).map((k) => (
+                  <button
+                    key={k}
+                    type="button"
+                    aria-pressed={order.status === k}
+                    onClick={() => order.status !== k && setStatus(k)}
+                    className={`press min-h-10 rounded-full border text-sm transition-colors ${
+                      order.status === k ? "border-ink bg-ink font-semibold text-ivory" : "border-line bg-paper text-text hover:border-gold"
+                    }`}
+                  >
+                    {STATUS_META[k].label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
             <a href={whatsappLink(order.customer.phone, customerMsg)} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp w-full">
               <WhatsappIcon className="size-4" /> مراسلة الزبونة
             </a>
@@ -130,7 +142,6 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
             >
               <Copy className="size-4" /> نسخ نص الطلب
             </button>
-            <p className="text-xs leading-relaxed text-muted">تُكمل الزبونة الطلب عبر واتساب. حدّث الحالة هنا لتتابع الطلبات.</p>
           </aside>
         </div>
       </Modal>
@@ -152,8 +163,10 @@ export function OrdersPage() {
   const { data } = useStore();
   const params = useSearchParams();
   const router = useRouter();
+  const save = useSave();
   const [status, setStatus] = useState<OrderStatus | "all">("all");
   const [q, setQ] = useState("");
+  const [confirmBulk, setConfirmBulk] = useState(false);
   const openId = params.get("open");
   const open = data.orders.find((o) => o.id === openId);
   const money = (n: number) => formatMoney(n, data.settings);
@@ -173,17 +186,16 @@ export function OrdersPage() {
     <>
       <PageHeader
         title="الطلبات"
-        description="عندما ترسل الزبونة طلبًا من صفحة الإتمام تُحفظ نسخة هنا. أكّد التوفر والتوصيل والدفع عبر واتساب ثم حدّث الحالة."
+        description="كل طلب يصلك على واتساب يُحفظ هنا أيضًا. افتح الطلب لتغيير حالته أو مراسلة الزبونة."
       />
 
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0" role="tablist" aria-label="تصفية حسب الحالة">
+        <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:px-0" role="group" aria-label="تصفية حسب الحالة">
           {(["all", ...Object.keys(STATUS_META)] as (OrderStatus | "all")[]).map((s) => (
             <button
               key={s}
               type="button"
-              role="tab"
-              aria-selected={status === s}
+              aria-pressed={status === s}
               onClick={() => setStatus(s)}
               className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm transition-colors ${status === s ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
             >
@@ -203,40 +215,53 @@ export function OrdersPage() {
           <EmptyState icon={<Inbox className="size-6" />} title="لا توجد طلبات هنا" body={data.orders.length ? "جرّب تصفية أخرى." : "عندما يرسل الزبائن طلباتهم ستظهر هنا."} />
         </div>
       ) : (
-        <div className="card overflow-hidden">
-          <table className="w-full text-sm">
-            <caption className="sr-only">الطلبات</caption>
-            <thead className="hidden border-b border-line bg-sand/40 text-start text-xs text-muted md:table-header-group">
-              <tr>
-                <th className="px-5 py-3 font-medium">الطلب</th>
-                <th className="px-5 py-3 font-medium">الزبونة</th>
-                <th className="px-5 py-3 font-medium">التاريخ</th>
-                <th className="px-5 py-3 font-medium">الحالة</th>
-                <th className="px-5 py-3 text-end font-medium">الإجمالي</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {list.map((o) => (
-                <tr key={o.id} className="grid cursor-pointer grid-cols-[1fr_auto] gap-1 px-4 py-4 transition-colors hover:bg-sand/40 md:table-row md:p-0" onClick={() => setOpen(o.id)}>
-                  <td className="md:px-5 md:py-4">
-                    <button type="button" className="ltr font-semibold text-ink hover:underline" onClick={(e) => { e.stopPropagation(); setOpen(o.id); }}>
-                      {o.number}
-                    </button>
-                    {o.sample && <span className="ms-2"><Badge>مثال</Badge></span>}
-                  </td>
-                  <td className="col-start-1 md:px-5 md:py-4">
-                    <span className="block text-ink">{o.customer.name}</span>
-                    <span className="ltr block text-xs text-muted">{o.customer.phone}</span>
-                  </td>
-                  <td className="col-start-1 text-xs text-muted md:px-5 md:py-4 md:text-sm">{dateFormat(o.createdAt)}</td>
-                  <td className="col-start-2 row-start-1 justify-self-end md:px-5 md:py-4"><Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge></td>
-                  <td className="col-start-2 row-start-2 text-end font-semibold tabular-nums md:px-5 md:py-4">{money(o.total)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <ul className="stagger grid gap-3 md:grid-cols-2">
+            {list.map((o) => (
+              <li key={o.id}>
+                <button
+                  type="button"
+                  onClick={() => setOpen(o.id)}
+                  className="press card flex w-full flex-col gap-3 p-4 text-start transition-shadow hover:shadow-[var(--shadow-soft)]"
+                >
+                  <span className="flex w-full items-center justify-between gap-3">
+                    <span className="ltr text-xs font-semibold text-muted">{o.number}</span>
+                    <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
+                  </span>
+                  <span className="flex w-full items-end justify-between gap-3">
+                    <span className="min-w-0">
+                      <span className="block truncate text-base font-semibold text-ink">{o.customer.name}</span>
+                      <span className="block text-xs text-muted">
+                        {[o.customer.city, piecesLabel(o.lines.reduce((n, l) => n + l.quantity, 0)), dateFormat(o.createdAt, { day: "numeric", month: "short" })].filter(Boolean).join(" · ")}
+                      </span>
+                    </span>
+                    <span className="font-display shrink-0 text-2xl leading-none text-ink tabular-nums">{money(o.total)}</span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8 text-center">
+            <button type="button" className="press btn btn-sm btn-ghost text-danger" onClick={() => setConfirmBulk(true)}>
+              <Trash2 className="size-4" /> {status === "all" ? `حذف كل الطلبات (${list.length})` : `حذف طلبات «${STATUS_META[status].label}» (${list.length})`}
+            </button>
+          </div>
+        </>
       )}
+
+      <ConfirmDialog
+        open={confirmBulk}
+        title={status === "all" ? "حذف كل الطلبات؟" : `حذف طلبات «${STATUS_META[status as OrderStatus]?.label}»؟`}
+        body={<>سيُحذف <strong>{ordersLabel(list.length)}</strong> من لوحة التحكم. لا يمكن التراجع عن ذلك. المنتجات لن تتأثر.</>}
+        confirmLabel={`حذف ${ordersLabel(list.length)}`}
+        onCancel={() => setConfirmBulk(false)}
+        onConfirm={async () => {
+          setConfirmBulk(false);
+          const ids = new Set(list.map((o) => o.id));
+          await save((d) => ({ ...d, orders: d.orders.filter((o) => !ids.has(o.id)) }), `تم حذف ${ordersLabel(ids.size)}`);
+          setStatus("all");
+        }}
+      />
 
       {open && <OrderDetail key={open.id} order={open} onClose={() => setOpen(null)} />}
     </>

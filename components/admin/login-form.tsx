@@ -13,6 +13,7 @@ export function LoginForm() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [welcome, setWelcome] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,12 +36,34 @@ export function LoginForm() {
         return;
       }
       const next = params.get("next");
-      router.replace(next && next.startsWith("/admin") ? next : "/admin");
-      router.refresh();
+      const target = next && next.startsWith("/admin") ? next : "/admin";
+      router.prefetch(target);
+      setWelcome(true);
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.setTimeout(() => {
+        router.replace(target);
+        router.refresh();
+      }, reduced ? 300 : 1500);
     } catch {
       setError("خطأ في الاتصال. تحقق من الإنترنت وحاول مجددًا.");
       setBusy(false);
     }
+  }
+
+  if (welcome) {
+    return (
+      <div className="on-dark relative grid min-h-dvh place-items-center overflow-hidden bg-ink px-4 text-center text-ivory" role="status">
+        <div className="pattern-geo absolute inset-0 opacity-[0.07]" aria-hidden />
+        <div className="welcome-glow pointer-events-none absolute top-1/2 left-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/25 blur-3xl" aria-hidden />
+        <div className="relative">
+          <div className="welcome-coin mx-auto w-fit">
+            <LogoCoin float={false} className="size-28" />
+          </div>
+          <p className="welcome-text font-display mt-7 text-5xl">أهلًا بك</p>
+          <p className="welcome-text mt-2 text-sm text-gold" style={{ animationDelay: "560ms" }}>جارٍ فتح لوحة التحكم…</p>
+        </div>
+      </div>
+    );
   }
 
   return (

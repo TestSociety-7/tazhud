@@ -35,20 +35,22 @@ Requires Node.js 20.9 or newer.
 ### Storefront
 - **Home:** announcement bar, hero image and headline, categories, new arrivals and an optional promotion banner with a copyable code. Section order, titles and visibility are editable in the admin.
 - **Shop** (`/shop`): category filters, search, sort (suggested, newest, price), on-sale / in-stock / colour filters, mobile filter sheet. Filters live in the URL so they can be shared.
-- **Product pages** (`/product/[slug]`): swipeable gallery with thumbnails and hover zoom, colour and size selection with validation, stock status, quantity, sale pricing, “Ask on WhatsApp”, details accordions, related products and a sticky mobile add-to-bag bar.
-- **Bag** (`/cart`) and slide-out bag drawer: quantity updates, remove, coupon codes (percent, fixed, free delivery, minimum spend, expiry), free-delivery progress, order summary.
-- **Checkout** (`/checkout`): name, phone, address, city and notes with accessible validation. On submit WhatsApp opens with a formatted order message, and the inquiry is saved for the admin.
-- **Policies** (`/policies`): delivery, returns, payment and care, editable in the admin.
+- **Product pages** (`/product/[slug]`): a back button on phones, an “added to bag” sheet asking “checkout or keep shopping” (keep shopping returns to the same list, tab and scroll position), swipeable gallery with thumbnails and hover zoom, colour and size selection with validation, stock status, quantity, sale pricing, “Ask on WhatsApp”, details accordions, related products and a sticky mobile add-to-bag bar.
+- **Bag** (`/cart`) and slide-out bag drawer: quantity updates, remove, coupon codes when switched on in settings (percent, fixed, free delivery, minimum spend, expiry), free-delivery progress, order summary.
+- **Checkout** (`/checkout`): name, phone, address, city and notes with accessible validation. On submit WhatsApp opens with a formatted order receipt (order number, items with colour/size, totals in ₪, delivery details), and the inquiry is saved for the admin.
+- **Policies** (`/policies`): delivery, returns, payment and care (default text from `lib/seed.ts`).
+- **Installable:** the store and the admin each have a web app manifest and icons, so both can be added to a phone home screen as separate apps.
 - Accessible by design: semantic landmarks, skip link, labelled controls, visible gold focus rings, native `<dialog>` sheets with focus trapping, 44px touch targets, `prefers-reduced-motion` support, loading / empty / error / success states and image fallbacks.
 
 ### Admin (`/admin`)
-- **Dashboard:** greeting with the logo as a turning 3D coin, quick actions, animated counters for new orders, 30-day sales, products and low stock (cards tilt in 3D under the mouse), latest orders and low-stock items. Motion is switched off for visitors who ask for reduced motion.
-- **Order inquiries:** filter by status, search, detail view with items and totals, status workflow (new → contacted → confirmed → completed / cancelled), internal notes, “Message customer” on WhatsApp, copy order text, delete. Customers always complete the order on WhatsApp.
-- **Phone-first layout:** bottom tab bar (home, orders, quick “add product”, products, more), bottom-sheet dialogs, sticky save bar and large touch targets.
-- **Products:** create, edit, duplicate, publish/unpublish, delete (with undo). “Save as draft” or “Save and publish”. Name, tagline, description, details, price, sale price, images (upload several at once from the gallery or camera, or paste a URL; reorderable), category, sizes (with presets), colours (with swatches), stock, SKU and a “new arrival” flag. Unsaved-changes guard.
+- **Sign-in greeting:** a short “أهلًا بك” screen with the logo after the passcode is accepted.
+- **Dashboard:** time-of-day greeting with the logo as a turning 3D coin (the same logo animation is used across the store and admin), animated counters for new orders, 30-day sales, products and low stock (cards tilt in 3D under the mouse), latest orders and low-stock items. Motion is switched off for visitors who ask for reduced motion.
+- **Order inquiries:** filter by status, search, detail view with items and totals, status workflow (new → contacted → confirmed → completed / cancelled), internal notes, “Message customer” on WhatsApp, copy order text, delete one, or delete all orders (or all in the current status) after a confirmation. Customers always complete the order on WhatsApp.
+- **Phone-first layout:** bottom tab bar (home, orders, quick “add product”, products, more; “more” holds only the remaining screens plus “install app”), bottom-sheet dialogs, sticky save bar and large touch targets.
+- **Products:** create, edit, duplicate, show/hide, mark sold out, delete (with undo). Status filters (visible, hidden, low, sold out), a select mode to hide/show/sell out/delete many at once, and “delete all sold-out” with a confirmation. “Save as draft” or “Save and publish”. Name, tagline, description, details, price, sale price, images (upload several at once from the gallery or camera, or paste a URL; reorderable), category, sizes (with presets), colours (with swatches), stock, SKU and a “new arrival” flag. Unsaved-changes guard.
 - **Categories, Coupons:** full create / edit / delete with confirmations.
 - **Storefront (واجهة المتجر):** hero image, headline and button, announcement messages, promotion banner and its coupon, section order and visibility.
-- **Settings:** store name, **WhatsApp number** (with test link), **Instagram link**, delivery fee, free-delivery threshold, delivery note and store policies. A banner shows whether shared storage is on. Prices are always in Israeli shekel (₪).
+- **Settings:** store name, **WhatsApp number** (with test link), **Instagram link**, a coupons on/off switch (off hides the home promo banner and the coupon box), delivery fee, free-delivery threshold and delivery note. Prices are always in Israeli shekel (₪).
 
 Every save, delete and publish action shows a confirmation toast; destructive actions ask first.
 

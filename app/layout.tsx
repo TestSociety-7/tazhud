@@ -19,6 +19,7 @@ export const metadata: Metadata = {
     template: "%s | تزهّد",
   },
   description: "طرح وعبايات وأزياء محتشمة بأقمشة ناعمة ومختارة بعناية. اطلبي بسهولة عبر واتساب.",
+  appleWebApp: { capable: true, title: "تزهّد", statusBarStyle: "black" },
   openGraph: {
     type: "website",
     siteName: "تزهّد Tazhud",

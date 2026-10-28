@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRef } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -14,7 +15,8 @@ import { Reveal } from "@/components/ui/reveal";
 
 export function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const { data } = useStore();
-  const { addProduct, setDrawerOpen } = useCart();
+  const { addProduct } = useCart();
+  const router = useRouter();
   const cardRef = useRef<HTMLDivElement>(null);
   const state = stockState(product.stock, data.settings.lowStockThreshold);
   const simple = product.colors.length <= 1 && product.sizes.length <= 1;
@@ -38,7 +40,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
     if (!simple) return;
     addProduct(product, { color: product.colors[0]?.name, size: product.sizes[0], quantity: 1 });
     toast.success(`أُضيفت ${product.name} إلى السلة`, {
-      action: { label: "عرض السلة", onClick: () => setDrawerOpen(true) },
+      action: { label: "إتمام الطلب", onClick: () => router.push("/checkout") },
     });
   }
 

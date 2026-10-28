@@ -30,7 +30,7 @@
 
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-spin-slow: spin 60s linear infinite;
-  --animate-fade-up: fade-up 0.8s var(--ease-soft) both;
+  --animate-fade-up: fade-up 0.8s var(--ease-soft) backwards;
 
   @keyframes shimmer {
     from { background-position: -200% 0; }
@@ -288,8 +288,9 @@ input[type="url"],
   from { transform: translateX(120%) skewX(-20deg); }
   to { transform: translateX(-220%) skewX(-20deg); }
 }
-.admin-enter { animation: admin-enter 0.45s var(--ease-soft) both; }
-.stagger > * { animation: admin-enter 0.55s var(--ease-soft) both; }
+/* "backwards" so no transform is left behind: a leftover transform would trap position:fixed children. */
+.admin-enter { animation: admin-enter 0.45s var(--ease-soft) backwards; }
+.stagger > * { animation: admin-enter 0.55s var(--ease-soft) backwards; }
 .stagger > :nth-child(2) { animation-delay: 60ms; }
 .stagger > :nth-child(3) { animation-delay: 120ms; }
 .stagger > :nth-child(4) { animation-delay: 180ms; }
@@ -313,7 +314,60 @@ input[type="url"],
   box-shadow: 0 0 0 2px rgb(201 162 74 / 0.7), 0 14px 30px -12px rgb(201 162 74 / 0.6);
 }
 .coin-back { transform: rotateY(180deg); }
+/* Light crossing the front face just after the coin lands. */
+.coin-glint {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(1px);
+  pointer-events: none;
+}
+.coin-glint::after {
+  content: "";
+  position: absolute;
+  inset: -10% auto -10% 0;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, rgb(255 236 190 / 0.55), transparent);
+  transform: translateX(-160%) skewX(-18deg);
+  animation: coin-glint 7s var(--ease-soft) infinite;
+}
+@keyframes coin-glint {
+  0%, 84% { transform: translateX(-160%) skewX(-18deg); }
+  100% { transform: translateX(330%) skewX(-18deg); }
+}
 .float-soft { animation: float-soft 5s ease-in-out infinite; }
+
+/* Phone menu rows slide in one after another each time the menu opens. */
+@keyframes menu-row {
+  from { opacity: 0; transform: translate3d(-18px, 0, 0); }
+  to { opacity: 1; transform: none; }
+}
+dialog[open] .menu-stagger > * { animation: menu-row 0.5s var(--ease-soft) both; }
+dialog[open] .menu-stagger > :nth-child(1) { animation-delay: 120ms; }
+dialog[open] .menu-stagger > :nth-child(2) { animation-delay: 170ms; }
+dialog[open] .menu-stagger > :nth-child(3) { animation-delay: 220ms; }
+dialog[open] .menu-stagger > :nth-child(4) { animation-delay: 270ms; }
+dialog[open] .menu-stagger > :nth-child(5) { animation-delay: 320ms; }
+dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
+
+/* Greeting shown right after the admin signs in. */
+@keyframes welcome-coin {
+  from { opacity: 0; transform: perspective(600px) rotateY(-200deg) scale(0.6); }
+  to { opacity: 1; transform: perspective(600px) rotateY(0) scale(1); }
+}
+@keyframes welcome-text {
+  from { opacity: 0; transform: translate3d(0, 12px, 0); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes welcome-glow {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+.welcome-coin { animation: welcome-coin 1s var(--ease-soft) both; }
+.welcome-text { animation: welcome-text 0.7s var(--ease-soft) 0.35s both; }
+.welcome-glow { animation: welcome-glow 1.2s var(--ease-soft) both; }
 
 /* Cards that lean towards the pointer. --rx/--ry are set from JS. */
 .tilt {
@@ -348,7 +402,8 @@ input[type="url"],
   }
   [data-reveal] { opacity: 1; transform: none; }
   .tilt { transform: none !important; }
-  .sheen::after { display: none; }
+  .sheen::after,
+  .coin-glint { display: none; }
   .reveal-line { transform: none; }
   .unveil { clip-path: none; }
 }

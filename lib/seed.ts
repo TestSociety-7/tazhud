@@ -37,6 +37,7 @@ export const seedSettings: StoreSettings = {
   freeDeliveryThreshold: 400,
   deliveryNote: "التوصيل خلال 2 إلى 4 أيام عمل، ونؤكد الموعد معكِ عبر واتساب.",
   lowStockThreshold: 5,
+  couponsEnabled: false,
   policies: [
     {
       id: "pol-delivery",

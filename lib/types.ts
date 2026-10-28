@@ -97,6 +97,8 @@ export interface StoreSettings {
   freeDeliveryThreshold: number;
   deliveryNote: string;
   lowStockThreshold: number;
+  /** When off, the home promo banner and the coupon box in the cart are hidden. */
+  couponsEnabled: boolean;
   policies: Policy[];
 }
 

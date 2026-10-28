@@ -136,7 +136,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [state.lines, data.products, data.bundles]);
 
   const subtotal = roundMoney(lines.reduce((s, l) => s + l.lineTotal, 0));
-  const coupon = state.couponCode
+  const coupon = data.settings.couponsEnabled && state.couponCode
     ? evaluateCoupon(state.couponCode, subtotal, data.coupons, data.settings)
     : null;
   const discount = coupon?.ok ? coupon.discount : 0;

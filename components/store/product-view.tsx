@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronDown, ShoppingBag, Truck } from "lucide-react";
-import { toast } from "sonner";
+import { ArrowLeft, Check, ChevronDown, ShoppingBag, Truck } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { discountPercent, effectivePrice, isOnSale, stockState, visibleProducts } from "@/lib/commerce";
@@ -16,6 +16,9 @@ import { StockBadge } from "@/components/ui/stock-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { ProductCard } from "./product-card";
+import { BackToListButton, useBackToList } from "./return-spot";
+import { Sheet } from "@/components/ui/sheet";
+import { piecesLabel } from "@/lib/arabic";
 
 function Gallery({ product }: { product: Product }) {
   const images = product.images.length ? product.images : [""];
@@ -116,7 +119,8 @@ function Disclosure({ title, children, defaultOpen = false }: { title: string; c
 
 export function ProductView({ slug }: { slug: string }) {
   const { data, ready } = useStore();
-  const { addProduct, setDrawerOpen } = useCart();
+  const cart = useCart();
+  const { addProduct } = cart;
   const money = useMoney();
   const product = data.products.find((p) => p.slug === slug && p.published);
 
@@ -125,6 +129,9 @@ export function ProductView({ slug }: { slug: string }) {
   const [qty, setQty] = useState(1);
   const [errors, setErrors] = useState<{ color?: string; size?: string }>({});
   const [added, setAdded] = useState(false);
+  const [justAdded, setJustAdded] = useState<{ options: string; quantity: number } | null>(null);
+  const backToList = useBackToList();
+  const router = useRouter();
   const [lastSlug, setLastSlug] = useState(slug);
   if (slug !== lastSlug) {
     setLastSlug(slug);
@@ -201,18 +208,16 @@ export function ProductView({ slug }: { slug: string }) {
     if (soldOut || !validate()) return;
     addProduct(product!, { color: selectedColor, size: selectedSize, quantity: qty });
     setAdded(true);
-    toast.success(`أُضيفت ${product!.name} إلى السلة`, {
-      description: [selectedColor, selectedSize].filter(Boolean).join(" · ") || undefined,
-      action: { label: "عرض السلة", onClick: () => setDrawerOpen(true) },
-    });
+    setJustAdded({ options: [selectedColor, selectedSize].filter(Boolean).join(" · "), quantity: qty });
   }
 
   const askText = `السلام عليكم ${data.settings.storeName}، أنا مهتمة بـ ${product.name}${selectedColor ? ` باللون ${selectedColor}` : ""}${selectedSize ? `، مقاس ${selectedSize}` : ""}. هل هي متوفرة؟`;
 
   return (
     <div className="pb-28 lg:pb-0">
-      <div className="container-x pt-6">
-        <nav aria-label="مسار التنقل" className="text-xs text-muted">
+      <div className="container-x pt-4 lg:pt-6">
+        <BackToListButton className="lg:hidden" />
+        <nav aria-label="مسار التنقل" className="hidden text-xs text-muted lg:block">
           <ol className="flex flex-wrap items-center gap-2">
             <li><Link href="/" className="hover:text-ink">الرئيسية</Link></li>
             <li aria-hidden>/</li>
@@ -329,6 +334,38 @@ export function ProductView({ slug }: { slug: string }) {
           </button>
         </div>
       </div>
+
+      <Sheet open={!!justAdded} onClose={() => setJustAdded(null)} side="bottom" title="أُضيفت إلى سلتكِ"
+        heading={
+          <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
+            <span className="grid size-7 place-items-center rounded-full bg-success text-white"><Check className="size-4" /></span>
+            أُضيفت إلى سلتكِ
+          </h2>
+        }
+      >
+        <div className="p-5">
+          <div className="flex items-center gap-4">
+            <SmartImage src={product.images[0]} alt="" className="arch h-24 w-20 shrink-0 bg-sand" />
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-xl leading-tight text-ink">{product.name}</p>
+              {justAdded?.options && <p className="mt-1 text-xs text-muted">{justAdded.options}</p>}
+              <p className="mt-1 text-sm text-ink tabular-nums">{justAdded?.quantity} × {money(effectivePrice(product))}</p>
+            </div>
+          </div>
+          <p className="mt-5 flex items-center justify-between rounded-xl bg-sand/70 px-4 py-3 text-sm">
+            <span className="text-muted">في سلتكِ الآن: {piecesLabel(cart.count)}</span>
+            <strong className="text-ink tabular-nums">{money(cart.subtotal)}</strong>
+          </p>
+          <div className="mt-5 grid gap-3">
+            <button type="button" className="press btn btn-primary min-h-12" onClick={() => { setJustAdded(null); router.push("/checkout"); }}>
+              إتمام الطلب <ArrowLeft className="size-4" />
+            </button>
+            <button type="button" className="press btn btn-outline min-h-12 border-line" onClick={() => { setJustAdded(null); backToList(); }}>
+              متابعة التسوق
+            </button>
+          </div>
+        </div>
+      </Sheet>
     </div>
   );
 }

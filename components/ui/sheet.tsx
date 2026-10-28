@@ -14,15 +14,18 @@ export function Sheet({
   title,
   children,
   footer,
+  heading,
   className = "",
 }: {
   open: boolean;
   onClose: () => void;
   /** "start" opens from the reading side (right in Arabic), "end" from the other. */
-  side?: "start" | "end" | "top";
+  side?: "start" | "end" | "top" | "bottom";
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  /** Replaces the plain title in the header bar (the title is still the dialog's name). */
+  heading?: React.ReactNode;
   className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -48,6 +51,7 @@ export function Sheet({
     end: "ms-auto h-full max-h-none w-full max-w-md starting:ltr:translate-x-full starting:rtl:-translate-x-full",
     start: "me-auto h-full max-h-none w-[88%] max-w-sm starting:ltr:-translate-x-full starting:rtl:translate-x-full",
     top: "mx-auto mb-auto w-full max-w-none starting:-translate-y-full",
+    bottom: "mx-auto mt-auto w-full max-w-lg rounded-t-3xl max-h-[88dvh] starting:translate-y-full sm:mb-auto sm:rounded-3xl",
   }[side];
 
   return (
@@ -65,7 +69,7 @@ export function Sheet({
       className={`fixed inset-0 m-0 flex max-h-dvh flex-col bg-ivory p-0 text-text shadow-[var(--shadow-lift)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/45 backdrop:backdrop-blur-[2px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
     >
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        <h2 className="font-display text-2xl text-ink">{title}</h2>
+        {heading ?? <h2 className="font-display text-2xl text-ink">{title}</h2>}
         <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>

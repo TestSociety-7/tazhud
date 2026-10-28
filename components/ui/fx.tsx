@@ -56,16 +56,21 @@ export function CountUp({ value, format = (n) => String(Math.round(n)) }: { valu
   return <>{format(shown)}</>;
 }
 
-/** The brand logo as a gold coin that flips over every few seconds. */
-export function LogoCoin({ className = "size-16" }: { className?: string }) {
+/**
+ * The brand logo as a gold coin. Every coin on the page turns over together every
+ * few seconds and catches a glint of light as it lands: the one logo animation used
+ * across the store and the admin.
+ */
+export function LogoCoin({ className = "size-16", float = true }: { className?: string; float?: boolean }) {
   return (
-    <span className={`coin float-soft inline-block shrink-0 ${className}`} aria-hidden>
+    <span className={`coin inline-block shrink-0 ${float ? "float-soft" : ""} ${className}`} aria-hidden>
       <span className="coin-inner block">
         {/* eslint-disable-next-line @next/next/no-img-element -- small static brand mark */}
         <img src="/brand/tazhud-logo.jpg" alt="" className="coin-face object-cover" width={150} height={150} />
         <span className="coin-face coin-back grid place-items-center bg-gradient-to-br from-gold-bright via-gold to-gold-deep">
           <Star8 className="size-1/2 text-ink/80" />
         </span>
+        <span className="coin-glint" />
       </span>
     </span>
   );

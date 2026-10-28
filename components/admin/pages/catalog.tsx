@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDown, ArrowUp, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowLeft, ArrowUp, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney, newId, slugify, uniqueSlug } from "@/lib/commerce";
 import type { Category, Coupon, CouponType } from "@/lib/types";
@@ -182,6 +183,13 @@ export function CouponsPage() {
           </button>
         }
       />
+      {!data.settings.couponsEnabled && (
+        <Link href="/admin/settings" className="press mb-5 flex items-center gap-3 rounded-2xl border border-gold/40 bg-gold-soft/40 p-4 text-sm text-[#5c4519]">
+          <TicketPercent className="size-5 shrink-0" />
+          <span className="flex-1">أكواد الخصم متوقفة الآن ولا يراها الزبائن. يمكنك تشغيلها من الإعدادات.</span>
+          <ArrowLeft className="size-4 shrink-0" />
+        </Link>
+      )}
       {data.coupons.length === 0 ? (
         <div className="card"><EmptyState icon={<TicketPercent className="size-6" />} title="لا توجد أكواد خصم" body="أنشئ كودًا للافتتاح أو للعيد أو كعرض ترحيبي." /></div>
       ) : (
