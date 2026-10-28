@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Lock } from "lucide-react";
 import { LogoCoin } from "@/components/ui/fx";
 
-export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
+export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [passcode, setPasscode] = useState("");
@@ -67,7 +67,7 @@ export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
                 setError("");
               }}
               aria-invalid={!!error}
-              aria-describedby={error ? "pass-err" : demoPasscode ? "pass-hint" : undefined}
+              aria-describedby={error ? "pass-err" : undefined}
               className="field ltr !border-white/15 !bg-black/20 !pe-9 !ps-11 !text-ivory"
               autoFocus
             />
@@ -79,11 +79,6 @@ export function LoginForm({ demoPasscode }: { demoPasscode: string | null }) {
           <button type="submit" className="btn btn-gold mt-5 w-full" disabled={busy}>
             {busy ? "جارٍ الدخول…" : "دخول"}
           </button>
-          {demoPasscode && (
-            <p id="pass-hint" className="mt-4 rounded-lg bg-gold/10 p-3 text-xs leading-relaxed text-gold-soft">
-              الوضع التجريبي: لم يتم ضبط <code>ADMIN_PASSCODE</code>، لذلك كلمة المرور هي <strong className="font-mono">{demoPasscode}</strong>. اضبط كلمة مرور خاصة في Vercel قبل مشاركة الموقع.
-            </p>
-          )}
         </form>
         <Link href="/" className="mt-6 flex min-h-10 items-center justify-center gap-2 text-sm text-ivory/60 hover:text-ivory">
           <ArrowRight className="size-4" /> العودة إلى المتجر

@@ -146,9 +146,8 @@ function BottomBar({ onMore }: { onMore: () => void }) {
   );
 }
 
-export function AdminShell({ children, demoPasscode }: { children: React.ReactNode; demoPasscode: boolean }) {
+export function AdminShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  const { isLocalOnly, storageLabel } = useStore();
   const pathname = usePathname();
   const [lastPath, setLastPath] = useState(pathname);
   if (lastPath !== pathname) {
@@ -175,15 +174,6 @@ export function AdminShell({ children, demoPasscode }: { children: React.ReactNo
             <ExternalLink className="size-5" />
           </a>
         </header>
-
-        {(isLocalOnly || demoPasscode) && (
-          <div className="border-b border-gold/30 bg-gold-soft/40 px-4 py-2.5 text-xs leading-relaxed text-[#5c4519] sm:px-8">
-            <strong>{storageLabel}.</strong>{" "}
-            {isLocalOnly && "التغييرات تُحفظ في هذا المتصفح فقط، ولا تظهر للزبائن أو على الأجهزة الأخرى حتى يتم ربط التخزين المشترك في Vercel. "}
-            {demoPasscode && "لوحة التحكم تستخدم كلمة المرور التجريبية. اضبط ADMIN_PASSCODE في Vercel قبل مشاركة الموقع. "}
-            <Link href="/admin/settings" className="font-semibold underline underline-offset-2">التفاصيل</Link>
-          </div>
-        )}
 
         <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
           {/* Admin screens read the current time and browser storage, so they render on request. */}

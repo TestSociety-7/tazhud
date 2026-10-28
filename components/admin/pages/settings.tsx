@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, CloudOff, ExternalLink, Plus, Trash2 } from "lucide-react";
+import { ExternalLink, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { useStore } from "@/components/providers/store-provider";
 import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber, normalizeWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import type { StoreSettings } from "@/lib/types";
@@ -26,7 +25,6 @@ function validate(s: StoreSettings): Errors {
 }
 
 export function SettingsPage() {
-  const { isLocalOnly } = useStore();
   const save = useSave();
   const { draft, setDraft, dirty, discard, markSaved } = useDraft((d) => d.settings);
   const s = draft as StoreSettings;
@@ -69,24 +67,6 @@ export function SettingsPage() {
     <form onSubmit={submit} noValidate>
       <PageHeader title="الإعدادات" description="رقم واتساب، إنستغرام، التوصيل والسياسات." />
 
-      <div
-        className={`mb-6 flex items-start gap-3 rounded-2xl p-4 text-sm ${isLocalOnly ? "bg-gold-soft/40 text-[#5c4519]" : "bg-sage-soft text-forest"}`}
-        role="status"
-      >
-        {isLocalOnly ? <CloudOff className="mt-0.5 size-5 shrink-0" /> : <CheckCircle2 className="mt-0.5 size-5 shrink-0" />}
-        <p>
-          {isLocalOnly ? (
-            <>
-              <strong>الوضع التجريبي:</strong> التعديلات محفوظة في هذا المتصفح فقط ولا يراها الزبائن. اربط مخزن Blob في Vercel ثم أعد النشر.
-            </>
-          ) : (
-            <>
-              <strong>التخزين المشترك مفعّل:</strong> كل ما تحفظه يظهر لكل الزوار خلال دقيقة تقريبًا.
-            </>
-          )}
-        </p>
-      </div>
-
       <div className="stagger space-y-6">
         <Panel title="المتجر والتواصل">
           <div className="grid gap-5 md:grid-cols-2">
@@ -97,7 +77,7 @@ export function SettingsPage() {
               label="رقم واتساب"
               htmlFor="s-whatsappNumber"
               error={errors.whatsappNumber}
-              hint={placeholderNumber ? "هذا رقم تجريبي. ضع رقم واتساب الحقيقي للمتجر." : "مع رمز الدولة. الطلبات تصل إلى هذا الرقم."}
+              hint={placeholderNumber ? "ضع رقم واتساب الخاص بالمتجر." : "مع رمز الدولة. الطلبات تصل إلى هذا الرقم."}
             >
               <div className="flex gap-2">
                 <input

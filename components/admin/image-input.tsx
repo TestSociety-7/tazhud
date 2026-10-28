@@ -165,7 +165,6 @@ function UploadButtons({ onAdd, multiple = true }: { onAdd: (urls: string[]) => 
 }
 
 export function ImageListEditor({ images, onChange }: { images: string[]; onChange: (images: string[]) => void }) {
-  const { isLocalOnly } = useStore();
   const empty = useRef<HTMLInputElement>(null);
   const { busy, handle } = useUploader((urls) => onChange([...images, ...urls]));
   const move = (i: number, d: number) => {
@@ -221,7 +220,6 @@ export function ImageListEditor({ images, onChange }: { images: string[]; onChan
       </details>
       <p className="hint">
         الأفضل صور طولية بنسبة 4:5. تُصغَّر الصور تلقائيًا قبل الرفع.
-        {isLocalOnly && " في الوضع التجريبي تُحفظ الصور في هذا المتصفح فقط."}
       </p>
     </div>
   );
