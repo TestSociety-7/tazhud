@@ -4,6 +4,7 @@ import { AnnouncementBar } from "@/components/store/announcement-bar";
 import { SiteHeader } from "@/components/store/site-header";
 import { SiteFooter } from "@/components/store/site-footer";
 import { CartDrawer } from "@/components/store/cart-drawer";
+import { WhatsappFab } from "@/components/store/whatsapp-fab";
 import { hasSharedStorage, readCatalog } from "@/lib/server/storage";
 
 export default async function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,7 @@ export default async function StoreLayout({ children }: { children: React.ReactN
         </main>
         <SiteFooter />
         <CartDrawer />
+        <WhatsappFab />
       </CartProvider>
     </StoreProvider>
   );

@@ -100,7 +100,7 @@ export function ProductCard({ product, priority = false }: { product: Product; p
       </div>
       <div className="mt-4 px-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-[1.35rem] leading-tight text-ink">
+          <h3 className="font-display text-[1.15rem] leading-tight text-ink sm:text-[1.35rem]">
             <Link href={href} className="hover:underline hover:decoration-gold hover:underline-offset-4">
               {product.name}
             </Link>

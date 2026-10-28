@@ -8,6 +8,8 @@ import "@fontsource/cormorant-garamond/500.css";
 import "@fontsource/cormorant-garamond/600.css";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -36,6 +38,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ar" dir="rtl" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         {children}
+        <Analytics />
+        <SpeedInsights />
         <Toaster
           dir="rtl"
           position="bottom-center"

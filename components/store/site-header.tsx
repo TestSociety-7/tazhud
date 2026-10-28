@@ -4,10 +4,11 @@ import { InstagramIcon } from "@/components/ui/brand-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { ChevronLeft, Menu, MessageCircle, Search, ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
-import { Logo, LogoMark } from "@/components/ui/logo";
+import { Logo } from "@/components/ui/logo";
+import { SmartImage } from "@/components/ui/smart-image";
 import { Sheet } from "@/components/ui/sheet";
 import { SearchPanel } from "./search-panel";
 import { whatsappLink } from "@/lib/whatsapp";
@@ -118,43 +119,55 @@ export function SiteHeader() {
       </header>
 
       <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} side="start" title="القائمة">
-        <nav aria-label="قائمة الجوال" className="px-5 py-4">
-          <ul className="space-y-1">
-            <li>
-              <Link href="/shop" className="flex min-h-12 items-center font-display text-2xl text-ink">
-                كل المنتجات
-              </Link>
-            </li>
-            {categories.map((c) => (
-              <li key={c.id}>
-                <Link href={`/shop?category=${c.slug}`} className="flex min-h-12 items-center font-display text-2xl text-ink">
-                  {c.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <hr className="my-6 border-line" />
-          <ul className="space-y-1 text-sm">
-            <li>
-              <Link href="/cart" className="flex min-h-11 items-center">سلة التسوق</Link>
-            </li>
-            <li>
-              <Link href="/policies" className="flex min-h-11 items-center">التوصيل والاستبدال</Link>
-            </li>
-            <li>
-              <a href={whatsappLink(data.settings.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center">
-                تواصلي معنا على واتساب
+        <nav aria-label="قائمة الجوال" className="flex min-h-full flex-col gap-6 px-5 py-5">
+          <button
+            type="button"
+            onClick={() => {
+              setMenuOpen(false);
+              setSearchOpen(true);
+            }}
+            className="press flex min-h-12 w-full items-center gap-3 rounded-full border border-line bg-paper px-4 text-sm text-muted"
+          >
+            <Search className="size-4" /> ابحثي عن قطعة…
+          </button>
+
+          <div>
+            <p className="mb-3 text-xs font-semibold text-muted">الأقسام</p>
+            <ul className="stagger grid grid-cols-2 gap-3">
+              {categories.map((c) => (
+                <li key={c.id}>
+                  <Link href={`/shop?category=${c.slug}`} className="press group block overflow-hidden rounded-2xl border border-line bg-paper">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+                      <SmartImage src={c.image} alt="" className="absolute inset-0" imgClassName="transition-transform duration-700 group-hover:scale-105" fallbackLabel={c.name} />
+                    </div>
+                    <p className="flex items-center justify-between px-3 py-2.5 text-sm font-semibold text-ink">
+                      {c.name}
+                      <ChevronLeft className="size-4 text-gold-deep" />
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Link href="/shop" className="press sheen btn btn-primary w-full">
+            كل المنتجات
+          </Link>
+
+          <div className="mt-auto space-y-3 border-t border-line pt-5">
+            <div className="grid grid-cols-2 gap-3">
+              <a href={whatsappLink(data.settings.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="press btn btn-whatsapp">
+                <MessageCircle className="size-4" /> واتساب
               </a>
-            </li>
-            <li>
-              <a href={data.settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-2">
-                <InstagramIcon className="size-4" /> {data.settings.instagramHandle}
-              </a>
-            </li>
-          </ul>
-          <div className="mt-8 flex items-center gap-3 rounded-2xl bg-ink p-4 text-gold-soft">
-            <LogoMark className="size-12" />
-            <p className="text-sm leading-snug">{data.settings.tagline}</p>
+              {data.settings.instagramUrl && (
+                <a href={data.settings.instagramUrl} target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-line">
+                  <InstagramIcon className="size-4" /> إنستغرام
+                </a>
+              )}
+            </div>
+            <Link href="/policies" className="flex min-h-11 items-center justify-center text-sm text-muted underline-offset-4 hover:underline">
+              التوصيل والاستبدال
+            </Link>
           </div>
         </nav>
       </Sheet>

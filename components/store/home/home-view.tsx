@@ -3,7 +3,7 @@
 import { useStore } from "@/components/providers/store-provider";
 import { visibleProducts } from "@/lib/commerce";
 import { Hero } from "./hero";
-import { CategoriesSection, ProductRail, PromoSection } from "./sections";
+import { AllProductsSection, CategoriesSection, ProductRail, PromoSection } from "./sections";
 
 export function HomeView() {
   const { data } = useStore();
@@ -28,6 +28,7 @@ export function HomeView() {
               return null;
           }
         })}
+      <AllProductsSection />
     </>
   );
 }

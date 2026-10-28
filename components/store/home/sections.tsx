@@ -67,9 +67,9 @@ export function ProductRail({ section, products, href }: { section: HomeSection;
   return (
     <section className="container-x pt-16 sm:pt-24">
       <SectionHeading title={section.title} href={href} />
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
+      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {products.slice(0, 8).map((p, i) => (
-          <Reveal as="li" key={p.id} delay={(i % 4) * 90}>
+          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className="w-[62%] shrink-0 snap-start sm:w-auto">
             <ProductCard product={p} />
           </Reveal>
         ))}
@@ -119,6 +119,60 @@ export function PromoSection() {
           </p>
         </div>
       </Reveal>
+    </section>
+  );
+}
+
+/** Every product on the home page, with quick category tabs. */
+export function AllProductsSection() {
+  const { data } = useStore();
+  const [category, setCategory] = useState("");
+  const [limit, setLimit] = useState(8);
+  const cats = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
+  const all = visibleProducts(data);
+  const list = category ? all.filter((p) => p.categoryId === category) : all;
+  if (all.length === 0) return null;
+
+  const tabs = [{ id: "", name: "الكل" }, ...cats.filter((c) => all.some((p) => p.categoryId === c.id))];
+
+  return (
+    <section id="products" className="container-x scroll-mt-24 pt-16 sm:pt-24">
+      <SectionHeading title="منتجاتنا" href="/shop" linkLabel="المتجر" />
+      <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mb-8 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0">
+        {tabs.map((t) => {
+          const active = t.id === category;
+          return (
+            <button
+              key={t.id || "all"}
+              type="button"
+              aria-pressed={active}
+              onClick={() => {
+                setCategory(t.id);
+                setLimit(8);
+              }}
+              className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
+                active ? "border-ink bg-ink text-ivory shadow-[0_8px_18px_-10px_rgb(15_18_15/0.6)]" : "border-line bg-paper text-text hover:border-gold"
+              }`}
+            >
+              {t.name}
+            </button>
+          );
+        })}
+      </div>
+      <ul key={category} className="grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
+        {list.slice(0, limit).map((p, i) => (
+          <li key={p.id} className="admin-enter" style={{ animationDelay: `${(i % 8) * 50}ms` }}>
+            <ProductCard product={p} />
+          </li>
+        ))}
+      </ul>
+      {list.length > limit && (
+        <div className="mt-10 text-center">
+          <button type="button" className="press btn btn-outline border-line" onClick={() => setLimit((n) => n + 8)}>
+            عرض المزيد ({list.length - limit})
+          </button>
+        </div>
+      )}
     </section>
   );
 }

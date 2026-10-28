@@ -262,10 +262,28 @@ export function ShopView() {
               className="field !rounded-full !ps-11"
             />
           </form>
+          <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 lg:hidden">
+            {[{ id: "", slug: "", name: "الكل" }, ...categories].map((c) => {
+              const active = c.slug === category;
+              return (
+                <button
+                  key={c.id || "all"}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => setParam({ category: c.slug || null })}
+                  className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
+                    active ? "border-ink bg-ink text-ivory" : "border-line bg-ivory text-text"
+                  }`}
+                >
+                  {c.name}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </header>
 
-      <div className="container-x grid gap-10 py-10 lg:grid-cols-[15rem_1fr]">
+      <div className="container-x grid gap-10 py-6 sm:py-10 lg:grid-cols-[15rem_1fr]">
         <aside className="hidden lg:block" aria-label="عوامل التصفية">
           <div className="sticky top-[calc(var(--header-h)+1.5rem)]">
             {filterControls}
