@@ -1,29 +1,39 @@
 import { NextResponse } from "next/server";
-import { ADMIN_COOKIE, checkPasscode, createSessionToken } from "@/lib/admin-auth";
+import { adminPasscode, checkPasscode, createSessionToken, sessionCookie } from "@/lib/admin-auth";
+import { jsonError, sameOrigin } from "@/lib/server/guard";
+import { blockedFor, clear, clientIp, hit } from "@/lib/server/rate-limit";
+
+const MAX_FAILS = 5;
+const LOCK_MS = 15 * 60 * 1000;
 
 export async function POST(request: Request) {
+  if (!sameOrigin(request)) return jsonError("طلب غير مسموح.", 403);
+  if (!adminPasscode()) return jsonError("الدخول متوقف: لم تُضبط كلمة مرور لوحة التحكم بعد.", 503);
+
+  const ip = clientIp(request);
+  const wait = blockedFor("login", ip, MAX_FAILS);
+  if (wait) {
+    return jsonError(`محاولات كثيرة. حاول مجددًا بعد ${Math.ceil(wait / 60)} دقيقة.`, 429);
+  }
+
   let passcode = "";
   try {
     const body = (await request.json()) as { passcode?: unknown };
     passcode = typeof body.passcode === "string" ? body.passcode : "";
   } catch {
-    return NextResponse.json({ ok: false, error: "طلب غير صالح." }, { status: 400 });
+    return jsonError("طلب غير صالح.", 400);
   }
 
-  if (!passcode || !(await checkPasscode(passcode))) {
-    // Small delay slows down guessing.
-    await new Promise((r) => setTimeout(r, 600));
-    return NextResponse.json({ ok: false, error: "كلمة المرور غير صحيحة." }, { status: 401 });
+  if (!(await checkPasscode(passcode))) {
+    hit("login", ip, LOCK_MS);
+    // A short pause on every wrong try slows guessing further.
+    await new Promise((r) => setTimeout(r, 800));
+    return jsonError("كلمة المرور غير صحيحة.", 401);
   }
 
+  clear("login", ip);
   const { token, maxAge } = await createSessionToken();
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set(ADMIN_COOKIE, token, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge,
-  });
+  const res = NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
+  res.cookies.set(sessionCookie(token, maxAge));
   return res;
 }

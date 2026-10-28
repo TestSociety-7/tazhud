@@ -58,19 +58,21 @@ Every save, delete and publish action shows a confirmation toast; destructive ac
 
 The admin is protected by a **single shared passcode**:
 
-1. `proxy.ts` checks for a signed, `httpOnly` session cookie on every `/admin` route and redirects to `/admin/login` without it.
-2. `POST /api/admin/login` compares the passcode with `ADMIN_PASSCODE` and sets the cookie (7 days). The cookie is HMAC-signed with `ADMIN_SESSION_SECRET`.
-3. If `ADMIN_PASSCODE` is **not set**, the demo passcode `tazhud-demo` is used and shown on the sign-in page, and the admin shows a warning banner.
+1. `proxy.ts` checks for a signed, `httpOnly`, `Secure`, `SameSite=Lax` session cookie (`__Host-` prefixed in production) on every `/admin` route and redirects to `/admin/login` without it. Every `/api/admin/*` route checks the same cookie on the server.
+2. `POST /api/admin/login` compares the passcode in constant time and sets the cookie (7 days). The cookie is HMAC-signed with a key made from `ADMIN_SESSION_SECRET` and the passcode, so changing either signs every device out.
+3. After 5 wrong passcodes an IP is locked out for 15 minutes (in-memory per server instance, so it slows guessing; the long passcode is what makes guessing hopeless).
+4. In production, if `ADMIN_PASSCODE` is not set, sign-in is switched off. Locally the passcode `tazhud-demo` is used.
+5. Requests that change data must come from the site's own pages (the `Origin` header is checked), which blocks cross-site request forgery.
 
-When shared storage is connected, the same signed cookie also protects the admin API routes (`/api/admin/*`) that write the catalogue, read orders and issue image-upload tokens.
+Other protections: security headers on every page (Content-Security-Policy, HSTS, no framing, nosniff, strict referrer), admin pages and API answers are `no-store`; photo uploads accept only JPEG/PNG/WebP/AVIF up to 8 MB in `products/`; the public orders endpoint is rate-limited, checks origin and recalculates prices from the saved catalogue; links entered in the admin may only be site paths or http(s) URLs; orders are stored under an unguessable folder derived from `ADMIN_SESSION_SECRET`.
 
-This is a simple single-passcode gate, **not** full production authentication: there are no individual accounts, roles, rate limiting or audit log. Use a long random passcode, and add a real auth provider (for example Clerk or Auth.js) if several people will manage the store.
+This is a single-passcode gate, not individual accounts. Use a long random passcode (16+ characters), and add a real auth provider (for example Clerk or Auth.js) if several people will manage the store.
 
 ## Environment variables
 
 | Variable | Required | Purpose |
 | --- | --- | --- |
-| `ADMIN_PASSCODE` | Strongly recommended | Admin passcode. Unset = demo passcode `tazhud-demo`. |
+| `ADMIN_PASSCODE` | Yes (production) | Admin passcode, 16+ random characters. Unset in production = admin sign-in is off; unset locally = `tazhud-demo`. |
 | `ADMIN_SESSION_SECRET` | Recommended | Long random string used to sign the admin cookie (`openssl rand -base64 32`). |
 | `BLOB_READ_WRITE_TOKEN` | For launch | Added automatically when you connect a Vercel Blob store to the project. Turns on shared storage. |
 | `NEXT_PUBLIC_SITE_URL` | Optional | Public address used for sharing previews and the sitemap. Defaults to `https://tazhud.store`. |

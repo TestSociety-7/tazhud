@@ -7,10 +7,27 @@ export async function isAdmin() {
   return verifySessionToken((await cookies()).get(ADMIN_COOKIE)?.value);
 }
 
-export const jsonError = (error: string, status: number) => NextResponse.json({ ok: false, error }, { status });
+export const jsonError = (error: string, status: number) =>
+  NextResponse.json({ ok: false, error }, { status, headers: { "Cache-Control": "no-store" } });
+
+/**
+ * True when a state-changing request comes from this site's own pages. Browsers
+ * always send Origin on POST/PUT/DELETE, so another site cannot forge one.
+ */
+export function sameOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+  try {
+    return new URL(origin).host === host;
+  } catch {
+    return false;
+  }
+}
 
 /** Returns an error response when the request may not use the admin API. */
-export async function adminGuard() {
+export async function adminGuard(request: Request) {
+  if (request.method !== "GET" && !sameOrigin(request)) return jsonError("طلب غير مسموح.", 403);
   if (!(await isAdmin())) return jsonError("انتهت جلسة الدخول. سجّل الدخول مجددًا.", 401);
   if (!hasSharedStorage()) return jsonError("التخزين المشترك غير متصل.", 503);
   return null;
@@ -66,6 +83,7 @@ export function cleanOrder(input: unknown) {
 }
 
 export async function readBody(request: Request, maxBytes: number) {
+  if (Number(request.headers.get("content-length") || 0) > maxBytes) throw new Error("too_large");
   const text = await request.text();
   if (text.length > maxBytes) throw new Error("too_large");
   return JSON.parse(text) as unknown;
