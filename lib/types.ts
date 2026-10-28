@@ -3,6 +3,8 @@ export type ID = string;
 export interface ColorOption {
   name: string;
   hex: string;
+  /** One of the product's photos showing this colour. */
+  image?: string;
 }
 
 export interface Category {

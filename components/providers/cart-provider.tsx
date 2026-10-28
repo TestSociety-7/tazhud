@@ -103,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           ...line,
           product,
           name: product.name,
-          image: product.images[0] ?? "",
+          image: product.colors.find((c) => c.name === line.color)?.image || product.images[0] || "",
           href: `/product/${product.slug}`,
           unitPrice,
           compareAt: unitPrice < product.price ? product.price : undefined,

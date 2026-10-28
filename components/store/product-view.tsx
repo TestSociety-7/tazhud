@@ -20,11 +20,20 @@ import { BackToListButton, useBackToList } from "./return-spot";
 import { Sheet } from "@/components/ui/sheet";
 import { piecesLabel } from "@/lib/arabic";
 
-function Gallery({ product }: { product: Product }) {
+function Gallery({ product, focus }: { product: Product; focus?: string }) {
   const images = product.images.length ? product.images : [""];
   const [active, setActive] = useState(0);
   const scroller = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
+
+  // Choosing a colour slides to that colour's photo; onScroll then updates the dots.
+  useEffect(() => {
+    const i = focus ? product.images.indexOf(focus) : -1;
+    const el = scroller.current;
+    if (i < 0 || !el) return;
+    const dir = getComputedStyle(el).direction === "rtl" ? -1 : 1;
+    el.scrollTo({ left: dir * el.clientWidth * i, behavior: "smooth" });
+  }, [focus, product.images]);
 
   function goTo(i: number) {
     setActive(i);
@@ -228,7 +237,7 @@ export function ProductView({ slug }: { slug: string }) {
       </div>
 
       <div className="container-x grid gap-10 pt-6 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-        <Gallery product={product} />
+        <Gallery product={product} focus={product.colors.find((c) => c.name === selectedColor)?.image} />
 
         <div className="lg:pt-4">
           {product.newArrival && <p className="eyebrow text-gold-deep">وصل حديثًا</p>}

@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Check, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { newId, slugify, uniqueSlug } from "@/lib/commerce";
 import type { ColorOption, Product } from "@/lib/types";
 import { dateFormat } from "@/lib/arabic";
 import { EmptyState } from "@/components/ui/empty-state";
+import { SmartImage } from "@/components/ui/smart-image";
 import { ImageListEditor } from "../image-input";
 import { ConfirmDialog, FormField, PageHeader, Panel, Toggle } from "../ui";
 import { useSave } from "../use-save";
@@ -108,49 +109,73 @@ function validate(d: Draft, others: Product[]): Errors {
 
 function ColorsEditor({
   colors,
+  images,
   onChange,
 }: {
   colors: ColorOption[];
+  images: string[];
   onChange: (c: ColorOption[]) => void;
 }) {
+  const patch = (i: number, change: Partial<ColorOption>) =>
+    onChange(colors.map((x, j) => (j === i ? { ...x, ...change } : x)));
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {colors.map((c, i) => (
-        <div key={i} className="flex items-center gap-2">
-          <input
-            type="color"
-            value={/^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex : "#cccccc"}
-            onChange={(e) =>
-              onChange(
-                colors.map((x, j) =>
-                  j === i ? { ...x, hex: e.target.value } : x,
-                ),
-              )
-            }
-            className="size-11 shrink-0 cursor-pointer rounded-xl border border-line bg-paper p-1"
-            aria-label={`درجة ${c.name || `اللون ${i + 1}`}`}
-          />
-          <input
-            className="field"
-            value={c.name}
-            placeholder="اسم اللون، مثال: زيتي"
-            onChange={(e) =>
-              onChange(
-                colors.map((x, j) =>
-                  j === i ? { ...x, name: e.target.value } : x,
-                ),
-              )
-            }
-            aria-label={`اسم اللون ${i + 1}`}
-          />
-          <button
-            type="button"
-            className="icon-btn shrink-0 text-muted hover:text-danger"
-            onClick={() => onChange(colors.filter((_, j) => j !== i))}
-            aria-label={`حذف اللون ${c.name || i + 1}`}
-          >
-            <Trash2 className="size-4" />
-          </button>
+        <div key={i} className="rounded-xl border border-line bg-paper/60 p-3">
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={/^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex : "#cccccc"}
+              onChange={(e) => patch(i, { hex: e.target.value })}
+              className="size-11 shrink-0 cursor-pointer rounded-xl border border-line bg-paper p-1"
+              aria-label={`درجة ${c.name || `اللون ${i + 1}`}`}
+            />
+            <input
+              className="field"
+              value={c.name}
+              placeholder="اسم اللون، مثال: زيتي"
+              onChange={(e) => patch(i, { name: e.target.value })}
+              aria-label={`اسم اللون ${i + 1}`}
+            />
+            <button
+              type="button"
+              className="icon-btn shrink-0 text-muted hover:text-danger"
+              onClick={() => onChange(colors.filter((_, j) => j !== i))}
+              aria-label={`حذف اللون ${c.name || i + 1}`}
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+          {images.length > 0 ? (
+            <div className="mt-3">
+              <p className="mb-2 text-xs text-muted">صورة هذا اللون (اختياري): اضغط على الصورة المناسبة</p>
+              <ul className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={`صورة ${c.name || `اللون ${i + 1}`}`}>
+                {images.map((src, k) => {
+                  const picked = c.image === src;
+                  return (
+                    <li key={src + k} className="shrink-0">
+                      <button
+                        type="button"
+                        aria-pressed={picked}
+                        aria-label={`الصورة ${k + 1}`}
+                        onClick={() => patch(i, { image: picked ? undefined : src })}
+                        className={`press relative block h-16 w-13 overflow-hidden rounded-lg ring-offset-2 ring-offset-paper transition ${picked ? "ring-2 ring-gold" : "opacity-60 hover:opacity-100"}`}
+                      >
+                        <SmartImage src={src} alt="" className="absolute inset-0" />
+                        {picked && (
+                          <span className="absolute inset-x-0 bottom-0 grid place-items-center bg-ink/70 py-0.5 text-white">
+                            <Check className="size-3.5" />
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : (
+            <p className="mt-2 text-xs text-muted">أضف صور المنتج أولًا، ثم اختر صورة لكل لون.</p>
+          )}
         </div>
       ))}
       <button
@@ -350,7 +375,12 @@ export function ProductEditor({ productId }: { productId?: string }) {
         .filter(Boolean),
       colors: rest.colors
         .filter((c) => c.name.trim())
-        .map((c) => ({ ...c, name: c.name.trim() })),
+        .map((c) => ({
+          name: c.name.trim(),
+          hex: c.hex,
+          // Keep the colour's photo only if it is still one of the product's photos.
+          ...(c.image && rest.images.includes(c.image) ? { image: c.image } : {}),
+        })),
       sku:
         rest.sku.trim() ||
         `TZ-${Date.now().toString(36).slice(-5).toUpperCase()}`,
@@ -571,6 +601,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
                 <p className="label">الألوان</p>
                 <ColorsEditor
                   colors={draft.colors}
+                  images={draft.images}
                   onChange={(c) => set("colors", c)}
                 />
               </div>
