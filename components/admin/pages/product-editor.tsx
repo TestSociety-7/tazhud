@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, Copy, ExternalLink, Plus, Trash2, X } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { newId, slugify, uniqueSlug } from "@/lib/commerce";
 import type { ColorOption, Product } from "@/lib/types";
@@ -349,7 +349,8 @@ export function ProductEditor({ productId }: { productId?: string }) {
     setErrors(errs);
     const first = Object.keys(errs)[0];
     if (first) {
-      document.getElementById(`f-${first}`)?.focus();
+      // After the re-render, so a field inside the closed "extra details" box is open first.
+      requestAnimationFrame(() => document.getElementById(`f-${first}`)?.focus());
       return;
     }
     setSaving(true);
@@ -418,8 +419,6 @@ export function ProductEditor({ productId }: { productId?: string }) {
     if (isNew) router.replace(`/admin/products/${product.id}`);
   }
 
-  const category = data.categories.find((c) => c.id === draft.categoryId);
-
   return (
     <form onSubmit={submit} noValidate>
       <Link
@@ -469,78 +468,25 @@ export function ProductEditor({ productId }: { productId?: string }) {
         }
       />
 
-      <div className="grid gap-6 lg:grid-cols-[1fr_20rem]">
-        <div className="space-y-6">
-          <Panel
-            title="الصور"
-            description="رتّب الصور بالأسهم. الصورة الأولى هي الغلاف."
-          >
-            <ImageListEditor
-              images={draft.images}
-              onChange={(imgs) => set("images", imgs)}
-            />
-          </Panel>
+      <div className="mx-auto max-w-3xl space-y-6">
+        <Panel title="الصور" description="اضغط لإضافة الصور. الصورة الأولى هي الغلاف، ورتّبها بالأسهم.">
+          <ImageListEditor images={draft.images} onChange={(imgs) => set("images", imgs)} />
+        </Panel>
 
-          <Panel title="المعلومات الأساسية">
-            <div className="space-y-5">
-              <FormField
-                label="اسم المنتج"
-                htmlFor="f-name"
-                error={errors.name}
-              >
-                <input
-                  id="f-name"
-                  className="field"
-                  placeholder="مثال: عباية نور المفتوحة"
-                  value={draft.name}
-                  onChange={(e) => set("name", e.target.value)}
-                  aria-invalid={!!errors.name}
-                />
-              </FormField>
-              <FormField
-                label="وصف قصير"
-                htmlFor="f-tagline"
-                hint="سطر قصير يظهر تحت الاسم."
-              >
-                <input
-                  id="f-tagline"
-                  className="field"
-                  value={draft.tagline}
-                  onChange={(e) => set("tagline", e.target.value)}
-                />
-              </FormField>
-              <FormField label="الوصف" htmlFor="f-description">
-                <textarea
-                  id="f-description"
-                  className="field"
-                  rows={5}
-                  value={draft.description}
-                  onChange={(e) => set("description", e.target.value)}
-                />
-              </FormField>
-              <FormField
-                label="التفاصيل والعناية"
-                htmlFor="f-details"
-                hint="نقطة في كل سطر: القماش، القياسات، القصّة، العناية."
-              >
-                <textarea
-                  id="f-details"
-                  className="field"
-                  rows={4}
-                  value={draft.details}
-                  onChange={(e) => set("details", e.target.value)}
-                />
-              </FormField>
-            </div>
-          </Panel>
-
-          <Panel title="السعر والمخزون">
+        <Panel title="الأساسيات">
+          <div className="space-y-5">
+            <FormField label="اسم المنتج" htmlFor="f-name" error={errors.name}>
+              <input
+                id="f-name"
+                className="field"
+                placeholder="مثال: عباية نور المفتوحة"
+                value={draft.name}
+                onChange={(e) => set("name", e.target.value)}
+                aria-invalid={!!errors.name}
+              />
+            </FormField>
             <div className="grid grid-cols-2 gap-4 sm:gap-5">
-              <FormField
-                label={`السعر (${data.settings.currency})`}
-                htmlFor="f-price"
-                error={errors.price}
-              >
+              <FormField label={`السعر (${data.settings.currency})`} htmlFor="f-price" error={errors.price}>
                 <input
                   id="f-price"
                   className="field"
@@ -550,27 +496,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   aria-invalid={!!errors.price}
                 />
               </FormField>
-              <FormField
-                label="سعر التخفيض"
-                htmlFor="f-salePrice"
-                error={errors.salePrice}
-                hint="اختياري."
-              >
-                <input
-                  id="f-salePrice"
-                  className="field"
-                  inputMode="decimal"
-                  value={draft.salePrice}
-                  onChange={(e) => set("salePrice", e.target.value)}
-                  aria-invalid={!!errors.salePrice}
-                />
-              </FormField>
-              <FormField
-                label="الكمية المتوفرة"
-                htmlFor="f-stock"
-                error={errors.stock}
-                hint={`يظهر «بقي القليل» عند ${data.settings.lowStockThreshold} أو أقل.`}
-              >
+              <FormField label="الكمية المتوفرة" htmlFor="f-stock" error={errors.stock}>
                 <input
                   id="f-stock"
                   className="field"
@@ -580,119 +506,109 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   aria-invalid={!!errors.stock}
                 />
               </FormField>
-              <FormField
-                label="رمز المنتج"
-                htmlFor="f-sku"
-                hint="اتركه فارغًا ليُنشأ تلقائيًا."
-              >
-                <input
-                  id="f-sku"
-                  className="field ltr"
-                  value={draft.sku}
-                  onChange={(e) => set("sku", e.target.value)}
-                />
-              </FormField>
             </div>
-          </Panel>
-
-          <Panel title="الألوان والمقاسات">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <p className="label">الألوان</p>
-                <ColorsEditor
-                  colors={draft.colors}
-                  images={draft.images}
-                  onChange={(c) => set("colors", c)}
-                />
-              </div>
-              <div>
-                <p className="label">المقاسات</p>
-                <SizesEditor
-                  sizes={draft.sizes}
-                  onChange={(s) => set("sizes", s)}
-                />
-              </div>
-            </div>
-          </Panel>
-        </div>
-
-        <div className="space-y-6">
-          <Panel title="النشر">
-            <div className="space-y-5">
-              <Toggle
-                checked={draft.published}
-                onChange={(v) => set("published", v)}
-                label="منشور"
-                description="ظاهر للزبائن"
-              />
-              <Toggle
-                checked={draft.newArrival}
-                onChange={(v) => set("newArrival", v)}
-                label="وصل حديثًا"
-                description="يظهر في قسم وصل حديثًا"
-              />
-            </div>
-          </Panel>
-
-          <Panel title="التنظيم">
-            <div className="space-y-5">
-              <FormField
-                label="القسم"
-                htmlFor="f-categoryId"
-                error={errors.categoryId}
-              >
-                <select
-                  id="f-categoryId"
-                  className="field"
-                  value={draft.categoryId}
-                  onChange={(e) => set("categoryId", e.target.value)}
-                  aria-invalid={!!errors.categoryId}
-                >
-                  <option value="">اختر…</option>
-                  {data.categories.map((c) => (
-                    <option key={c.id} value={c.id}>
+            <fieldset>
+              <legend className="label">القسم</legend>
+              <div className="flex flex-wrap gap-2" id="f-categoryId" tabIndex={-1}>
+                {[...data.categories]
+                  .sort((a, b) => a.sortOrder - b.sortOrder)
+                  .map((c) => (
+                    <label
+                      key={c.id}
+                      className={`press flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold ${
+                        draft.categoryId === c.id ? "border-forest bg-forest text-ivory" : "border-line bg-paper text-text hover:border-gold"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="category"
+                        className="sr-only"
+                        checked={draft.categoryId === c.id}
+                        onChange={() => set("categoryId", c.id)}
+                      />
+                      {draft.categoryId === c.id && <Check className="size-4" />}
                       {c.name}
-                    </option>
+                    </label>
                   ))}
-                </select>
-              </FormField>
-              <details className="group" open={!!errors.slug}>
-                <summary className="cursor-pointer text-sm font-medium text-muted">
-                  خيارات متقدمة
-                </summary>
-                <div className="mt-3">
-                  <FormField
-                    label="رابط المنتج (بالإنجليزية)"
-                    htmlFor="f-slug"
-                    error={errors.slug}
-                    hint={
-                      slugify(draft.slug)
-                        ? `/product/${slugify(draft.slug)}`
-                        : "اختياري، يُنشأ تلقائيًا. مثال: noor-abaya"
-                    }
-                  >
-                    <input
-                      id="f-slug"
-                      className="field ltr"
-                      placeholder="noor-abaya"
-                      value={draft.slug}
-                      onChange={(e) => {
-                        setSlugTouched(true);
-                        set("slug", e.target.value);
-                      }}
-                      aria-invalid={!!errors.slug}
-                    />
-                  </FormField>
-                </div>
-              </details>
-              {category && (
-                <p className="text-xs text-muted">
-                  يظهر ضمن قسم {category.name} في المتجر.
-                </p>
-              )}
+              </div>
+              {errors.categoryId && <p className="error-text">{errors.categoryId}</p>}
+            </fieldset>
+          </div>
+        </Panel>
+
+        <Panel title="الألوان والمقاسات" description="اختياري. اتركها فارغة إذا كان للمنتج لون أو مقاس واحد.">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div>
+              <p className="label">الألوان</p>
+              <ColorsEditor colors={draft.colors} images={draft.images} onChange={(c) => set("colors", c)} />
             </div>
-          </Panel>
-        </div>
+            <div>
+              <p className="label">المقاسات</p>
+              <SizesEditor sizes={draft.sizes} onChange={(s) => set("sizes", s)} />
+            </div>
+          </div>
+        </Panel>
+
+        <Panel title="الظهور في المتجر">
+          <div className="grid gap-5 sm:grid-cols-2">
+            <Toggle checked={draft.published} onChange={(v) => set("published", v)} label="منشور" description="ظاهر للزبائن" />
+            <Toggle checked={draft.newArrival} onChange={(v) => set("newArrival", v)} label="وصل حديثًا" description="يظهر في قسم وصل حديثًا" />
+          </div>
+        </Panel>
+
+        <details className="card group overflow-hidden" open={errors.salePrice || errors.slug ? true : undefined}>
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 font-semibold text-ink sm:px-6 [&::-webkit-details-marker]:hidden">
+            <span>
+              وصف وتفاصيل إضافية
+              <span className="ms-2 text-xs font-normal text-muted">اختياري</span>
+            </span>
+            <ChevronDown className="size-5 text-muted transition-transform duration-300 group-open:rotate-180" />
+          </summary>
+          <div className="space-y-5 border-t border-line px-5 py-5 sm:px-6">
+            <FormField label="وصف قصير" htmlFor="f-tagline" hint="سطر قصير يظهر تحت الاسم.">
+              <input id="f-tagline" className="field" value={draft.tagline} onChange={(e) => set("tagline", e.target.value)} />
+            </FormField>
+            <FormField label="الوصف" htmlFor="f-description">
+              <textarea id="f-description" className="field" rows={5} value={draft.description} onChange={(e) => set("description", e.target.value)} />
+            </FormField>
+            <FormField label="التفاصيل والعناية" htmlFor="f-details" hint="نقطة في كل سطر: القماش، القياسات، القصّة، العناية.">
+              <textarea id="f-details" className="field" rows={4} value={draft.details} onChange={(e) => set("details", e.target.value)} />
+            </FormField>
+            <div className="grid grid-cols-2 gap-4 sm:gap-5">
+              <FormField label="سعر التخفيض" htmlFor="f-salePrice" error={errors.salePrice} hint="اتركه فارغًا إن لم يوجد تخفيض.">
+                <input
+                  id="f-salePrice"
+                  className="field"
+                  inputMode="decimal"
+                  value={draft.salePrice}
+                  onChange={(e) => set("salePrice", e.target.value)}
+                  aria-invalid={!!errors.salePrice}
+                />
+              </FormField>
+              <FormField label="رمز المنتج" htmlFor="f-sku" hint="يُنشأ تلقائيًا.">
+                <input id="f-sku" className="field ltr" value={draft.sku} onChange={(e) => set("sku", e.target.value)} />
+              </FormField>
+            </div>
+            <FormField
+              label="رابط المنتج (بالإنجليزية)"
+              htmlFor="f-slug"
+              error={errors.slug}
+              hint={slugify(draft.slug) ? `/product/${slugify(draft.slug)}` : "اختياري، يُنشأ تلقائيًا. مثال: noor-abaya"}
+            >
+              <input
+                id="f-slug"
+                className="field ltr"
+                placeholder="noor-abaya"
+                value={draft.slug}
+                onChange={(e) => {
+                  setSlugTouched(true);
+                  set("slug", e.target.value);
+                }}
+                aria-invalid={!!errors.slug}
+              />
+            </FormField>
+          </div>
+        </details>
       </div>
 
       <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">

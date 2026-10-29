@@ -3,7 +3,7 @@
 import { useStore } from "@/components/providers/store-provider";
 import { visibleProducts } from "@/lib/commerce";
 import { Hero } from "./hero";
-import { AllProductsSection, CategoriesSection, ProductRail, PromoSection } from "./sections";
+import { AllProductsSection, CategoriesSection, HowToOrder, ProductRail, PromoSection, TrustBand } from "./sections";
 
 export function HomeView() {
   const { data } = useStore();
@@ -14,6 +14,7 @@ export function HomeView() {
   return (
     <>
       <Hero />
+      <TrustBand />
       {data.homepage.sections
         .filter((s) => s.enabled)
         .map((section) => {
@@ -29,6 +30,7 @@ export function HomeView() {
           }
         })}
       <AllProductsSection />
+      <HowToOrder />
     </>
   );
 }

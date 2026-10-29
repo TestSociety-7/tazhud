@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { cleanOrder, jsonError, readBody, sameOrigin } from "@/lib/server/guard";
 import { blockedFor, clientIp, hit } from "@/lib/server/rate-limit";
 import { hasSharedStorage, orderExists, readCatalogFresh, writeOrder } from "@/lib/server/storage";
 import { catalogToStoreData } from "@/lib/repository";
-import { deliveryFor, effectivePrice, evaluateCoupon, roundMoney } from "@/lib/commerce";
+import { deliveryFor, effectivePrice, evaluateCoupon, formatMoney, roundMoney } from "@/lib/commerce";
+import { notifyAdmins } from "@/lib/server/push";
 
 const MAX_ORDERS = 8;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -38,18 +39,29 @@ export async function POST(request: Request) {
   const discount = coupon?.ok ? coupon.discount : 0;
   const delivery = deliveryFor(subtotal - discount, store.settings, Boolean(coupon?.ok && coupon.freeDelivery));
 
+  const total = roundMoney(subtotal - discount + delivery);
   await writeOrder({
     ...order,
     lines,
     subtotal,
     discount,
     delivery,
-    total: roundMoney(subtotal - discount + delivery),
+    total,
     couponCode: coupon?.ok ? order.couponCode.toUpperCase() : "",
     currency: "ILS",
     status: "new",
     adminNote: "",
     createdAt: new Date().toISOString(),
   });
+  // Tell the admin's phone right away, after the customer already has the answer.
+  const pieces = lines.reduce((n, l) => n + l.quantity, 0);
+  after(() =>
+    notifyAdmins({
+      title: "طلب جديد 🛍️",
+      body: `${order.customer.name} · ${pieces} ${pieces === 1 ? "قطعة" : "قطع"} · ${formatMoney(total, store.settings)}`,
+      url: `/admin/orders?open=${encodeURIComponent(order.id)}`,
+      tag: order.id,
+    }),
+  );
   return NextResponse.json({ ok: true });
 }

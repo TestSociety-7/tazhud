@@ -26,10 +26,10 @@ export function sameOrigin(request: Request) {
 }
 
 /** Returns an error response when the request may not use the admin API. */
-export async function adminGuard(request: Request) {
+export async function adminGuard(request: Request, { needsStorage = true } = {}) {
   if (request.method !== "GET" && !sameOrigin(request)) return jsonError("طلب غير مسموح.", 403);
   if (!(await isAdmin())) return jsonError("انتهت جلسة الدخول. سجّل الدخول مجددًا.", 401);
-  if (!hasSharedStorage()) return jsonError("التخزين المشترك غير متصل.", 503);
+  if (needsStorage && !hasSharedStorage()) return jsonError("التخزين المشترك غير متصل.", 503);
   return null;
 }
 

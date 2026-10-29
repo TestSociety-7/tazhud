@@ -8,9 +8,11 @@ import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber } from "@/lib/whatsapp";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Badge, Panel } from "../ui";
-import { CountUp, LogoCoin, Tilt } from "@/components/ui/fx";
+import { CountUp, Tilt } from "@/components/ui/fx";
 import { STATUS_META } from "./orders";
 import { dateFormat, itemsLabel } from "@/lib/arabic";
+import { SeasonPicker } from "../season-picker";
+import { greeting, WelcomeMark } from "../welcome";
 
 const DAY = 24 * 60 * 60 * 1000;
 // Captured once per page load; only used after hydration (see `ready`).
@@ -47,12 +49,6 @@ function Stat({
   );
 }
 
-function greeting(hour: number) {
-  if (hour < 0) return "مرحبًا";
-  if (hour < 12) return "صباح الخير";
-  if (hour < 18) return "نهارك سعيد";
-  return "مساء الخير";
-}
 
 export function Dashboard() {
   const { data, ready } = useStore();
@@ -72,7 +68,7 @@ export function Dashboard() {
         <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
         <div className="pointer-events-none absolute -top-20 -end-16 size-56 rounded-full bg-gold/20 blur-3xl" aria-hidden />
         <div className="relative flex items-center gap-4 sm:gap-6">
-          <LogoCoin className="size-16 sm:size-20" />
+          <WelcomeMark size="size-14 sm:size-20" pad="p-2.5 sm:p-3" />
           <div className="min-w-0">
             <p className="text-sm text-gold">{greeting(ready ? new Date(CLIENT_NOW).getHours() : -1)}</p>
             <h1 className="font-display mt-0.5 text-3xl leading-tight sm:text-4xl">أهلًا بك في {data.settings.storeName}</h1>
@@ -96,6 +92,10 @@ export function Dashboard() {
         <Stat label="مبيعات آخر 30 يومًا" value={last30.reduce((s, o) => s + o.total, 0)} format={money} icon={<TrendingUp className="size-5" />} href="/admin/orders" />
         <Stat label="منتجات منشورة" value={published.length} icon={<Package className="size-5" />} href="/admin/products" />
         <Stat label="مخزون منخفض" value={low.length} icon={<AlertTriangle className="size-5" />} href="/admin/products?stock=low" />
+      </div>
+
+      <div className="mt-6">
+        <SeasonPicker />
       </div>
 
       <div className="stagger mt-6 grid gap-6 lg:grid-cols-2">

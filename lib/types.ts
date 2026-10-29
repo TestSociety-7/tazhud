@@ -101,8 +101,13 @@ export interface StoreSettings {
   lowStockThreshold: number;
   /** When off, the home promo banner and the coupon box in the cart are hidden. */
   couponsEnabled: boolean;
+  /** Seasonal look of the storefront. The admin always keeps the original look. */
+  season: Season;
   policies: Policy[];
 }
+
+export const SEASONS = ["original", "christmas", "halloween"] as const;
+export type Season = (typeof SEASONS)[number];
 
 export type HomeSectionKey =
   | "categories"

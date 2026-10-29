@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { AdminWelcome } from "./welcome";
+import { OrderWatcher } from "./order-alerts";
 import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import {
@@ -229,6 +231,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <BottomBar onMore={() => setOpen(true)} />
+      <AdminWelcome />
+      <OrderWatcher />
 
       <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="!bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory">
         <MoreSheet onNavigate={() => setOpen(false)} />

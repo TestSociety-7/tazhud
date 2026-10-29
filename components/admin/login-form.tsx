@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { markWelcomed, WelcomeMark } from "./welcome";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { ArrowRight, Eye, EyeOff, Lock } from "lucide-react";
@@ -38,6 +39,7 @@ export function LoginForm() {
       const next = params.get("next");
       const target = next && next.startsWith("/admin") ? next : "/admin";
       router.prefetch(target);
+      markWelcomed();
       setWelcome(true);
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.setTimeout(() => {
@@ -56,9 +58,7 @@ export function LoginForm() {
         <div className="pattern-geo absolute inset-0 opacity-[0.07]" aria-hidden />
         <div className="welcome-glow pointer-events-none absolute top-1/2 left-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/25 blur-3xl" aria-hidden />
         <div className="relative">
-          <div className="welcome-coin mx-auto w-fit">
-            <LogoCoin float={false} className="size-28" />
-          </div>
+          <WelcomeMark />
           <p className="welcome-text font-display mt-7 text-5xl">أهلًا بك</p>
           <p className="welcome-text mt-2 text-sm text-gold" style={{ animationDelay: "560ms" }}>جارٍ فتح لوحة التحكم…</p>
         </div>

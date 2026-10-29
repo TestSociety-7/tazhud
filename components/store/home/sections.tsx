@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { readListState, saveListState } from "@/lib/return-spot";
-import { ArrowLeft, Check, Copy } from "lucide-react";
+import { ArrowLeft, Check, Copy, MessageCircle, PackageCheck, ShoppingBag } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { Reveal } from "@/components/ui/reveal";
 import { SmartImage } from "@/components/ui/smart-image";
-import { Mandala } from "@/components/ui/mandala";
+import { Mandala, Star8 } from "@/components/ui/mandala";
 import { Tilt } from "@/components/ui/fx";
 import { formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
@@ -38,9 +38,9 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
   return (
     <section className="container-x pt-16 sm:pt-24">
       <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
-      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-7 lg:gap-5">
+      <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-7 lg:gap-5" style={{ "--cf-pad": "29vw" } as React.CSSProperties}>
         {cats.map((c, i) => (
-          <Reveal as="li" key={c.id} delay={i * 80} className="w-[42%] shrink-0 snap-start sm:w-auto">
+          <Reveal as="li" key={c.id} delay={i * 80} className="w-[42vw] shrink-0 snap-center sm:w-auto">
             <Link href={`/shop?category=${c.slug}`} className="press group block text-center">
               <Tilt max={8} className="rounded-t-full">
                 <div className="arch-full relative aspect-[3/4] overflow-hidden bg-sand ring-1 ring-line transition-shadow duration-500 group-hover:shadow-[var(--shadow-lift)] group-hover:ring-gold/60">
@@ -68,9 +68,9 @@ export function ProductRail({ section, products, href }: { section: HomeSection;
   return (
     <section className="container-x pt-16 sm:pt-24">
       <SectionHeading title={section.title} href={href} />
-      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
+      <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {products.slice(0, 8).map((p, i) => (
-          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className="w-[62%] shrink-0 snap-start sm:w-auto">
+          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className={`w-[62vw] shrink-0 snap-center sm:w-auto ${i >= 4 ? "lg:hidden" : ""}`}>
             <ProductCard product={p} />
           </Reveal>
         ))}
@@ -184,6 +184,74 @@ export function AllProductsSection() {
           </button>
         </div>
       )}
+    </section>
+  );
+}
+
+/** A slow ribbon of the store's promises under the hero. */
+export function TrustBand() {
+  const { data } = useStore();
+  const s = data.settings;
+  const items = [
+    "اطلبي عبر واتساب بخطوة واحدة",
+    s.freeDeliveryThreshold > 0 ? `توصيل مجاني للطلبات فوق ${formatMoney(s.freeDeliveryThreshold, s)}` : "توصيل إلى باب البيت",
+    "نؤكد طلبكِ معكِ قبل التوصيل",
+    "استبدال سهل للقطع غير المستخدمة",
+    "أقمشة مختارة بعناية",
+  ];
+  const row = (hidden: boolean) => (
+    <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
+      {items.map((t) => (
+        <li key={t} className="flex items-center gap-6 px-6 whitespace-nowrap">
+          <Star8 className="size-3 text-gold" />
+          {t}
+        </li>
+      ))}
+    </ul>
+  );
+  return (
+    <section aria-label="لماذا تزهّد" className="on-dark relative overflow-hidden border-y border-gold/25 bg-ink-2 py-3.5 text-sm text-gold-soft">
+      <div className="marquee flex w-max">
+        {row(false)}
+        {row(true)}
+      </div>
+    </section>
+  );
+}
+
+const STEPS = [
+  { icon: ShoppingBag, title: "اختاري قطعتكِ", body: "اختاري اللون والمقاس وأضيفيها إلى السلة." },
+  { icon: MessageCircle, title: "أرسلي الطلب عبر واتساب", body: "نجهّز لكِ رسالة الطلب كاملة، فقط اضغطي إرسال." },
+  { icon: PackageCheck, title: "نؤكد ونوصل", body: "نؤكد التوفر وموعد التوصيل معكِ، ثم تصلكِ القطعة." },
+];
+
+/** Three simple steps, because ordering over WhatsApp is new to some customers. */
+export function HowToOrder() {
+  return (
+    <section className="container-x pt-16 sm:pt-24">
+      <Reveal className="on-dark relative overflow-hidden rounded-[2rem] bg-ink px-5 py-10 text-ivory sm:px-12 sm:py-14">
+        <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
+        <Mandala className="pointer-events-none absolute -top-32 -start-32 size-80 text-gold/15 motion-safe:animate-spin-slow" />
+        <div className="relative">
+          <p className="text-sm font-semibold text-gold">بدون تعقيد</p>
+          <h2 className="font-display mt-1 text-3xl leading-tight sm:text-[2.6rem]">كيف تطلبين؟</h2>
+          <ol className="relative mt-10 grid gap-8 sm:grid-cols-3 sm:gap-6">
+            <span className="reveal-line absolute inset-x-[16%] top-8 hidden h-px bg-gradient-to-l from-gold/0 via-gold/70 to-gold/0 sm:block" aria-hidden />
+            {STEPS.map(({ icon: Icon, title, body }, i) => (
+              <li key={title} className="relative flex gap-4 sm:flex-col sm:items-center sm:text-center">
+                <span className="relative grid size-16 shrink-0 place-items-center rounded-t-full rounded-b-2xl bg-gradient-to-b from-gold-bright to-gold-deep text-ink shadow-[0_18px_30px_-16px_rgb(212_178_106/0.8)]">
+                  <Icon className="size-6" />
+                  <span className="absolute -top-2 -end-2 grid size-6 place-items-center rounded-full bg-ivory text-xs font-bold text-ink">{i + 1}</span>
+                </span>
+                <div>
+                  <h3 className="font-display text-xl text-ivory">{title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-ivory/65">{body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </Reveal>
     </section>
   );
 }

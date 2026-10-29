@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { catalogToStoreData, createRepository, type Catalog } from "@/lib/repository";
-import type { StoreData } from "@/lib/types";
+import type { OrderInquiry, StoreData } from "@/lib/types";
 
 type Mutator = (draft: StoreData) => StoreData;
 
@@ -19,6 +19,8 @@ interface StoreContextValue {
   isLocalOnly: boolean;
   update: (mutate: Mutator) => Promise<SaveResult>;
   resetToDemo: () => Promise<SaveResult>;
+  /** Adds orders that arrived on the server, without saving anything back. */
+  receiveOrders: (orders: OrderInquiry[]) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -94,9 +96,19 @@ export function StoreProvider({ children, shared, scope, initialCatalog = null }
     }
   }, [repo]);
 
+  const receiveOrders = useCallback((orders: OrderInquiry[]) => {
+    const current = dataRef.current;
+    const known = new Set(current.orders.map((o) => o.id));
+    const fresh = orders.filter((o) => !known.has(o.id));
+    if (!fresh.length) return;
+    const next = { ...current, orders: [...fresh, ...current.orders].sort((a, b) => b.createdAt.localeCompare(a.createdAt)) };
+    dataRef.current = next;
+    setData(next);
+  }, []);
+
   const value = useMemo(
-    () => ({ data, ready, update, resetToDemo, storageLabel: repo.label, isLocalOnly: repo.isLocalOnly }),
-    [data, ready, update, resetToDemo, repo],
+    () => ({ data, ready, update, resetToDemo, receiveOrders, storageLabel: repo.label, isLocalOnly: repo.isLocalOnly }),
+    [data, ready, update, resetToDemo, receiveOrders, repo],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

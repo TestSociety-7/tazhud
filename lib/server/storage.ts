@@ -23,9 +23,13 @@ export function hasSharedStorage() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
+/** Server-only seed for names and keys that must stay stable and unguessable. */
+export function serverSeed() {
+  return process.env.ADMIN_SESSION_SECRET || process.env.BLOB_READ_WRITE_TOKEN || "tazhud";
+}
+
 function privateFolder() {
-  const seed = process.env.ADMIN_SESSION_SECRET || process.env.BLOB_READ_WRITE_TOKEN || "tazhud";
-  return `private-${createHash("sha256").update(`tazhud-private:${seed}`).digest("hex").slice(0, 32)}`;
+  return `private-${createHash("sha256").update(`tazhud-private:${serverSeed()}`).digest("hex").slice(0, 32)}`;
 }
 
 async function readJson<T>(pathname: string): Promise<T | null> {
@@ -96,6 +100,25 @@ export async function orderExists(id: string) {
 }
 
 export const writeOrder = (order: OrderInquiry) => writeJson(orderPath(order.id), order);
+export const readOrder = (id: string) => readJson<OrderInquiry>(orderPath(id));
+
+/** Ids of every saved order, from the folder listing only (cheap enough to poll). */
+export async function listOrderIds(): Promise<string[]> {
+  const ids: string[] = [];
+  let cursor: string | undefined;
+  do {
+    const page = await list({ prefix: `${privateFolder()}/orders/`, cursor, limit: 1000 });
+    for (const b of page.blobs) ids.push(b.pathname.slice(b.pathname.lastIndexOf("/") + 1).replace(/\.json$/, ""));
+    cursor = page.hasMore ? page.cursor : undefined;
+  } while (cursor);
+  return ids;
+}
+
+/* Admin devices that asked for new-order notifications. */
+const pushPath = (endpoint: string) => `${privateFolder()}/push/${createHash("sha256").update(endpoint).digest("hex").slice(0, 32)}.json`;
+export const writePushSubscription = (sub: { endpoint: string; keys: { p256dh: string; auth: string } }) => writeJson(pushPath(sub.endpoint), sub);
+export const deletePushSubscription = async (endpoint: string) => del(pushPath(endpoint));
+export const readPushSubscriptions = <T>() => readFolder<T>("push", 50);
 export const deleteOrder = async (id: string) => del(orderPath(id));
 export const writeSubscriber = (sub: Subscriber) => writeJson(subscriberPath(sub.email), sub);
 

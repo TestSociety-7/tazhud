@@ -1,0 +1,141 @@
+"use client";
+
+import { useStore } from "@/components/providers/store-provider";
+import type { Season } from "@/lib/types";
+
+/**
+ * Seasonal look for the storefront. The admin picks Original, Christmas or Halloween;
+ * colours come from CSS variables under [data-season] and the decorations below are
+ * purely visual (aria-hidden, no pointer events, off with reduced motion).
+ */
+
+// Fixed pseudo-random numbers so the server and the browser draw the same flakes.
+function series(count: number, seed: number) {
+  let s = seed;
+  const next = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: count }, () => [next(), next(), next(), next(), next()]);
+}
+const FLAKES = series(34, 7);
+const BATS = series(5, 31);
+
+export function useSeason(): Season {
+  return useStore().data.settings.season ?? "original";
+}
+
+/** Wraps the storefront so every colour follows the chosen season. */
+export function SeasonRoot({ children }: { children: React.ReactNode }) {
+  const season = useSeason();
+  return (
+    <div data-season={season} className="contents">
+      {children}
+      {season === "christmas" && <Snow />}
+      {season === "halloween" && <Bats />}
+    </div>
+  );
+}
+
+function Snow() {
+  return (
+    <div className="season-snow" aria-hidden>
+      {FLAKES.map(([x, size, dur, delay, drift], i) => (
+        <i
+          key={i}
+          className={i % 5 === 0 ? "flake-star" : undefined}
+          style={
+            {
+              "--x": `${(x * 100).toFixed(2)}%`,
+              "--s": `${(i % 5 === 0 ? 12 + size * 8 : 4 + size * 5).toFixed(1)}px`,
+              "--d": `${(10 + dur * 12).toFixed(1)}s`,
+              "--delay": `${(-delay * 22).toFixed(1)}s`,
+              "--drift": `${((drift - 0.5) * 120).toFixed(0)}px`,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+const BAT_PATH =
+  "M0 6C3 2 6 2 8 5c1-2 2-3 3-2l1-2 1 2c1-1 2 0 3 2 2-3 5-3 8 1-3-1-5 0-6 3-2-2-4-1-6 1-2-2-4-3-6-1-1-3-3-4-6-3Z";
+
+function Bats() {
+  return (
+    <div className="season-bats" aria-hidden>
+      {BATS.map(([y, size, dur, delay], i) => (
+        <span
+          key={i}
+          style={
+            {
+              "--y": `${(8 + y * 55).toFixed(1)}vh`,
+              "--s": `${(26 + size * 26).toFixed(0)}px`,
+              "--d": `${(14 + dur * 12).toFixed(1)}s`,
+              "--delay": `${(-delay * 26).toFixed(1)}s`,
+            } as React.CSSProperties
+          }
+        >
+          <svg viewBox="0 0 24 11">
+            <path d={BAT_PATH} />
+          </svg>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/** A string of lights along the bottom of the header (and a little spider at Halloween). */
+export function SeasonTrim() {
+  const season = useSeason();
+  if (season === "original") return null;
+  return (
+    <div className="season-lights" aria-hidden>
+      {Array.from({ length: 28 }, (_, i) => (
+        <i key={i} />
+      ))}
+      {season === "halloween" && (
+        <span className="season-spider">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="10" r="4" />
+            <circle cx="12" cy="16" r="5" />
+            <path d="M8 13 2 9M8 15 1 15M8 17 2 21M16 13l6-4M16 15h7M16 17l6 4" strokeWidth="1.6" fill="none" stroke="currentColor" />
+          </svg>
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Decoration hung inside the dark hero: baubles at Christmas, pumpkins and a web at Halloween. */
+export function SeasonHeroDecor() {
+  const season = useSeason();
+  if (season === "christmas")
+    return (
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-0" aria-hidden>
+        {[
+          ["8%", "47%", "5.5rem", "#b3262d", "0s"],
+          ["20%", "53%", "8rem", "#d4b26a", "-1.4s"],
+          ["32%", "59%", "4rem", "#2c6a4a", "-0.7s"],
+        ].map(([end, endLg, len, color, delay]) => (
+          <span key={end} className="bauble" style={{ "--e": end, "--e-lg": endLg, "--len": len, "--c": color, animationDelay: delay } as React.CSSProperties} />
+        ))}
+      </div>
+    );
+  if (season === "halloween")
+    return (
+      <>
+        <svg className="pointer-events-none absolute top-0 start-0 z-0 size-40 text-ivory/25 sm:size-56" viewBox="0 0 100 100" aria-hidden>
+          <g fill="none" stroke="currentColor" strokeWidth="0.7">
+            <path d="M0 0 100 0M0 0 0 100M0 0 92 38M0 0 70 70M0 0 38 92" />
+            {[18, 34, 52, 72].map((r) => (
+              <path key={r} d={`M${r} 0 Q${r * 0.8} ${r * 0.22} ${r * 0.92} ${r * 0.38} Q${r * 0.62} ${r * 0.5} ${r * 0.7} ${r * 0.7} Q${r * 0.5} ${r * 0.62} ${r * 0.38} ${r * 0.92} Q${r * 0.22} ${r * 0.8} 0 ${r}`} />
+            ))}
+          </g>
+        </svg>
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 z-20 h-0" aria-hidden>
+          <span className="pumpkin" style={{ insetInlineEnd: "6%" }} />
+          <span className="pumpkin pumpkin-sm" style={{ insetInlineEnd: "16%", animationDelay: "-2s" }} />
+        </div>
+      </>
+    );
+  return null;
+}

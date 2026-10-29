@@ -1,5 +1,5 @@
 import { createSeedData } from "./seed";
-import type { Category, OrderInquiry, Product, StoreData, Subscriber } from "./types";
+import { SEASONS, type Category, type OrderInquiry, type Product, type StoreData, type Subscriber } from "./types";
 
 /**
  * The storage boundary for everything the admin can edit.
@@ -70,6 +70,7 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       ...input.settings,
       currency: "ILS",
       locale: "ar-u-nu-latn",
+      season: SEASONS.includes(input.settings?.season as never) ? input.settings!.season : "original",
       // Policies are no longer edited in the admin; never show an empty policies page.
       policies: input.settings?.policies?.length ? input.settings.policies : seed.settings.policies,
     },

@@ -1,6 +1,15 @@
 import { NextResponse } from "next/server";
 import { adminGuard, cleanOrder, jsonError, ORDER_ID_RE, readBody } from "@/lib/server/guard";
-import { deleteOrder, writeOrder } from "@/lib/server/storage";
+import { deleteOrder, readOrder, writeOrder } from "@/lib/server/storage";
+
+export async function GET(request: Request, ctx: { params: Promise<{ id: string }> }) {
+  const denied = await adminGuard(request);
+  if (denied) return denied;
+  const { id } = await ctx.params;
+  if (!ORDER_ID_RE.test(id)) return jsonError("طلب غير صالح.", 400);
+  const order = await readOrder(id).catch(() => null);
+  return order ? NextResponse.json(order, { headers: { "Cache-Control": "no-store" } }) : jsonError("غير موجود.", 404);
+}
 
 export async function PUT(request: Request, ctx: { params: Promise<{ id: string }> }) {
   const denied = await adminGuard(request);

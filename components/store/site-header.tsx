@@ -23,6 +23,7 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { Sheet } from "@/components/ui/sheet";
 import { SearchPanel } from "./search-panel";
 import { whatsappLink } from "@/lib/whatsapp";
+import { SeasonTrim } from "./season";
 
 export function SiteHeader() {
   const { data } = useStore();
@@ -162,6 +163,8 @@ export function SiteHeader() {
             </button>
           </div>
         </div>
+        <span className="scroll-progress" aria-hidden />
+        <SeasonTrim />
       </header>
 
       <Sheet

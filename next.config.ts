@@ -17,6 +17,7 @@ const csp = [
   "connect-src 'self' https://vercel.com https://*.vercel-storage.com https://vercel.live wss://ws-us3.pusher.com",
   "frame-src https://vercel.live",
   "manifest-src 'self'",
+  "worker-src 'self'",
   "media-src 'self' blob: https:",
   "object-src 'none'",
   "base-uri 'self'",
@@ -44,6 +45,8 @@ const nextConfig: NextConfig = {
       { source: "/:path*", headers: securityHeaders },
       // Admin screens and API answers are never stored by browsers or shared caches.
       { source: "/admin/:path*", headers: [{ key: "Cache-Control", value: "no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow" }] },
+      // The notification worker must update as soon as a new version ships.
+      { source: "/sw.js", headers: [{ key: "Cache-Control", value: "no-cache" }, { key: "Content-Type", value: "application/javascript; charset=utf-8" }] },
       { source: "/api/admin/:path*", headers: [{ key: "Cache-Control", value: "no-store" }, { key: "X-Robots-Tag", value: "noindex, nofollow" }] },
     ];
   },

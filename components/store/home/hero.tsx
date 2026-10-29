@@ -8,6 +8,7 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { Mandala, Star8 } from "@/components/ui/mandala";
 import { LogoCoin, Tilt } from "@/components/ui/fx";
 import { effectivePrice, formatMoney, visibleProducts } from "@/lib/commerce";
+import { SeasonHeroDecor } from "../season";
 
 export function Hero() {
   const { data } = useStore();
@@ -57,6 +58,7 @@ export function Hero() {
         className="pointer-events-none absolute -top-40 -start-40 -z-10 size-[34rem] rounded-full bg-gold/10 blur-3xl"
         aria-hidden
       />
+      <SeasonHeroDecor />
 
       <div className="container-x grid items-center gap-12 pt-10 pb-20 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-20 lg:pb-24">
         <div className="relative z-10 max-w-xl">

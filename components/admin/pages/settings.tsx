@@ -9,6 +9,7 @@ import type { StoreSettings } from "@/lib/types";
 import { FormField, PageHeader, Panel, Toggle } from "../ui";
 import { useSave } from "../use-save";
 import { SaveBar, useDraft } from "../use-draft";
+import { NotificationsPanel } from "../order-alerts";
 
 type Errors = Partial<Record<"storeName" | "whatsappNumber" | "instagramUrl" | "deliveryFee" | "freeDeliveryThreshold", string>>;
 
@@ -57,7 +58,8 @@ export function SettingsPage() {
       instagramUrl,
       instagramHandle: handle ? `@${handle}` : s.instagramHandle,
     };
-    if (await save((d) => ({ ...d, settings: clean }), "تم حفظ الإعدادات")) markSaved(clean);
+    // The season is switched from the dashboard, so keep whatever is saved now.
+    if (await save((d) => ({ ...d, settings: { ...clean, season: d.settings.season } }), "تم حفظ الإعدادات")) markSaved(clean);
     setSaving(false);
   }
 
@@ -65,9 +67,10 @@ export function SettingsPage() {
 
   return (
     <form onSubmit={submit} noValidate>
-      <PageHeader title="الإعدادات" description="رقم واتساب، إنستغرام والتوصيل." />
+      <PageHeader title="الإعدادات" description="الإشعارات، رقم واتساب، إنستغرام والتوصيل." />
 
       <div className="stagger space-y-6">
+        <NotificationsPanel />
         <Panel title="المتجر والتواصل">
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="اسم المتجر" htmlFor="s-storeName" error={errors.storeName}>
