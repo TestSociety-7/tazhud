@@ -599,6 +599,26 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   .season-bats span:nth-child(n + 4) { display: none; }
 }
 
+/* The header logo wears a hat for the season. */
+.logo-mark::after {
+  content: "";
+  position: absolute;
+  top: -46%;
+  inset-inline-end: -22%;
+  width: 78%;
+  aspect-ratio: 40 / 34;
+  background: no-repeat center / contain;
+  pointer-events: none;
+  rotate: -18deg;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.25));
+}
+[data-season="christmas"] .logo-mark::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 34'%3E%3Cpath d='M6 26C8 12 18 3 30 4c4 0 7 4 6 9l-4-3c-1 6 0 11 2 16Z' fill='%23c0303a'/%3E%3Crect x='3' y='24' width='33' height='8' rx='4' fill='%23fff'/%3E%3Ccircle cx='34' cy='12' r='4.5' fill='%23fff'/%3E%3C/svg%3E");
+}
+[data-season="halloween"] .logo-mark::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 34'%3E%3Cpath d='M11 26 21 2c1 7 5 12 11 14-5 1-8 5-8 10Z' fill='%23241a30'/%3E%3Cellipse cx='20' cy='27' rx='19' ry='5' fill='%23241a30'/%3E%3Crect x='13' y='21' width='15' height='4' rx='1' fill='%23f08a24'/%3E%3C/svg%3E");
+}
+
 /* Lights hanging under the header. */
 .season-lights {
   position: absolute;
