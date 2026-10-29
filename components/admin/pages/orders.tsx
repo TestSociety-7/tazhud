@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney } from "@/lib/commerce";
 import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
+import { orderPicturesUrl } from "@/lib/order-pictures";
 import { dateFormat, ordersLabel, piecesLabel } from "@/lib/arabic";
 import type { OrderInquiry, OrderStatus } from "@/lib/types";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
@@ -133,7 +134,7 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
               className="btn btn-outline w-full border-line"
               onClick={async () => {
                 try {
-                  await navigator.clipboard.writeText(buildOrderMessage(order, data.settings));
+                  await navigator.clipboard.writeText(buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products)));
                   toast.success("تم نسخ ملخص الطلب");
                 } catch {
                   toast.error("النسخ غير متاح في هذا المتصفح");

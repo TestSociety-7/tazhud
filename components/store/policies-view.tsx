@@ -3,7 +3,6 @@
 import { useStore } from "@/components/providers/store-provider";
 import Link from "next/link";
 import { Undo2 } from "lucide-react";
-import { whatsappLink } from "@/lib/whatsapp";
 
 export function PoliciesView() {
   const { data } = useStore();
@@ -30,14 +29,6 @@ export function PoliciesView() {
             )}
           </section>
         ))}
-        <section className="card p-6">
-          <h2 className="font-display text-2xl text-ink">لديكِ سؤال آخر؟</h2>
-          <p className="mt-2 text-sm text-muted">
-            راسلينا على{" "}
-            <a className="font-semibold text-forest underline underline-offset-4" href={whatsappLink(s.whatsappNumber)} target="_blank" rel="noopener noreferrer">واتساب</a>
-            {s.email && (<>{" "}أو عبر البريد <a className="font-semibold text-forest underline underline-offset-4" href={`mailto:${s.email}`}>{s.email}</a></>)}. {s.hours}.
-          </p>
-        </section>
       </div>
     </div>
   );

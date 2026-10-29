@@ -9,6 +9,7 @@ import { useStore } from "@/components/providers/store-provider";
 import { buildOrderMessage, isValidWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import { newId, newOrderNumber } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
+import { orderPicturesUrl } from "@/lib/order-pictures";
 import type { OrderInquiry } from "@/lib/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SmartImage } from "@/components/ui/smart-image";
@@ -122,7 +123,7 @@ export function CheckoutView() {
       currency: data.settings.currency,
       adminNote: "",
     };
-    const link = whatsappLink(data.settings.whatsappNumber, buildOrderMessage(order, data.settings));
+    const link = whatsappLink(data.settings.whatsappNumber, buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products)));
 
     // Open WhatsApp synchronously inside the click so popup blockers allow it.
     const win = window.open(link, "_blank");
