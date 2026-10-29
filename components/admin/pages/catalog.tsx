@@ -220,7 +220,7 @@ export function CouponsPage() {
               }}
             >
               <option value="">لا شيء</option>
-              {data.coupons.filter((c) => c.active).map((c) => (
+              {data.coupons.filter((c) => c.active && !(c.expiresOn && new Date(`${c.expiresOn}T23:59:59`) < new Date())).map((c) => (
                 <option key={c.id} value={c.code}>{c.code} · {c.description || describe(c)}</option>
               ))}
             </select>
@@ -300,7 +300,16 @@ export function CouponsPage() {
         onConfirm={() => {
           const t = toDelete;
           setToDelete(null);
-          if (t) save((d) => ({ ...d, coupons: d.coupons.filter((c) => c.id !== t.id) }), `تم حذف ${t.code}`);
+          if (t)
+            save(
+              (d) => ({
+                ...d,
+                coupons: d.coupons.filter((c) => c.id !== t.id),
+                // A deleted code also leaves the home page.
+                homepage: d.homepage.promo.couponCode === t.code ? { ...d.homepage, promo: { ...d.homepage.promo, couponCode: "" } } : d.homepage,
+              }),
+              `تم حذف ${t.code}`,
+            );
         }}
       />
     </>

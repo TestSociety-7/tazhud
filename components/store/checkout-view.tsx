@@ -8,7 +8,7 @@ import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { buildOrderMessage, isValidWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import { newId, newOrderNumber } from "@/lib/commerce";
-import { piecesLabel } from "@/lib/arabic";
+import { daysLabel, piecesLabel } from "@/lib/arabic";
 import { orderPicturesUrl } from "@/lib/order-pictures";
 import { saveMyOrder } from "@/lib/my-orders";
 import type { OrderInquiry } from "@/lib/types";
@@ -212,7 +212,7 @@ export function CheckoutView() {
             ))}
           </span>
           <span className="flex-1 text-sm text-text">
-            {piecesLabel(cart.lines.reduce((n, l) => n + l.quantity, 0))} في طلبكِ
+            {piecesLabel(cart.lines.reduce((n, l) => n + l.quantity * (l.bundle ? l.bundle.items.reduce((k, it) => k + it.quantity, 0) : 1), 0))} في طلبكِ
           </span>
           <strong className="tabular-nums text-ink">{money(cart.total)}</strong>
           <ChevronDown className="size-4 text-muted transition-transform group-open:rotate-180" aria-hidden />
@@ -278,7 +278,7 @@ export function CheckoutView() {
           <ul className="grid grid-cols-3 gap-2 text-center text-[0.7rem] leading-snug text-muted">
             <li className="flex flex-col items-center gap-1"><Wallet className="size-4 text-forest" />لا دفع الآن</li>
             <li className="flex flex-col items-center gap-1"><ShieldCheck className="size-4 text-forest" />نؤكد معكِ قبل التوصيل</li>
-            <li className="flex flex-col items-center gap-1"><RefreshCw className="size-4 text-forest" />إرجاع أو استبدال خلال {data.settings.returnDays} أيام</li>
+            <li className="flex flex-col items-center gap-1"><RefreshCw className="size-4 text-forest" />إرجاع أو استبدال خلال {daysLabel(data.settings.returnDays)}</li>
           </ul>
         </form>
 

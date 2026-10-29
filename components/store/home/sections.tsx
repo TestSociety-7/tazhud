@@ -88,16 +88,18 @@ export function PromoSection() {
   const promo = data.homepage.promo;
   const coupon = data.coupons.find((c) => c.code === promo.couponCode && c.active && !(c.expiresOn && c.expiresOn < new Date().toISOString().slice(0, 10)));
   const [copied, setCopied] = useState(false);
-  const title = promo.title || coupon?.description;
-  if (!data.settings.couponsEnabled || !title) return null;
+  // The ticket only shows while its code still works.
+  if (!data.settings.couponsEnabled || !coupon) return null;
+  const title = promo.title || coupon.description;
   const money = (n: number) => formatMoney(n, data.settings);
-  const big = !coupon ? "" : coupon.type === "percent" ? `${coupon.value}%` : coupon.type === "fixed" ? money(coupon.value) : "";
-  const small = !coupon ? "" : coupon.type === "free_delivery" ? "توصيل مجاني" : "خصم";
+  const big = coupon.type === "percent" ? `${coupon.value}%` : coupon.type === "fixed" ? money(coupon.value) : "";
+  const small = coupon.type === "free_delivery" ? "توصيل مجاني" : "خصم";
+
+  const code = coupon.code;
 
   async function copy() {
-    if (!coupon) return;
     try {
-      await navigator.clipboard.writeText(coupon.code);
+      await navigator.clipboard.writeText(code);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -114,30 +116,28 @@ export function PromoSection() {
           <p className="eyebrow text-gold-bright">{promo.eyebrow || "عرض خاص"}</p>
           <h2 className="font-display mt-2 text-3xl leading-tight text-balance sm:text-[2.6rem]">{title}</h2>
           {promo.body && <p className="mt-3 max-w-md text-sm text-ivory/70 sm:text-base">{promo.body}</p>}
-          {coupon?.minSubtotal ? <p className="mt-3 text-xs text-ivory/60">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
+          {coupon.minSubtotal ? <p className="mt-3 text-xs text-ivory/60">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
         </div>
-        {coupon && (
-          <div className="ticket-stub relative flex shrink-0 flex-col items-center justify-center gap-3 px-7 py-8 text-center sm:w-64 sm:py-10">
-            {big ? (
-              <p className="font-display text-6xl leading-none text-gold-bright tabular-nums sm:text-7xl" dir="ltr">
-                {big}
-                <span className="block pt-1 text-base text-ivory/70" dir="rtl">{small}</span>
-              </p>
-            ) : (
-              <p className="font-display text-3xl text-gold-bright">{small}</p>
-            )}
-            <button
-              type="button"
-              onClick={copy}
-              className="press sheen ltr inline-flex min-h-12 items-center gap-3 rounded-full bg-gold-bright px-6 font-mono text-base font-bold tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft"
-              aria-label={`نسخ الكود ${coupon.code}`}
-            >
-              {coupon.code}
-              {copied ? <Check className="size-4" /> : <Copy className="size-4 opacity-70" />}
-            </button>
-            <p className="h-4 text-xs text-ivory/60" role="status">{copied ? "تم نسخ الكود ✓" : "اضغطي لنسخ الكود"}</p>
-          </div>
-        )}
+        <div className="ticket-stub relative flex shrink-0 flex-col items-center justify-center gap-3 px-7 py-8 text-center sm:w-64 sm:py-10">
+          {big ? (
+            <p className="font-display text-6xl leading-none text-gold-bright tabular-nums sm:text-7xl" dir="ltr">
+              {big}
+              <span className="block pt-1 text-base text-ivory/70" dir="rtl">{small}</span>
+            </p>
+          ) : (
+            <p className="font-display text-3xl text-gold-bright">{small}</p>
+          )}
+          <button
+            type="button"
+            onClick={copy}
+            className="press sheen ltr inline-flex min-h-12 items-center gap-3 rounded-full bg-gold-bright px-6 font-mono text-base font-bold tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft"
+            aria-label={`نسخ الكود ${coupon.code}`}
+          >
+            {coupon.code}
+            {copied ? <Check className="size-4" /> : <Copy className="size-4 opacity-70" />}
+          </button>
+          <p className="h-4 text-xs text-ivory/60" role="status">{copied ? "تم نسخ الكود ✓" : "اضغطي لنسخ الكود"}</p>
+        </div>
       </Reveal>
     </section>
   );

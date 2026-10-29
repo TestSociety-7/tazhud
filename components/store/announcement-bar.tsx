@@ -4,10 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useStore } from "@/components/providers/store-provider";
 
+const FREE_RE = /(توصيل مجاني للطلبات فوق\s*₪?\s*)[\d,.]+/;
+
 export function AnnouncementBar() {
   const { data } = useStore();
   const { enabled, messages, link } = data.homepage.announcement;
-  const items = messages.filter((m) => m.trim());
+  const free = data.settings.freeDeliveryThreshold;
+  // The free-delivery line always shows the amount set in Settings.
+  const items = messages
+    .filter((m) => m.trim())
+    .filter((m) => free > 0 || !FREE_RE.test(m))
+    .map((m) => m.replace(FREE_RE, `$1${free}`));
   const [index, setIndex] = useState(0);
 
   useEffect(() => {

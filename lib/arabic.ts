@@ -18,6 +18,9 @@ export const itemsLabel = (n: number) =>
 export const ordersLabel = (n: number) =>
   plural(n, { zero: "لا توجد طلبات", one: "طلب واحد", two: "طلبان", few: "# طلبات", many: "# طلبًا", other: "# طلب" });
 
+export const daysLabel = (n: number) =>
+  plural(n, { zero: "0 أيام", one: "يوم واحد", two: "يومين", few: "# أيام", many: "# يومًا", other: "# يوم" });
+
 export const dateFormat = (iso: string, opts: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" }) => {
   try {
     return new Intl.DateTimeFormat("ar-u-nu-latn", opts).format(new Date(iso));

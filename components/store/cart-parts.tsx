@@ -49,7 +49,9 @@ export function CartLineItem({ line, compact = false, onNavigate }: { line: Reso
         {(!line.available || overStock) && (
           <p className="mt-2 flex items-center gap-1.5 text-xs font-medium text-danger" role="alert">
             <AlertCircle className="size-3.5" />
-            {line.maxQuantity === 0 ? "هذه القطعة غير متوفرة حاليًا." : `المتوفر ${line.maxQuantity} فقط. يرجى تقليل الكمية.`}
+            {!line.available && line.maxQuantity >= line.quantity
+              ? line.kind === "bundle" ? "هذه المجموعة غير متوفرة حاليًا. احذفيها من السلة." : "هذه القطعة غير متوفرة حاليًا. احذفيها من السلة."
+              : line.maxQuantity === 0 ? "هذه القطعة غير متوفرة حاليًا." : `المتوفر ${line.maxQuantity} فقط. يرجى تقليل الكمية.`}
           </p>
         )}
       </div>

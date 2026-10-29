@@ -11,7 +11,7 @@ import { QuantityControl } from "@/components/ui/quantity";
 import { buildReturnMessage, LAST_ORDER_KEY, RETURN_REASONS } from "@/lib/returns";
 import { whatsappLink } from "@/lib/whatsapp";
 import { readMyOrders } from "@/lib/my-orders";
-import { dateFormat } from "@/lib/arabic";
+import { dateFormat, daysLabel } from "@/lib/arabic";
 import type { OrderLine, ReturnRequest } from "@/lib/types";
 
 type FoundOrder = { number: string; createdAt: string; name: string; lines: (OrderLine & { image: string })[] };
@@ -146,7 +146,7 @@ export function ReturnsView() {
 
       <ul className="mt-6 grid gap-3 sm:grid-cols-3">
         {[
-          { icon: CalendarClock, text: `خلال ${s.returnDays} أيام من الاستلام` },
+          { icon: CalendarClock, text: `خلال ${daysLabel(s.returnDays)} من الاستلام` },
           { icon: Tag, text: "القطع غير مستخدمة ومعها بطاقاتها" },
           { icon: PackageOpen, text: "نرتب استلام القطع من عندكِ" },
         ].map(({ icon: Icon, text }) => (
@@ -197,7 +197,7 @@ export function ReturnsView() {
 
           {late && (
             <p className="rounded-xl border border-gold/40 bg-gold/10 p-4 text-sm text-text" role="status">
-              مرّ {found.days} يومًا على طلبكِ ومدة الإرجاع {found.returnDays} أيام. يمكنكِ إرسال الطلب وسنراجعه معكِ.
+              مرّ {daysLabel(found.days)} على طلبكِ ومدة الإرجاع {daysLabel(found.returnDays)}. يمكنكِ إرسال الطلب وسنراجعه معكِ.
             </p>
           )}
 

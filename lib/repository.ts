@@ -1,3 +1,4 @@
+import { daysLabel } from "./arabic";
 import { createSeedData } from "./seed";
 import { SEASONS, type Category, type OrderInquiry, type Product, type StoreData, type Subscriber } from "./types";
 
@@ -98,7 +99,7 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       // Policies are no longer edited in the admin, so the current wording always applies,
       // with the return window the admin set.
       policies: seed.settings.policies.map((p) =>
-        p.id === "pol-returns" ? { ...p, body: p.body.replace("خلال 7 أيام", `خلال ${clampDays(input.settings?.returnDays)} أيام`) } : p,
+        p.id === "pol-returns" ? { ...p, body: p.body.replace("خلال 7 أيام", `خلال ${daysLabel(clampDays(input.settings?.returnDays))}`) } : p,
       ),
     },
     homepage: {

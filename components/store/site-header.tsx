@@ -18,7 +18,7 @@ import { useStore } from "@/components/providers/store-provider";
 import { Logo } from "@/components/ui/logo";
 import { LogoCoin } from "@/components/ui/fx";
 import { InstallAppButton } from "@/components/ui/install-app";
-import { piecesLabel } from "@/lib/arabic";
+import { daysLabel, piecesLabel } from "@/lib/arabic";
 import { visibleProducts } from "@/lib/commerce";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Sheet } from "@/components/ui/sheet";
@@ -217,7 +217,7 @@ export function SiteHeader() {
           <ul className="menu-stagger relative mt-5 grid grid-cols-2 gap-3">
             {[
               { href: "/orders", label: "طلباتي", note: myOrders ? `${myOrders} ${myOrders === 1 ? "طلب" : "طلبات"}` : "تابعي طلباتكِ", icon: Package },
-              { href: "/returns", label: "إرجاع أو استبدال", note: `خلال ${data.settings.returnDays} أيام`, icon: Undo2 },
+              { href: "/returns", label: "إرجاع أو استبدال", note: `خلال ${daysLabel(data.settings.returnDays)}`, icon: Undo2 },
               { href: "/cart", label: "السلة", note: hydrated && count ? piecesLabel(count) : "فارغة", icon: ShoppingBag },
               { href: whatsappLink(data.settings.whatsappNumber), label: "تواصلي معنا", note: "واتساب", icon: MessageCircle, external: true },
             ].map(({ href, label, note, icon: Icon, external }) => (
