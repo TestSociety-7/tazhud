@@ -18,11 +18,12 @@ export function SiteFooter() {
   return (
     <footer className="on-dark relative mt-24 overflow-hidden bg-ink text-sm text-ivory/70">
       <div className="gold-rule" aria-hidden />
+      <div className="season-footer-edge" aria-hidden />
       <Mandala className="pointer-events-none absolute -bottom-48 -start-40 size-[30rem] text-gold/10 motion-safe:animate-spin-slow" />
       <div className="container-x relative grid gap-10 pt-14 pb-28 sm:pb-14 lg:grid-cols-[1.4fr_2fr]">
         <div className="max-w-sm">
           <div className="flex items-center gap-3">
-            <LogoCoin float={false} className="size-12" />
+            <LogoCoin hat float={false} className="size-12" />
             <p className="font-display text-2xl text-ivory">{s.storeName}</p>
           </div>
           <p className="mt-4 leading-relaxed text-pretty">{s.tagline || "أزياء محتشمة بأقمشة ناعمة ومختارة بعناية."}</p>

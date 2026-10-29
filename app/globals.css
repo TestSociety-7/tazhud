@@ -742,6 +742,99 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
 }
 .pumpkin-sm { width: 2.3rem; height: 1.9rem; }
 
+/* The coin that wears a hat needs to be the hat's anchor. */
+.logo-mark:not(.absolute) { position: relative; }
+
+/* Small label saying which season is on (hero, admin welcome). */
+[data-season="christmas"] .season-chip {
+  background: #b3262d;
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), 0 10px 24px -12px #c0303a;
+}
+[data-season="halloween"] .season-chip {
+  background: #f08a24;
+  color: #1d1526;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.25), 0 0 22px -4px rgb(240 138 36 / 0.7);
+}
+
+/* The short line under section headings becomes a candy cane or a Halloween stripe. */
+[data-season="christmas"] .season-rule,
+[data-season="halloween"] .season-rule { height: 5px; width: 4.5rem; }
+[data-season="christmas"] .season-rule { background: repeating-linear-gradient(-45deg, #c0303a 0 5px, #fff 5px 10px); box-shadow: 0 0 0 1px rgb(192 48 58 / 0.35); }
+[data-season="halloween"] .season-rule { background: repeating-linear-gradient(-45deg, #f08a24 0 6px, #2a1838 6px 12px); }
+
+/* Page titles get a little snowflake or pumpkin. */
+[data-season="christmas"] .season-title::after,
+[data-season="halloween"] .season-title::after {
+  content: "";
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  margin-inline-start: 0.3em;
+  vertical-align: 0.05em;
+  background: no-repeat center / contain;
+}
+[data-season="christmas"] .season-title::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c0303a' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 3 3-3M9 20l3-3 3 3'/%3E%3C/svg%3E"); animation: spin 14s linear infinite; }
+[data-season="halloween"] .season-title::after { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 6c-1-2 0-4 2-4' fill='none' stroke='%236b8f2a' stroke-width='2' stroke-linecap='round'/%3E%3Cellipse cx='8' cy='14' rx='5.5' ry='7' fill='%23f08a24'/%3E%3Cellipse cx='16' cy='14' rx='5.5' ry='7' fill='%23f08a24'/%3E%3Cellipse cx='12' cy='14' rx='5' ry='7.5' fill='%23f59a3a'/%3E%3Cpath d='M8 12l2 2H6zM16 12l2 2h-4zM8 17q4 3 8 0l-2 .5-1-1-1 1-1-1-1 1z' fill='%231d1526'/%3E%3C/svg%3E"); animation: float-soft 4s ease-in-out infinite; }
+
+/* Dark bands (announcement, ribbon) get a striped edge. */
+.season-band { position: relative; }
+[data-season="christmas"] .season-band::after,
+[data-season="halloween"] .season-band::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 3px;
+  pointer-events: none;
+}
+[data-season="christmas"] .season-band::after { background: repeating-linear-gradient(90deg, #c0303a 0 14px, #fff 14px 28px, #3f9e6b 28px 42px, #fff 42px 56px); }
+[data-season="halloween"] .season-band::after { background: repeating-linear-gradient(90deg, #f08a24 0 14px, #2a1838 14px 22px, #9d5cd6 22px 36px, #2a1838 36px 44px); }
+
+/* Arched photo frames: snow on top at Christmas, an orange glow and night mist at Halloween. */
+[data-season="christmas"] :is(.arch, .arch-full).relative::after,
+[data-season="halloween"] :is(.arch, .arch-full).relative::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+}
+[data-season="christmas"] :is(.arch, .arch-full).relative::after {
+  box-shadow: inset 0 7px 0 -1px rgb(255 255 255 / 0.95), inset 0 12px 14px -5px rgb(255 255 255 / 0.75);
+}
+[data-season="halloween"] :is(.arch, .arch-full).relative::after {
+  box-shadow: inset 0 0 0 2px rgb(240 138 36 / 0.6), inset 0 -46px 50px -30px rgb(157 92 214 / 0.6);
+}
+
+/* The top edge of the footer: hanging snow, or orange and purple bunting. */
+.season-footer-edge { display: none; }
+[data-season="christmas"] .season-footer-edge,
+[data-season="halloween"] .season-footer-edge {
+  display: block;
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+[data-season="christmas"] .season-footer-edge {
+  height: 22px;
+  background:
+    radial-gradient(circle at 17px -2px, #fff 0 13px, transparent 14px) 0 0 / 34px 22px repeat-x,
+    radial-gradient(circle at 40px -12px, #eaf1f8 0 21px, transparent 22px) 0 0 / 80px 22px repeat-x;
+  filter: drop-shadow(0 3px 4px rgb(0 0 0 / 0.35));
+}
+[data-season="halloween"] .season-footer-edge {
+  height: 14px;
+  background:
+    linear-gradient(-45deg, transparent 50%, #f08a24 50%) 0 0 / 28px 14px repeat-x,
+    linear-gradient(45deg, transparent 50%, #f08a24 50%) 0 0 / 28px 14px repeat-x;
+  background-position: 0 0, 14px 0;
+  filter: drop-shadow(0 0 6px rgb(240 138 36 / 0.6));
+}
+
 @media (prefers-reduced-motion: reduce) {
   .season-snow,
   .season-bats,

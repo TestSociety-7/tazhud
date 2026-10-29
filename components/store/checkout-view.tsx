@@ -165,7 +165,7 @@ export function CheckoutView() {
       <Link href="/cart" className="inline-flex min-h-10 items-center gap-2 text-sm text-muted hover:text-ink">
         <ArrowRight className="size-4" /> العودة إلى السلة
       </Link>
-      <h1 className="font-display mt-2 text-5xl text-ink">إتمام الطلب</h1>
+      <h1 className="season-title font-display mt-2 text-5xl text-ink">إتمام الطلب</h1>
       <p className="mt-2 max-w-xl text-sm text-muted">
         املئي بيانات التوصيل. عند المتابعة سيفتح واتساب وفيه طلبكِ مكتوبًا وجاهزًا للإرسال، ثم نؤكد كل التفاصيل معكِ شخصيًا. لا يتم أي دفع عبر هذا الموقع.
       </p>

@@ -8,11 +8,12 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { Mandala, Star8 } from "@/components/ui/mandala";
 import { LogoCoin, Tilt } from "@/components/ui/fx";
 import { effectivePrice, formatMoney, visibleProducts } from "@/lib/commerce";
-import { SeasonHeroDecor } from "../season";
+import { SEASON_WORDS, SeasonHeroDecor, SeasonIcon, useSeason } from "../season";
 
 export function Hero() {
   const { data } = useStore();
   const hero = data.homepage.hero;
+  const season = useSeason();
   const artRef = useRef<HTMLDivElement>(null);
   const floatRef = useRef<HTMLDivElement>(null);
 
@@ -62,6 +63,12 @@ export function Hero() {
 
       <div className="container-x grid items-center gap-12 pt-10 pb-20 sm:pt-14 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:pt-20 lg:pb-24">
         <div className="relative z-10 max-w-xl">
+          {season !== "original" && (
+            <p className="season-chip mb-4 inline-flex animate-fade-up items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold">
+              <SeasonIcon season={season} />
+              {SEASON_WORDS[season].badge}
+            </p>
+          )}
           <p className="flex animate-fade-up items-center gap-2 text-sm font-semibold text-gold">
             <Star8 className="size-3 motion-safe:animate-spin-slow" />{" "}
             {hero.eyebrow || "أزياء محتشمة · طرح وعبايات"}
@@ -118,7 +125,7 @@ export function Hero() {
             </Tilt>
           </div>
 
-          <LogoCoin className="absolute -top-3 -end-1 size-16 sm:-end-4 sm:size-20" />
+          <LogoCoin hat className="absolute -top-3 -end-1 size-16 sm:-end-4 sm:size-20" />
 
           {detailImage && (
             <div

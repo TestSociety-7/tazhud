@@ -174,7 +174,7 @@ export function SiteHeader() {
         title="القائمة"
         heading={
           <span className="flex items-center gap-2.5">
-            <LogoCoin float={false} className="size-9" />
+            <LogoCoin hat float={false} className="size-9" />
             <span className="font-display text-2xl text-ivory">
               {data.settings.storeName}
             </span>

@@ -1,3 +1,5 @@
+import logo from "@/public/brand/tazhud-logo.jpg";
+
 /**
  * A short opening the first time someone visits in a session: the coin turns in,
  * the name appears and two doors open onto the store. It never blocks taps and is
@@ -15,7 +17,7 @@ export function BrandIntro({ name }: { name: string }) {
         <span className="intro-mark">
           <span className="intro-coin">
             {/* eslint-disable-next-line @next/next/no-img-element -- small static brand mark */}
-            <img src="/brand/tazhud-logo.jpg" alt="" width={150} height={150} />
+            <img src={logo.src} alt="" width={150} height={150} />
           </span>
           <span className="intro-name font-display">{name}</span>
         </span>

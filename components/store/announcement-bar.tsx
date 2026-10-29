@@ -21,7 +21,7 @@ export function AnnouncementBar() {
   const current = items[index % items.length];
 
   return (
-    <div className="on-dark bg-ink text-gold-soft">
+    <div className="season-band on-dark bg-ink text-gold-soft">
       <div className="container-x flex min-h-9 items-center justify-center gap-3 py-2 text-center text-[0.82rem]">
         <p aria-live="polite" key={current} className="animate-fade-up">
           {link ? (

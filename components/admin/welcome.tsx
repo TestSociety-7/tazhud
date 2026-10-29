@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useStore } from "@/components/providers/store-provider";
 import { LogoCoin } from "@/components/ui/fx";
+import { SEASON_WORDS, useSeason } from "@/components/store/season";
 
 const SEEN = "tz-admin-hi";
 
@@ -19,7 +20,7 @@ export function WelcomeMark({ size = "size-28", pad = "p-6" }: { size?: string; 
     <div className={`orbit-stage welcome-coin relative mx-auto grid w-fit shrink-0 place-items-center ${pad}`}>
       <span className="orbit orbit-a" aria-hidden />
       <span className="orbit orbit-b" aria-hidden />
-      <LogoCoin float={false} className={size} />
+      <LogoCoin hat float={false} className={size} />
     </div>
   );
 }
@@ -36,6 +37,7 @@ export function markWelcomed() {
 /** Greets the admin each time the panel is opened (once per visit). */
 export function AdminWelcome() {
   const { data } = useStore();
+  const season = useSeason();
   const [phase, setPhase] = useState<"off" | "on" | "leaving">("off");
 
   useEffect(() => {
@@ -76,6 +78,11 @@ export function AdminWelcome() {
         <p className="welcome-text mt-3 text-sm text-ivory/70" style={{ animationDelay: "600ms" }}>
           {fresh > 0 ? `عندك ${fresh} ${fresh === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك` : "كل شيء جاهز"}
         </p>
+        {season !== "original" && (
+          <p className="welcome-text season-chip mt-4 inline-block rounded-full px-3.5 py-1.5 text-xs font-semibold" style={{ animationDelay: "750ms" }}>
+            {SEASON_WORDS[season].hello}
+          </p>
+        )}
       </div>
     </div>
   );

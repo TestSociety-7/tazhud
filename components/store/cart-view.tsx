@@ -39,7 +39,7 @@ export function CartView() {
       <Link href="/shop" className="inline-flex min-h-10 items-center gap-2 text-sm text-muted hover:text-ink">
         <ArrowRight className="size-4" /> متابعة التسوق
       </Link>
-      <h1 className="font-display mt-2 text-5xl text-ink">سلة التسوق <span className="text-3xl text-muted">({count})</span></h1>
+      <h1 className="season-title font-display mt-2 text-5xl text-ink">سلة التسوق <span className="text-3xl text-muted">({count})</span></h1>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_24rem] lg:gap-14">
         <section aria-label="القطع في سلتكِ">

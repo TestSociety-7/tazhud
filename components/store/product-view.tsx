@@ -325,7 +325,7 @@ export function ProductView({ slug }: { slug: string }) {
 
       {related.length > 0 && (
         <section className="container-x pt-24" aria-labelledby="related-heading">
-          <h2 id="related-heading" className="font-display mb-8 text-4xl text-ink">قد يعجبكِ أيضًا</h2>
+          <h2 id="related-heading" className="season-title font-display mb-8 text-4xl text-ink">قد يعجبكِ أيضًا</h2>
           <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
             {related.map((p) => <li key={p.id}><ProductCard product={p} /></li>)}
           </ul>

@@ -13,13 +13,14 @@ import { formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
 import type { HomeSection, Product } from "@/lib/types";
 import { ProductCard } from "../product-card";
+import { SEASON_WORDS, SeasonIcon, useSeason } from "../season";
 
 export function SectionHeading({ title, href, linkLabel = "عرض الكل" }: { title: string; href?: string; linkLabel?: string }) {
   return (
     <Reveal className="mb-8 flex items-end justify-between gap-4">
       <div>
         <h2 className="font-display text-3xl leading-tight text-ink sm:text-[2.75rem]">{title}</h2>
-        <span className="reveal-line mt-3 block h-0.5 w-14 rounded-full bg-gold" aria-hidden />
+        <span className="reveal-line season-rule mt-3 block h-0.5 w-14 rounded-full bg-gold" aria-hidden />
       </div>
       {href && (
         <Link href={href} className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-forest">
@@ -192,7 +193,9 @@ export function AllProductsSection() {
 export function TrustBand() {
   const { data } = useStore();
   const s = data.settings;
+  const season = useSeason();
   const items = [
+    ...(season === "original" ? [] : [SEASON_WORDS[season].ribbon]),
     "اطلبي عبر واتساب بخطوة واحدة",
     s.freeDeliveryThreshold > 0 ? `توصيل مجاني للطلبات فوق ${formatMoney(s.freeDeliveryThreshold, s)}` : "توصيل إلى باب البيت",
     "نؤكد طلبكِ معكِ قبل التوصيل",
@@ -203,14 +206,14 @@ export function TrustBand() {
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
       {items.map((t) => (
         <li key={t} className="flex items-center gap-6 px-6 whitespace-nowrap">
-          <Star8 className="size-3 text-gold" />
+          {season === "original" ? <Star8 className="size-3 text-gold" /> : <SeasonIcon season={season} className="size-3.5 text-gold" />}
           {t}
         </li>
       ))}
     </ul>
   );
   return (
-    <section aria-label="لماذا تزهّد" className="on-dark relative overflow-hidden border-y border-gold/25 bg-ink-2 py-3.5 text-sm text-gold-soft">
+    <section aria-label="لماذا تزهّد" className="season-band on-dark relative overflow-hidden border-y border-gold/25 bg-ink-2 py-3.5 text-sm text-gold-soft">
       <div className="marquee flex w-max">
         {row(false)}
         {row(true)}

@@ -23,6 +23,7 @@ import { useStore } from "@/components/providers/store-provider";
 import { Sheet } from "@/components/ui/sheet";
 import { LogoCoin } from "@/components/ui/fx";
 import { InstallAppButton } from "@/components/ui/install-app";
+import { SeasonSky, SeasonTrim, useSeason } from "@/components/store/season";
 
 const NAV = [
   { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, exact: true },
@@ -82,8 +83,9 @@ function Sidebar() {
   const { data } = useStore();
   return (
     <div className="on-dark flex h-full flex-col bg-ink p-4 text-ivory">
-      <Link href="/admin" className="mb-8 flex items-center gap-3 px-2 pt-2">
-        <LogoCoin float={false} className="size-11" />
+      <Link href="/admin" className="relative mb-8 flex items-center gap-3 px-2 pt-2 pb-3">
+        <SeasonTrim />
+        <LogoCoin hat float={false} className="size-11" />
         <span>
           <span className="font-display block text-2xl leading-none">{data.settings.storeName}</span>
           <span className="text-xs text-gold">لوحة التحكم</span>
@@ -197,6 +199,7 @@ function BottomBar({ onMore }: { onMore: () => void }) {
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { data } = useStore();
+  const season = useSeason();
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [lastPath, setLastPath] = useState(pathname);
@@ -206,7 +209,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-dvh bg-ivory lg:grid lg:grid-cols-[16.5rem_1fr]">
+    <div data-season={season} className="admin-season min-h-dvh bg-ivory lg:grid lg:grid-cols-[16.5rem_1fr]">
       <aside className="sticky top-0 hidden h-dvh lg:block">
         <Sidebar />
       </aside>
@@ -214,10 +217,11 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <div className="min-w-0">
         <header className="on-dark sticky top-0 z-30 flex h-14 items-center justify-center bg-ink/95 px-3 text-ivory backdrop-blur-md lg:hidden">
           <Link href="/admin" className="flex items-center gap-2.5">
-            <LogoCoin float={false} className="size-8" />
+            <LogoCoin hat float={false} className="size-8" />
             <span className="font-display text-xl">{data.settings.storeName}</span>
             <span className="rounded-full border border-gold/40 px-2 py-0.5 text-[0.65rem] text-gold">الإدارة</span>
           </Link>
+          <SeasonTrim />
         </header>
 
         <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
@@ -231,6 +235,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <BottomBar onMore={() => setOpen(true)} />
+      <SeasonSky season={season} />
       <AdminWelcome />
       <OrderWatcher />
 

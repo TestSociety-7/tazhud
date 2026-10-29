@@ -25,7 +25,7 @@ export function SeasonPicker() {
   }
 
   return (
-    <Panel title="مظهر المتجر" description="اختر الشكل الذي يراه الزبائن. لوحة الإدارة تبقى كما هي.">
+    <Panel title="مظهر المتجر" description="اختر الشكل الذي يراه الزبائن. لوحة الإدارة تتزيّن معه أيضًا.">
       <div role="radiogroup" aria-label="مظهر المتجر" className="grid grid-cols-3 gap-2 sm:gap-3">
         {OPTIONS.map((o) => {
           const on = o.id === current;

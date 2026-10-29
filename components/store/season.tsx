@@ -28,10 +28,43 @@ export function SeasonRoot({ children }: { children: React.ReactNode }) {
   return (
     <div data-season={season} className="contents">
       {children}
-      {season === "christmas" && <Snow />}
-      {season === "halloween" && <Bats />}
+      <SeasonSky season={season} />
     </div>
   );
+}
+
+/** Falling snow at Christmas, bats crossing the screen at Halloween. */
+export function SeasonSky({ season }: { season: Season }) {
+  if (season === "christmas") return <Snow />;
+  if (season === "halloween") return <Bats />;
+  return null;
+}
+
+/** Short seasonal words, used by the hero, the ribbon and the admin. */
+export const SEASON_WORDS: Record<Exclude<Season, "original">, { badge: string; ribbon: string; hello: string }> = {
+  christmas: { badge: "أجواء الأعياد", ribbon: "أجواء الشتاء والأعياد في تزهّد", hello: "أجواء الأعياد مفعّلة في متجرك ❄️" },
+  halloween: { badge: "ليلة الهالوين", ribbon: "ليلة الهالوين في تزهّد", hello: "أجواء الهالوين مفعّلة في متجرك 🎃" },
+};
+
+/** A small snowflake or pumpkin, used as a bullet and next to headings. */
+export function SeasonIcon({ season, className = "size-3.5" }: { season: Season; className?: string }) {
+  if (season === "christmas")
+    return (
+      <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+        <path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M9 4l3 3 3-3M9 20l3-3 3 3" />
+      </svg>
+    );
+  if (season === "halloween")
+    return (
+      <svg viewBox="0 0 24 24" className={className} aria-hidden>
+        <path d="M12 6c-1-2 0-4 2-4" fill="none" stroke="#6b8f2a" strokeWidth="2" strokeLinecap="round" />
+        <ellipse cx="8" cy="14" rx="5.5" ry="7" fill="currentColor" />
+        <ellipse cx="16" cy="14" rx="5.5" ry="7" fill="currentColor" />
+        <ellipse cx="12" cy="14" rx="5" ry="7.5" fill="currentColor" />
+        <path d="M8 12l2 2H6zM16 12l2 2h-4zM8 17q4 3 8 0l-2 .5-1-1-1 1-1-1-1 1z" fill="#1d1526" />
+      </svg>
+    );
+  return null;
 }
 
 function Snow() {

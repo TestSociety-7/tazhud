@@ -229,7 +229,7 @@ export function ShopView() {
               )}
             </ol>
           </nav>
-          <h1 className="font-display mt-3 text-4xl text-ink sm:text-5xl">
+          <h1 className="season-title font-display mt-3 text-4xl text-ink sm:text-5xl">
             {title}
           </h1>
           {description && (

@@ -9,7 +9,7 @@ export function PoliciesView() {
   return (
     <div className="container-x max-w-3xl py-14">
       <p className="eyebrow text-gold-deep">المساعدة</p>
-      <h1 className="font-display mt-2 text-5xl text-ink">سياسات المتجر</h1>
+      <h1 className="season-title font-display mt-2 text-5xl text-ink">سياسات المتجر</h1>
       <nav aria-label="السياسات" className="mt-6 flex flex-wrap gap-2">
         {s.policies.map((p) => (
           <a key={p.id} href={`#${p.id}`} className="btn btn-sm btn-outline border-line">{p.title}</a>

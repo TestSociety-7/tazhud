@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Star8 } from "@/components/ui/mandala";
+// Imported so the file gets a fresh, content-hashed address on every deploy.
+import logo from "@/public/brand/tazhud-logo.jpg";
 
 const prefersReducedMotion = () =>
   typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -59,14 +61,14 @@ export function CountUp({ value, format = (n) => String(Math.round(n)) }: { valu
 /**
  * The brand logo as a gold coin. Every coin on the page turns over together every
  * few seconds and catches a glint of light as it lands: the one logo animation used
- * across the store and the admin.
+ * across the store and the admin. With `hat`, it wears the season's hat in the store.
  */
-export function LogoCoin({ className = "size-16", float = true }: { className?: string; float?: boolean }) {
+export function LogoCoin({ className = "size-16", float = true, hat = false }: { className?: string; float?: boolean; hat?: boolean }) {
   return (
-    <span className={`coin inline-block shrink-0 ${float ? "float-soft" : ""} ${className}`} aria-hidden>
+    <span className={`coin inline-block shrink-0 ${float ? "float-soft" : ""} ${hat ? "logo-mark" : ""} ${className}`} aria-hidden>
       <span className="coin-inner block">
         {/* eslint-disable-next-line @next/next/no-img-element -- small static brand mark */}
-        <img src="/brand/tazhud-logo.jpg" alt="" className="coin-face object-cover" width={150} height={150} />
+        <img src={logo.src} alt="" className="coin-face object-cover" width={150} height={150} />
         <span className="coin-face coin-back grid place-items-center bg-gradient-to-br from-gold-bright via-gold to-gold-deep">
           <Star8 className="size-1/2 text-ink/80" />
         </span>
