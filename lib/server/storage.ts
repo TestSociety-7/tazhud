@@ -13,19 +13,32 @@ import type { OrderInquiry, Subscriber } from "@/lib/types";
  *   derived from a server secret, so their URLs cannot be guessed. Only the
  *   admin API lists and reads them.
  *
- * Without BLOB_READ_WRITE_TOKEN the site falls back to local demo mode.
+ * Without a Blob token the site falls back to local demo mode.
  */
 
 export const CATALOG_TAG = "catalog";
 const CATALOG_PATH = "store/catalog.json";
 
+/**
+ * The Blob read-write token. Vercel names it BLOB_READ_WRITE_TOKEN by default, but
+ * a store connected with a custom prefix gets e.g. TAZHUD_READ_WRITE_TOKEN, so any
+ * variable holding a Blob token is accepted.
+ */
+export function blobToken(): string | undefined {
+  if (process.env.BLOB_READ_WRITE_TOKEN) return process.env.BLOB_READ_WRITE_TOKEN;
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.endsWith("READ_WRITE_TOKEN") && value?.startsWith("vercel_blob_rw_")) return value;
+  }
+  return undefined;
+}
+
 export function hasSharedStorage() {
-  return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+  return Boolean(blobToken());
 }
 
 /** Server-only seed for names and keys that must stay stable and unguessable. */
 export function serverSeed() {
-  return process.env.ADMIN_SESSION_SECRET || process.env.BLOB_READ_WRITE_TOKEN || "tazhud";
+  return process.env.ADMIN_SESSION_SECRET || blobToken() || "tazhud";
 }
 
 function privateFolder() {
@@ -33,7 +46,7 @@ function privateFolder() {
 }
 
 async function readJson<T>(pathname: string): Promise<T | null> {
-  const res = await get(pathname, { access: "public", useCache: false });
+  const res = await get(pathname, { access: "public", useCache: false, token: blobToken() });
   if (!res || res.statusCode !== 200) return null;
   return (await new Response(res.stream).json()) as T;
 }
@@ -45,6 +58,7 @@ async function writeJson(pathname: string, value: unknown) {
     allowOverwrite: true,
     contentType: "application/json",
     cacheControlMaxAge: 60,
+    token: blobToken(),
   });
 }
 
@@ -76,7 +90,7 @@ async function readFolder<T>(folder: string, limit: number): Promise<T[]> {
   const out: T[] = [];
   let cursor: string | undefined;
   do {
-    const page = await list({ prefix: `${privateFolder()}/${folder}/`, cursor, limit: 1000 });
+    const page = await list({ prefix: `${privateFolder()}/${folder}/`, cursor, limit: 1000, token: blobToken() });
     const items = await Promise.all(page.blobs.map((b) => readJson<T>(b.pathname).catch(() => null)));
     for (const it of items) if (it) out.push(it);
     cursor = page.hasMore ? page.cursor : undefined;
@@ -95,7 +109,7 @@ export async function readSubscribers(): Promise<Subscriber[]> {
 }
 
 export async function orderExists(id: string) {
-  const page = await list({ prefix: orderPath(id), limit: 1 });
+  const page = await list({ prefix: orderPath(id), limit: 1, token: blobToken() });
   return page.blobs.length > 0;
 }
 
@@ -107,7 +121,7 @@ export async function listOrderIds(): Promise<string[]> {
   const ids: string[] = [];
   let cursor: string | undefined;
   do {
-    const page = await list({ prefix: `${privateFolder()}/orders/`, cursor, limit: 1000 });
+    const page = await list({ prefix: `${privateFolder()}/orders/`, cursor, limit: 1000, token: blobToken() });
     for (const b of page.blobs) ids.push(b.pathname.slice(b.pathname.lastIndexOf("/") + 1).replace(/\.json$/, ""));
     cursor = page.hasMore ? page.cursor : undefined;
   } while (cursor);
@@ -117,9 +131,9 @@ export async function listOrderIds(): Promise<string[]> {
 /* Admin devices that asked for new-order notifications. */
 const pushPath = (endpoint: string) => `${privateFolder()}/push/${createHash("sha256").update(endpoint).digest("hex").slice(0, 32)}.json`;
 export const writePushSubscription = (sub: { endpoint: string; keys: { p256dh: string; auth: string } }) => writeJson(pushPath(sub.endpoint), sub);
-export const deletePushSubscription = async (endpoint: string) => del(pushPath(endpoint));
+export const deletePushSubscription = async (endpoint: string) => del(pushPath(endpoint), { token: blobToken() });
 export const readPushSubscriptions = <T>() => readFolder<T>("push", 50);
-export const deleteOrder = async (id: string) => del(orderPath(id));
+export const deleteOrder = async (id: string) => del(orderPath(id), { token: blobToken() });
 export const writeSubscriber = (sub: Subscriber) => writeJson(subscriberPath(sub.email), sub);
 
 /** Uncached read for the admin, so it always edits the latest saved version. */

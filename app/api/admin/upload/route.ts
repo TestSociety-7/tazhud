@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { isAdmin, jsonError, sameOrigin } from "@/lib/server/guard";
-import { hasSharedStorage } from "@/lib/server/storage";
+import { blobToken, hasSharedStorage } from "@/lib/server/storage";
 
 /** Issues short-lived tokens so the admin can upload product photos straight to Vercel Blob. */
 export async function POST(request: Request) {
@@ -20,6 +20,7 @@ export async function POST(request: Request) {
   }
   try {
     const result = await handleUpload({
+      token: blobToken(),
       body,
       request,
       onBeforeGenerateToken: async (pathname) => {
