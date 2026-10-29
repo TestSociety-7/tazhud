@@ -191,7 +191,7 @@ export function SiteHeader() {
       >
         <nav
           aria-label="قائمة الجوال"
-          className="relative flex min-h-full flex-col px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
+          className="relative flex min-h-full flex-col overflow-hidden px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
         >
           <div
             className="pattern-geo pointer-events-none absolute inset-0 opacity-[0.05]"

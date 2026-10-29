@@ -66,7 +66,7 @@ export function Sheet({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`fixed inset-0 m-0 flex max-h-dvh flex-col bg-ivory p-0 text-text shadow-[var(--shadow-lift)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/45 backdrop:backdrop-blur-[2px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
+      className={`fixed inset-0 m-0 flex max-h-dvh flex-col overflow-hidden bg-ivory p-0 text-text shadow-[var(--shadow-lift)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/45 backdrop:backdrop-blur-[2px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
     >
       <div className="flex items-center justify-between border-b border-line px-5 py-4">
         {heading ?? <h2 className="font-display text-2xl text-ink">{title}</h2>}
@@ -74,7 +74,7 @@ export function Sheet({
           <X className="size-5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+      <div className="flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain">{children}</div>
       {footer && <div className="border-t border-line bg-paper px-5 py-4">{footer}</div>}
     </dialog>
   );
