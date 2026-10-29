@@ -3,7 +3,7 @@
 import { useStore } from "@/components/providers/store-provider";
 import { visibleProducts } from "@/lib/commerce";
 import { Hero } from "./hero";
-import { AllProductsSection, CategoriesSection, HowToOrder, ProductRail, PromoSection, TrustBand } from "./sections";
+import { AllProductsSection, BundlesSection, CategoriesSection, HowToOrder, ProductRail, PromoSection, TrustBand } from "./sections";
 
 export function HomeView() {
   const { data } = useStore();
@@ -23,6 +23,8 @@ export function HomeView() {
               return <CategoriesSection key={section.key} section={section} />;
             case "newArrivals":
               return <ProductRail key={section.key} section={section} products={newArrivals} href="/shop?sort=newest" />;
+            case "bundles":
+              return <BundlesSection key={section.key} section={section} />;
             case "promo":
               return <PromoSection key={section.key} />;
             default:

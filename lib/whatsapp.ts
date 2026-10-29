@@ -1,6 +1,6 @@
-import { formatMoney } from "./commerce";
+import { bundleContents, formatMoney } from "./commerce";
 import { dateFormat, piecesLabel } from "./arabic";
-import type { OrderInquiry, StoreSettings } from "./types";
+import type { Bundle, OrderInquiry, Product, StoreSettings } from "./types";
 
 /** Keeps digits only, as wa.me expects (country code, no +, spaces or dashes). */
 export function normalizeWhatsappNumber(input: string) {
@@ -22,7 +22,12 @@ export function whatsappLink(number: string, text?: string) {
  * read at a glance. WhatsApp renders *text* as bold. `picturesUrl` adds a link whose
  * preview shows the ordered pieces above the message.
  */
-export function buildOrderMessage(order: OrderInquiry, settings: StoreSettings, picturesUrl?: string) {
+export function buildOrderMessage(
+  order: OrderInquiry,
+  settings: StoreSettings,
+  picturesUrl?: string,
+  catalog?: { products: Product[]; bundles: Bundle[] },
+) {
   const money = (n: number) => formatMoney(n, settings);
   const rule = "────────────────";
   const pieces = order.lines.reduce((n, l) => n + l.quantity, 0);
@@ -40,6 +45,8 @@ export function buildOrderMessage(order: OrderInquiry, settings: StoreSettings, 
     lines.push(`${i + 1}. *${l.name}*`);
     const options = [l.color && `اللون: ${l.color}`, l.size && `المقاس: ${l.size}`].filter(Boolean).join("  |  ");
     if (options) lines.push(`    ${options}`);
+    const bundle = l.kind === "bundle" && catalog ? catalog.bundles.find((b) => b.id === l.refId) : undefined;
+    if (bundle) lines.push(`    مجموعة: ${bundleContents(bundle, catalog!.products)}`);
     lines.push(`    الكمية: ${l.quantity} × ${money(l.unitPrice)} = *${money(l.unitPrice * l.quantity)}*`);
   });
   if (picturesUrl) {

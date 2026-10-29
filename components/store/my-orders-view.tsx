@@ -38,11 +38,22 @@ export function MyOrdersView() {
       .catch(() => {});
   }, []);
 
-  const image = (refId: string) => data.products.find((p) => p.id === refId)?.images[0];
+  const image = (refId: string) => {
+    const b = data.bundles.find((x) => x.id === refId);
+    if (b?.image) return b.image;
+    const id = b ? b.items[0]?.productId : refId;
+    return data.products.find((p) => p.id === id)?.images[0];
+  };
 
   function orderAgain(o: SavedOrder) {
     let added = 0;
     for (const l of o.lines) {
+      const b = l.kind === "bundle" ? data.bundles.find((x) => x.id === l.refId && x.active) : undefined;
+      if (b) {
+        cart.addBundle(b);
+        added++;
+        continue;
+      }
       const p = data.products.find((x) => x.id === l.refId && x.published && x.stock > 0);
       if (!p) continue;
       cart.addProduct(p, { color: l.color, size: l.size, quantity: l.quantity });

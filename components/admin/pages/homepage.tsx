@@ -13,6 +13,7 @@ import { useStore } from "@/components/providers/store-provider";
 const SECTION_LABEL: Record<string, string> = {
   categories: "الأقسام",
   newArrivals: "وصل حديثًا",
+  bundles: "المجموعات",
   promo: "شريط العرض",
 };
 
@@ -128,7 +129,7 @@ export function HomepageEditor() {
           </div>
         </Panel>
 
-        <Panel title="شريط العرض" description={data.settings.couponsEnabled ? "يظهر مع كود خصم تختاره من صفحة أكواد الخصم." : "مخفي الآن لأن أكواد الخصم متوقفة من الإعدادات."}>
+        <Panel title="شريط العرض" description={data.settings.couponsEnabled ? "يظهر مع كود خصم تختاره من صفحة أكواد الخصم." : "مخفي الآن لأن أكواد الخصم متوقفة. شغّلها من صفحة أكواد الخصم."}>
           <div className="grid gap-5 md:grid-cols-2">
             <FormField label="العنوان" htmlFor="p-t">
               <input id="p-t" className="field" value={h.promo.title} onChange={(e) => patch("promo", { title: e.target.value })} />

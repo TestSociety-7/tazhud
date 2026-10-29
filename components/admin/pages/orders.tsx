@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { Copy, Inbox, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
-import { formatMoney } from "@/lib/commerce";
+import { bundleContents, formatMoney } from "@/lib/commerce";
 import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
 import { orderPicturesUrl } from "@/lib/order-pictures";
 import { dateFormat, ordersLabel, piecesLabel } from "@/lib/arabic";
@@ -27,6 +27,10 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
   const { data } = useStore();
   const save = useSave();
   const money = (n: number) => formatMoney(n, { currency: order.currency, locale: data.settings.locale });
+  const bundleText = (id: string) => {
+    const b = data.bundles.find((x) => x.id === id);
+    return b ? bundleContents(b, data.products) : "";
+  };
   const [note, setNote] = useState(order.adminNote);
   const [confirmDelete, setConfirmDelete] = useState(false);
 
@@ -81,7 +85,8 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
                     <td className="py-3">
                       <span className="font-medium text-ink">{l.name}</span>
                       {l.kind === "bundle" && <> <Badge tone="gold">مجموعة</Badge></>}
-                      <span className="block text-xs text-muted">{[l.color, l.size].filter(Boolean).join(" · ")} · {money(l.unitPrice)} للقطعة</span>
+                      {l.kind === "bundle" && bundleText(l.refId) && <span className="block text-xs text-text">{bundleText(l.refId)}</span>}
+                      <span className="block text-xs text-muted">{[l.color, l.size, `${money(l.unitPrice)} للقطعة`].filter(Boolean).join(" · ")}</span>
                     </td>
                     <td className="py-3 text-end tabular-nums">{l.quantity}</td>
                     <td className="py-3 text-end font-medium tabular-nums">{money(l.unitPrice * l.quantity)}</td>
@@ -134,7 +139,7 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
               className="btn btn-outline w-full border-line"
               onClick={async () => {
                 try {
-                  await navigator.clipboard.writeText(buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products)));
+                  await navigator.clipboard.writeText(buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products, data.bundles), data));
                   toast.success("تم نسخ ملخص الطلب");
                 } catch {
                   toast.error("النسخ غير متاح في هذا المتصفح");

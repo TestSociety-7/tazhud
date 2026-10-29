@@ -3,8 +3,9 @@ import { cleanOrder, jsonError, readBody, sameOrigin } from "@/lib/server/guard"
 import { blockedFor, clientIp, hit } from "@/lib/server/rate-limit";
 import { hasSharedStorage, orderExists, readCatalogFresh, writeOrder } from "@/lib/server/storage";
 import { catalogToStoreData } from "@/lib/repository";
-import { deliveryFor, effectivePrice, evaluateCoupon, formatMoney, roundMoney } from "@/lib/commerce";
+import { bundleDetails, deliveryFor, effectivePrice, evaluateCoupon, formatMoney, roundMoney } from "@/lib/commerce";
 import { notifyAdmins } from "@/lib/server/push";
+import type { OrderLine } from "@/lib/types";
 
 const MAX_ORDERS = 8;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -29,9 +30,14 @@ export async function POST(request: Request) {
 
   // Prices come from the saved catalogue, never from the browser.
   const store = catalogToStoreData(await readCatalogFresh());
-  const lines = order.lines.flatMap((l) => {
+  const lines = order.lines.flatMap((l): OrderLine[] => {
+    if (l.kind === "bundle") {
+      const b = store.bundles.find((x) => x.id === l.refId);
+      if (!b || !bundleDetails(b, store.products).available) return [];
+      return [{ ...l, kind: "bundle", name: b.name, color: "", size: "", unitPrice: b.price }];
+    }
     const p = store.products.find((x) => x.id === l.refId && x.published);
-    return p ? [{ ...l, kind: "product" as const, name: p.name, unitPrice: effectivePrice(p) }] : [];
+    return p ? [{ ...l, kind: "product", name: p.name, unitPrice: effectivePrice(p) }] : [];
   });
   if (!lines.length) return jsonError("طلب غير صالح.", 400);
   const subtotal = roundMoney(lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0));

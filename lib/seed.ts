@@ -693,6 +693,7 @@ export const seedHomepage: HomepageContent = {
   sections: [
     { key: "categories", enabled: true, title: "الأقسام", subtitle: "" },
     { key: "newArrivals", enabled: true, title: "وصل حديثًا", subtitle: "" },
+    { key: "bundles", enabled: true, title: "مجموعات بسعر أقل", subtitle: "" },
     { key: "promo", enabled: true, title: "العرض", subtitle: "" },
   ],
 };

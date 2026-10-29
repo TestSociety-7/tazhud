@@ -1,5 +1,5 @@
 import { SITE_URL } from "./site";
-import type { OrderLine, Product } from "./types";
+import type { Bundle, OrderLine, Product } from "./types";
 
 const MAX_ITEMS = 8;
 export const ORDER_NUMBER_RE = /^[A-Z0-9-]{4,32}$/;
@@ -9,10 +9,18 @@ export const ORDER_NUMBER_RE = /^[A-Z0-9-]{4,32}$/;
  * because a wa.me message can carry text only. Everything needed is in the address
  * (product slugs and quantities), so it works before the order is even saved.
  */
-export function orderPicturesUrl(number: string, lines: OrderLine[], products: Product[]) {
+export function orderPicturesUrl(number: string, lines: OrderLine[], products: Product[], bundles: Bundle[] = []) {
   const items = lines
     .flatMap((l) => {
-      const p = l.kind === "product" ? products.find((x) => x.id === l.refId) : undefined;
+      if (l.kind === "bundle") {
+        // A bundle shows each piece inside it.
+        const b = bundles.find((x) => x.id === l.refId);
+        return (b?.items ?? []).flatMap((it) => {
+          const p = products.find((x) => x.id === it.productId);
+          return p ? [`${p.slug}~${it.quantity * l.quantity}`] : [];
+        });
+      }
+      const p = products.find((x) => x.id === l.refId);
       return p ? [`${p.slug}~${l.quantity}`] : [];
     })
     .slice(0, MAX_ITEMS);

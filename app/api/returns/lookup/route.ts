@@ -35,7 +35,11 @@ export async function POST(request: Request) {
         number: order.number,
         createdAt: order.createdAt,
         name: order.customer.name,
-        lines: order.lines.map((l) => ({ ...l, image: products.get(l.refId)?.images[0] ?? "" })),
+        lines: order.lines.map((l) => {
+          const b = l.kind === "bundle" ? store.bundles.find((x) => x.id === l.refId) : undefined;
+          const image = b ? b.image || products.get(b.items[0]?.productId)?.images[0] : products.get(l.refId)?.images[0];
+          return { ...l, image: image ?? "" };
+        }),
       },
       days: daysSince(order.createdAt),
       returnDays: store.settings.returnDays,

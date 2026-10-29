@@ -25,7 +25,7 @@ export interface StoreRepository {
 const STORAGE_KEY = "tazhud:store:v3";
 
 /** Homepage sections the storefront still renders. */
-const HOME_SECTIONS = new Set(["categories", "newArrivals", "promo"]);
+const HOME_SECTIONS = new Set(["categories", "newArrivals", "bundles", "promo"]);
 
 /**
  * Older saves had one "الخمار وملابس الصلاة" category. Khimars now have their
@@ -67,6 +67,18 @@ function heroWithProducts(hero: StoreData["homepage"]["hero"], products: StoreDa
   return { ...hero, heroProductId: keep(hero.heroProductId), cardProductId: keep(hero.cardProductId) };
 }
 
+/** Saved section order, plus any section added in a later version (placed where the seed has it). */
+function withNewSections(saved: StoreData["homepage"]["sections"] | undefined, seeded: StoreData["homepage"]["sections"]) {
+  if (!saved?.length) return seeded;
+  const out = saved.filter((x) => HOME_SECTIONS.has(x.key));
+  seeded.forEach((s, i) => {
+    if (out.some((x) => x.key === s.key)) return;
+    const before = seeded.slice(0, i).reverse().find((x) => out.some((o) => o.key === x.key));
+    out.splice(before ? out.findIndex((o) => o.key === before.key) + 1 : 0, 0, s);
+  });
+  return out;
+}
+
 /** Fills in fields added in later versions so older saved data keeps working. */
 export function normalizeStoreData(input: Partial<StoreData> | null | undefined): StoreData {
   const seed = createSeedData();
@@ -96,7 +108,7 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       hero: heroWithProducts({ ...seed.homepage.hero, ...input.homepage?.hero }, products),
       promo: { ...seed.homepage.promo, ...input.homepage?.promo },
       story: { ...seed.homepage.story, ...input.homepage?.story },
-      sections: (input.homepage?.sections?.length ? input.homepage.sections : seed.homepage.sections).filter((x) => HOME_SECTIONS.has(x.key)),
+      sections: withNewSections(input.homepage?.sections, seed.homepage.sections),
     },
     categories,
     products,

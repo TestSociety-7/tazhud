@@ -63,6 +63,13 @@ export function bundleDetails(bundle: Bundle, products: Product[]) {
   return { items, value, savings: Math.max(0, roundMoney(value - bundle.price)), available };
 }
 
+/** "Hijab ×2 + Pins" — what is inside a bundle, for receipts. */
+export function bundleContents(bundle: Bundle, products: Product[]) {
+  return bundleDetails(bundle, products)
+    .items.map((it) => `${it.product.name}${it.quantity > 1 ? ` ×${it.quantity}` : ""}`)
+    .join(" + ");
+}
+
 export interface CouponResult {
   ok: boolean;
   coupon?: Coupon;

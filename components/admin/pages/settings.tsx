@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber, normalizeWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import type { StoreSettings } from "@/lib/types";
-import { FormField, PageHeader, Panel, Toggle } from "../ui";
+import { FormField, PageHeader, Panel } from "../ui";
 import { useSave } from "../use-save";
 import { SaveBar, useDraft } from "../use-draft";
 import { NotificationsPanel } from "../order-alerts";
@@ -108,15 +108,6 @@ export function SettingsPage() {
               <input id="s-instagramUrl" type="url" className="field" value={s.instagramUrl} onChange={(e) => set("instagramUrl", e.target.value)} aria-invalid={!!errors.instagramUrl} />
             </FormField>
           </div>
-        </Panel>
-
-        <Panel title="أكواد الخصم">
-          <Toggle
-            checked={s.couponsEnabled}
-            onChange={(v) => set("couponsEnabled", v)}
-            label="تفعيل أكواد الخصم"
-            description="عند الإيقاف يختفي إعلان الخصم من الصفحة الرئيسية وخانة الكود من السلة."
-          />
         </Panel>
 
         <Panel title="التوصيل والإرجاع" description="المبالغ بالشيكل (₪).">

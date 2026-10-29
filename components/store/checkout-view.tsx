@@ -124,7 +124,7 @@ export function CheckoutView() {
       currency: data.settings.currency,
       adminNote: "",
     };
-    const link = whatsappLink(data.settings.whatsappNumber, buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products)));
+    const link = whatsappLink(data.settings.whatsappNumber, buildOrderMessage(order, data.settings, orderPicturesUrl(order.number, order.lines, data.products, data.bundles), data));
 
     // Open WhatsApp synchronously inside the click so popup blockers allow it.
     const win = window.open(link, "_blank");

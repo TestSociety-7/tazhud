@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { readListState, saveListState } from "@/lib/return-spot";
 import { ArrowLeft, Check, Copy, MessageCircle, PackageCheck, ShoppingBag } from "lucide-react";
+import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { Reveal } from "@/components/ui/reveal";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Mandala, Star8 } from "@/components/ui/mandala";
 import { Tilt } from "@/components/ui/fx";
-import { formatMoney, visibleProducts } from "@/lib/commerce";
+import { bundleDetails, formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
-import type { HomeSection, Product } from "@/lib/types";
+import type { Bundle, HomeSection, Product } from "@/lib/types";
 import { ProductCard } from "../product-card";
 import { SEASON_WORDS, SeasonIcon, useSeason } from "../season";
 
@@ -83,13 +86,18 @@ export function ProductRail({ section, products, href }: { section: HomeSection;
 export function PromoSection() {
   const { data } = useStore();
   const promo = data.homepage.promo;
-  const coupon = data.coupons.find((c) => c.code === promo.couponCode && c.active);
+  const coupon = data.coupons.find((c) => c.code === promo.couponCode && c.active && !(c.expiresOn && c.expiresOn < new Date().toISOString().slice(0, 10)));
   const [copied, setCopied] = useState(false);
-  if (!promo.title || !data.settings.couponsEnabled) return null;
+  const title = promo.title || coupon?.description;
+  if (!data.settings.couponsEnabled || !title) return null;
+  const money = (n: number) => formatMoney(n, data.settings);
+  const big = !coupon ? "" : coupon.type === "percent" ? `${coupon.value}%` : coupon.type === "fixed" ? money(coupon.value) : "";
+  const small = !coupon ? "" : coupon.type === "free_delivery" ? "توصيل مجاني" : "خصم";
 
   async function copy() {
+    if (!coupon) return;
     try {
-      await navigator.clipboard.writeText(promo.couponCode);
+      await navigator.clipboard.writeText(coupon.code);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -99,28 +107,119 @@ export function PromoSection() {
 
   return (
     <section className="container-x pt-16 sm:pt-24">
-      <Reveal className="on-dark relative overflow-hidden rounded-[2rem] bg-ink px-6 py-12 text-center text-ivory sm:px-12 sm:py-16">
-        <div className="pointer-events-none absolute -bottom-24 left-1/2 size-80 -translate-x-1/2 rounded-full bg-gold/20 blur-3xl" aria-hidden />
-        <Mandala className="pointer-events-none absolute -top-28 -end-28 size-80 text-gold/15 motion-safe:animate-spin-slow" />
-        <div className="relative mx-auto max-w-lg">
-          <h2 className="font-display text-3xl leading-tight text-balance sm:text-5xl">{promo.title}</h2>
-          {promo.body && <p className="mt-3 text-sm text-ivory/70 sm:text-base">{promo.body}</p>}
-          {promo.couponCode && coupon && (
+      <Reveal className="ticket on-dark relative mx-auto flex max-w-4xl flex-col overflow-hidden rounded-[1.75rem] bg-ink text-ivory shadow-[var(--shadow-lift)] sm:flex-row">
+        <div className="pointer-events-none absolute -bottom-24 start-10 size-72 rounded-full bg-gold/20 blur-3xl" aria-hidden />
+        <Mandala className="pointer-events-none absolute -top-24 -start-24 size-72 text-gold/10 motion-safe:animate-spin-slow" />
+        <div className="relative flex-1 px-7 py-9 sm:px-10 sm:py-12">
+          <p className="eyebrow text-gold-bright">{promo.eyebrow || "عرض خاص"}</p>
+          <h2 className="font-display mt-2 text-3xl leading-tight text-balance sm:text-[2.6rem]">{title}</h2>
+          {promo.body && <p className="mt-3 max-w-md text-sm text-ivory/70 sm:text-base">{promo.body}</p>}
+          {coupon?.minSubtotal ? <p className="mt-3 text-xs text-ivory/60">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
+        </div>
+        {coupon && (
+          <div className="ticket-stub relative flex shrink-0 flex-col items-center justify-center gap-3 px-7 py-8 text-center sm:w-64 sm:py-10">
+            {big ? (
+              <p className="font-display text-6xl leading-none text-gold-bright tabular-nums sm:text-7xl" dir="ltr">
+                {big}
+                <span className="block pt-1 text-base text-ivory/70" dir="rtl">{small}</span>
+              </p>
+            ) : (
+              <p className="font-display text-3xl text-gold-bright">{small}</p>
+            )}
             <button
               type="button"
               onClick={copy}
-              className="press sheen ltr mt-7 inline-flex min-h-12 items-center gap-3 rounded-full border border-dashed border-gold/70 px-7 font-mono text-lg tracking-[0.2em] text-gold-soft transition-colors hover:bg-white/5"
-              aria-label={`نسخ الكود ${promo.couponCode}`}
+              className="press sheen ltr inline-flex min-h-12 items-center gap-3 rounded-full bg-gold-bright px-6 font-mono text-base font-bold tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft"
+              aria-label={`نسخ الكود ${coupon.code}`}
             >
-              {promo.couponCode}
-              {copied ? <Check className="size-4 text-gold" /> : <Copy className="size-4 opacity-70" />}
+              {coupon.code}
+              {copied ? <Check className="size-4" /> : <Copy className="size-4 opacity-70" />}
             </button>
-          )}
-          <p className="mt-3 h-4 text-xs text-ivory/60" role="status">
-            {copied ? "تم نسخ الكود" : coupon?.minSubtotal ? `للطلبات فوق ${formatMoney(coupon.minSubtotal, data.settings)}` : ""}
-          </p>
-        </div>
+            <p className="h-4 text-xs text-ivory/60" role="status">{copied ? "تم نسخ الكود ✓" : "اضغطي لنسخ الكود"}</p>
+          </div>
+        )}
       </Reveal>
+    </section>
+  );
+}
+
+/** Bundles: a few pieces together for one lower price, added to the cart in one tap. */
+export function BundlesSection({ section }: { section: HomeSection }) {
+  const { data } = useStore();
+  const { addBundle } = useCart();
+  const router = useRouter();
+  const money = (n: number) => formatMoney(n, data.settings);
+  const list = data.bundles.map((b) => ({ b, d: bundleDetails(b, data.products) })).filter(({ d }) => d.available);
+  if (!list.length) return null;
+
+  function add(b: Bundle) {
+    addBundle(b);
+    toast.success(`أُضيفت ${b.name} إلى السلة`, { action: { label: "إتمام الطلب", onClick: () => router.push("/checkout") } });
+  }
+
+  return (
+    <section id="bundles" className="container-x scroll-mt-24 pt-16 sm:pt-24">
+      <SectionHeading title={section.title || "مجموعات بسعر أقل"} />
+      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:flex-wrap sm:justify-center sm:gap-6 sm:overflow-visible sm:px-0">
+        {list.map(({ b, d }, i) => {
+          const pics = b.image ? [b.image] : d.items.slice(0, 3).map((it) => it.product.images[0]);
+          const pieces = d.items.reduce((n, it) => n + it.quantity, 0);
+          return (
+            <Reveal as="li" key={b.id} delay={i * 80} id={`bundle-${b.slug}`} className={`${list.length === 1 ? "w-full" : "w-[82vw]"} max-w-sm shrink-0 snap-center scroll-mt-24 sm:w-[calc(50%-0.75rem)] sm:max-w-md lg:w-[calc(33.333%-1rem)]`}>
+              <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-paper shadow-[var(--shadow-soft)]">
+                <div className="relative flex h-56 items-end justify-center overflow-hidden bg-sand pt-6">
+                  <Star8 className="pointer-events-none absolute -top-10 -end-10 size-40 text-gold/15" />
+                  {pics.length === 1 ? (
+                    <SmartImage src={pics[0]} alt="" className="arch h-full w-40" fallbackLabel=" " />
+                  ) : (
+                    <div className="relative h-full w-full">
+                      {pics.map((src, k) => {
+                        const n = pics.length;
+                        const offset = (k - (n - 1) / 2) * 30;
+                        return (
+                          <span
+                            key={k}
+                            className="absolute bottom-0 h-[88%] w-32 origin-bottom"
+                            style={{ insetInlineStart: `calc(50% - 4rem + ${offset * 1.6}px)`, rotate: `${offset / 5}deg`, zIndex: 3 - Math.abs(Math.round(k - (n - 1) / 2)) }}
+                          >
+                            <SmartImage src={src} alt="" fallbackLabel=" " className="arch h-full w-full shadow-[var(--shadow-soft)] ring-4 ring-sand" />
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {d.savings > 0 && (
+                    <span className="absolute top-4 start-4 z-10 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-gold-bright">وفّري {money(d.savings)}</span>
+                  )}
+                  <span className="absolute top-4 end-4 z-10 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-semibold text-forest backdrop-blur">{piecesLabel(pieces)}</span>
+                </div>
+                <div className="flex flex-1 flex-col p-5">
+                  <h3 className="font-display text-2xl leading-tight text-ink">{b.name}</h3>
+                  {b.description && <p className="mt-1 text-sm text-muted">{b.description}</p>}
+                  <ul className="mt-3 flex flex-wrap gap-1.5">
+                    {d.items.map((it) => (
+                      <li key={it.productId} className="rounded-full border border-line bg-ivory px-2.5 py-1 text-xs text-text">
+                        {it.product.name}
+                        {it.quantity > 1 && <span className="ms-1 font-semibold text-gold-deep">×{it.quantity}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                  {b.note && <p className="mt-3 text-xs text-gold-deep">{b.note}</p>}
+                  <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+                    <p className="leading-none">
+                      <span className="font-display block text-3xl text-ink tabular-nums">{money(b.price)}</span>
+                      {d.savings > 0 && <span className="mt-1 block text-sm text-muted line-through tabular-nums">{money(d.value)}</span>}
+                    </p>
+                    <button type="button" onClick={() => add(b)} className="btn btn-primary press shrink-0">
+                      <ShoppingBag className="size-4" /> أضيفي للسلة
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </Reveal>
+          );
+        })}
+      </ul>
     </section>
   );
 }

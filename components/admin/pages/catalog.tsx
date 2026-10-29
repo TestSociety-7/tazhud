@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowDown, ArrowLeft, ArrowUp, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Pencil, Plus, Shapes, TicketPercent, Trash2 } from "lucide-react";
 import { useStore } from "@/components/providers/store-provider";
 import { formatMoney, newId, slugify, uniqueSlug } from "@/lib/commerce";
 import type { Category, Coupon, CouponType } from "@/lib/types";
@@ -183,13 +182,51 @@ export function CouponsPage() {
           </button>
         }
       />
-      {!data.settings.couponsEnabled && (
-        <Link href="/admin/settings" className="press mb-5 flex items-center gap-3 rounded-2xl border border-gold/40 bg-gold-soft/40 p-4 text-sm text-[#5c4519]">
-          <TicketPercent className="size-5 shrink-0" />
-          <span className="flex-1">أكواد الخصم متوقفة الآن ولا يراها الزبائن. يمكنك تشغيلها من الإعدادات.</span>
-          <ArrowLeft className="size-4 shrink-0" />
-        </Link>
-      )}
+      <div className="card mb-5 space-y-4 p-4 sm:p-5">
+        <div className="flex items-center gap-3">
+          <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${data.settings.couponsEnabled ? "bg-forest text-ivory" : "bg-sand text-muted"}`}>
+            <TicketPercent className="size-5" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-ink">{data.settings.couponsEnabled ? "الأكواد تعمل الآن" : "الأكواد متوقفة"}</p>
+            <p className="text-xs text-muted">{data.settings.couponsEnabled ? "يراها الزبائن في السلة وفي الصفحة الرئيسية." : "شغّلها ليكتبها الزبائن في السلة وتظهر في الصفحة الرئيسية."}</p>
+          </div>
+          <Toggle
+            checked={data.settings.couponsEnabled}
+            onChange={(v) => save((d) => ({ ...d, settings: { ...d.settings, couponsEnabled: v } }), v ? "تم تشغيل أكواد الخصم" : "تم إيقاف أكواد الخصم")}
+            label={data.settings.couponsEnabled ? "تعمل" : "متوقفة"}
+          />
+        </div>
+        {data.settings.couponsEnabled && (
+          <FormField label="الكود الظاهر في الصفحة الرئيسية" htmlFor="cp-home" hint="يظهر كتذكرة خصم يمكن نسخها بضغطة.">
+            <select
+              id="cp-home"
+              className="field"
+              value={data.homepage.promo.couponCode}
+              onChange={(e) => {
+                const code = e.target.value;
+                const c = data.coupons.find((x) => x.code === code);
+                save(
+                  (d) => ({
+                    ...d,
+                    homepage: {
+                      ...d.homepage,
+                      promo: { ...d.homepage.promo, couponCode: code, title: c ? c.description || describe(c) : d.homepage.promo.title },
+                      sections: d.homepage.sections.map((s) => (s.key === "promo" ? { ...s, enabled: Boolean(code) } : s)),
+                    },
+                  }),
+                  code ? `سيظهر الكود ${code} في الصفحة الرئيسية` : "تم إخفاء الكود من الصفحة الرئيسية",
+                );
+              }}
+            >
+              <option value="">لا شيء</option>
+              {data.coupons.filter((c) => c.active).map((c) => (
+                <option key={c.id} value={c.code}>{c.code} · {c.description || describe(c)}</option>
+              ))}
+            </select>
+          </FormField>
+        )}
+      </div>
       {data.coupons.length === 0 ? (
         <div className="card"><EmptyState icon={<TicketPercent className="size-6" />} title="لا توجد أكواد خصم" body="أنشئ كودًا للافتتاح أو للعيد أو كعرض ترحيبي." /></div>
       ) : (

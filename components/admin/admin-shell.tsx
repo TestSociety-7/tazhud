@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import {
   ExternalLink,
+  Gift,
   Home,
   Inbox,
   LayoutDashboard,
@@ -32,6 +33,7 @@ const NAV = [
   { href: "/admin/returns", label: "الإرجاع والاستبدال", icon: Undo2 },
   { href: "/admin/products", label: "المنتجات", icon: Package },
   { href: "/admin/categories", label: "الأقسام", icon: Shapes },
+  { href: "/admin/bundles", label: "المجموعات", icon: Gift },
   { href: "/admin/coupons", label: "أكواد الخصم", icon: TicketPercent },
   { href: "/admin/homepage", label: "واجهة المتجر", icon: Home },
   { href: "/admin/settings", label: "الإعدادات", icon: Settings },

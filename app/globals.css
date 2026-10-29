@@ -859,3 +859,24 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   .brand-intro { display: none; }
   .unveil { clip-path: none; }
 }
+
+/* Coupon ticket: a perforated tear line with half-circle notches between the offer and its stub. */
+.ticket-stub {
+  border-top: 2px dashed rgb(255 255 255 / 0.18);
+}
+.ticket-stub::before,
+.ticket-stub::after {
+  content: "";
+  position: absolute;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 9999px;
+  background: var(--color-ivory);
+}
+.ticket-stub::before { top: -0.875rem; inset-inline-start: -0.875rem; }
+.ticket-stub::after { top: -0.875rem; inset-inline-end: -0.875rem; }
+@media (min-width: 40rem) {
+  .ticket-stub { border-top: 0; border-inline-start: 2px dashed rgb(255 255 255 / 0.18); }
+  .ticket-stub::before { top: -0.875rem; inset-inline-start: -0.875rem; }
+  .ticket-stub::after { top: auto; bottom: -0.875rem; inset-inline-end: auto; inset-inline-start: -0.875rem; }
+}
