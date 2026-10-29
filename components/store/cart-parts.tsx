@@ -132,7 +132,9 @@ export function OrderSummary({ className = "" }: { className?: string }) {
   const { data } = useStore();
   const money = useMoney();
   const threshold = data.settings.freeDeliveryThreshold;
-  const remaining = threshold > 0 ? Math.max(0, threshold - (subtotal - discount)) : 0;
+  // Free delivery is judged after the discount, so a percent code raises what is still needed.
+  const pct = coupon?.ok && coupon.coupon?.type === "percent" && discount > 0 && coupon.coupon.value < 100 ? coupon.coupon.value / 100 : 0;
+  const remaining = threshold > 0 && subtotal - discount < threshold ? Math.ceil(pct ? threshold / (1 - pct) - subtotal : threshold - (subtotal - discount)) : 0;
   const freeByCoupon = Boolean(coupon?.ok && coupon.freeDelivery);
 
   return (

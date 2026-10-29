@@ -71,7 +71,7 @@ export function MyOrdersView() {
     <div className="container-x max-w-3xl py-10 sm:py-14">
       <p className="eyebrow text-gold-deep">حسابي</p>
       <h1 className="season-title font-display mt-2 text-5xl text-ink">طلباتي</h1>
-      <p className="mt-2 text-sm text-muted">الطلبات التي أرسلتِها من هذا الهاتف.</p>
+      <p className="mt-2 text-sm text-muted">الطلبات التي أرسلتِها من هذا الجهاز.</p>
 
       {orders.length === 0 ? (
         <div className="mt-10">

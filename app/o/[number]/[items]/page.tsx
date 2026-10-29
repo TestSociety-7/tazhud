@@ -58,7 +58,7 @@ async function OrderPictures({ params }: { params: Params }) {
             <Link href={`/product/${product.slug}`} className="press group block">
               <div className="arch relative aspect-[4/5] overflow-hidden bg-sand">
                 <SmartImage src={product.images[0]} alt={product.name} className="absolute inset-0" />
-                <span className="absolute top-3 end-3 z-10 rounded-full bg-ink px-2.5 py-1 text-xs font-bold text-ivory">× {quantity}</span>
+                <span className="absolute bottom-3 start-3 z-10 rounded-full bg-ink px-2.5 py-1 text-xs font-bold text-ivory">× {quantity}</span>
               </div>
               <p className="font-display mt-3 text-lg leading-tight text-ink group-hover:text-gold-deep">{product.name}</p>
             </Link>

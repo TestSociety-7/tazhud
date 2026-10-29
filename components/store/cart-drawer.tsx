@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
+import { useStore } from "@/components/providers/store-provider";
 import { Sheet } from "@/components/ui/sheet";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CartLineItem, OrderSummary } from "./cart-parts";
 
 export function CartDrawer() {
   const { drawerOpen, setDrawerOpen, lines, count } = useCart();
+  const { data } = useStore();
   const pathname = usePathname();
   const [lastPath, setLastPath] = useState(pathname);
   if (pathname !== lastPath) {
@@ -34,7 +36,7 @@ export function CartDrawer() {
                 إتمام الطلب عبر واتساب
               </Link>
               <Link href="/cart" onClick={close} className="btn btn-ghost w-full">
-                عرض السلة وإضافة كود خصم
+                {data.settings.couponsEnabled ? "عرض السلة وإضافة كود خصم" : "عرض السلة"}
               </Link>
             </div>
           </div>
