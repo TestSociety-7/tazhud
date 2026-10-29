@@ -56,6 +56,12 @@ function splitPrayerCategory(categories: Category[], products: Product[]) {
   };
 }
 
+/** Keeps the chosen hero products only while they still exist. */
+function heroWithProducts(hero: StoreData["homepage"]["hero"], products: StoreData["products"]) {
+  const keep = (id: unknown) => (typeof id === "string" && products.some((p) => p.id === id) ? id : "");
+  return { ...hero, heroProductId: keep(hero.heroProductId), cardProductId: keep(hero.cardProductId) };
+}
+
 /** Fills in fields added in later versions so older saved data keeps working. */
 export function normalizeStoreData(input: Partial<StoreData> | null | undefined): StoreData {
   const seed = createSeedData();
@@ -78,7 +84,7 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       ...seed.homepage,
       ...input.homepage,
       announcement: { ...seed.homepage.announcement, ...input.homepage?.announcement },
-      hero: { ...seed.homepage.hero, ...input.homepage?.hero },
+      hero: heroWithProducts({ ...seed.homepage.hero, ...input.homepage?.hero }, products),
       promo: { ...seed.homepage.promo, ...input.homepage?.promo },
       story: { ...seed.homepage.story, ...input.homepage?.story },
       sections: (input.homepage?.sections?.length ? input.homepage.sections : seed.homepage.sections).filter((x) => HOME_SECTIONS.has(x.key)),

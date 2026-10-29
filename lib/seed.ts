@@ -673,6 +673,8 @@ export const seedHomepage: HomepageContent = {
     secondaryHref: "/shop?category=hijabs",
     image: "/art/hero.svg",
     secondaryImage: "",
+    heroProductId: "",
+    cardProductId: "",
   },
   promo: {
     eyebrow: "",

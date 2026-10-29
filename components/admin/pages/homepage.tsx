@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowDown, ArrowUp, ExternalLink, Plus, Trash2 } from "lucide-react";
 import type { HomepageContent } from "@/lib/types";
 import { SingleImageInput } from "../image-input";
+import { ProductPicker } from "../product-picker";
 import { FormField, PageHeader, Panel, Toggle } from "../ui";
 import { useSave } from "../use-save";
 import { SaveBar, useDraft } from "../use-draft";
@@ -61,12 +62,30 @@ export function HomepageEditor() {
       />
 
       <div className="stagger space-y-6">
-        <Panel title="الصورة الرئيسية والعنوان">
+        <Panel title="صور الواجهة" description="اختر المنتج الذي يظهر في الصورة الكبيرة، والمنتج الذي يظهر في البطاقة الصغيرة بجانبها.">
           <div className="grid gap-5 md:grid-cols-2">
-            <div className="md:row-span-3">
-              <p className="label">الصورة</p>
-              <SingleImageInput label="رابط الصورة الرئيسية" value={h.hero.image} onChange={(v) => patch("hero", { image: v })} />
+            <div className="space-y-4">
+              <ProductPicker
+                label="الصورة الكبيرة"
+                value={h.hero.heroProductId}
+                onChange={(id) => patch("hero", { heroProductId: id })}
+                autoLabel="صورة من اختيارك"
+                autoNote="ارفع صورة بالأسفل بدل منتج"
+              />
+              {!h.hero.heroProductId && <SingleImageInput label="رابط الصورة الرئيسية" value={h.hero.image} onChange={(v) => patch("hero", { image: v })} />}
             </div>
+            <ProductPicker
+              label="البطاقة الصغيرة"
+              value={h.hero.cardProductId}
+              onChange={(id) => patch("hero", { cardProductId: id })}
+              autoLabel="تلقائي"
+              autoNote="أرخص طرحة في المتجر"
+            />
+          </div>
+        </Panel>
+
+        <Panel title="العنوان والنص">
+          <div className="grid gap-5 md:grid-cols-2">
             <FormField label="العنوان" htmlFor="h-title">
               <input id="h-title" className="field" value={h.hero.title} onChange={(e) => patch("hero", { title: e.target.value })} />
             </FormField>

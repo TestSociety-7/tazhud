@@ -142,6 +142,10 @@ export interface HomepageContent {
     secondaryHref: string;
     image: string;
     secondaryImage: string;
+    /** Product shown in the big arch ("" = use `image`). */
+    heroProductId: string;
+    /** Product shown on the small floating card ("" = the cheapest hijab). */
+    cardProductId: string;
   };
   promo: {
     eyebrow: string;

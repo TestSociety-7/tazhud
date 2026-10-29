@@ -17,12 +17,19 @@ export function Hero() {
   const artRef = useRef<HTMLDivElement>(null);
   const floatRef = useRef<HTMLDivElement>(null);
 
-  // Cheapest hijab, shown on the floating card next to the main image.
-  const hijab = visibleProducts(data)
+  // The admin can choose a product for the big arch and for the small card.
+  const visible = visibleProducts(data);
+  const chosen = (id: string) => (id ? visible.find((p) => p.id === id && p.images[0]) : undefined);
+  const heroProduct = chosen(hero.heroProductId);
+  const cardProduct = chosen(hero.cardProductId);
+  // Otherwise the small card shows the cheapest hijab.
+  const hijab = visible
     .filter((p) => p.categoryId === "cat-hijabs" && p.images[0])
     .sort((a, b) => effectivePrice(a) - effectivePrice(b))[0];
-  const detailImage =
-    hero.secondaryImage || hijab?.images[1] || hijab?.images[0];
+  const mainImage = heroProduct?.images[0] || hero.image;
+  const detailImage = cardProduct
+    ? cardProduct.images[0]
+    : hero.secondaryImage || hijab?.images[1] || hijab?.images[0];
 
   // The artwork drifts slower than the page and the small card faster, for depth.
   useEffect(() => {
@@ -111,8 +118,8 @@ export function Hero() {
             <Tilt max={6} className="rounded-t-full">
               <div className="arch-full relative aspect-[4/5] overflow-hidden shadow-[0_40px_80px_-40px_rgb(0_0_0/0.9)] ring-1 ring-gold/40 ring-offset-8 ring-offset-ink">
                 <SmartImage
-                  src={hero.image}
-                  alt="أزياء محتشمة من تزهّد"
+                  src={mainImage}
+                  alt={heroProduct?.name ?? "أزياء محتشمة من تزهّد"}
                   priority
                   unveil
                   className="absolute inset-0"
@@ -121,6 +128,19 @@ export function Hero() {
                   className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent"
                   aria-hidden
                 />
+                {heroProduct && (
+                  <Link
+                    href={`/product/${heroProduct.slug}`}
+                    className="absolute inset-0 z-10 flex items-end justify-end p-4 sm:p-5"
+                  >
+                    <span className="rounded-full bg-ink/70 px-3.5 py-1.5 text-xs text-ivory backdrop-blur-sm sm:text-sm">
+                      {heroProduct.name} ·{" "}
+                      <strong className="text-gold-soft">
+                        {formatMoney(effectivePrice(heroProduct), data.settings)}
+                      </strong>
+                    </span>
+                  </Link>
+                )}
               </div>
             </Tilt>
           </div>
@@ -135,7 +155,11 @@ export function Hero() {
               <div className="animate-fade-up [animation-delay:600ms]">
                 <Link
                   href={
-                    hijab ? `/product/${hijab.slug}` : "/shop?category=hijabs"
+                    cardProduct
+                      ? `/product/${cardProduct.slug}`
+                      : hijab
+                        ? `/product/${hijab.slug}`
+                        : "/shop?category=hijabs"
                   }
                   className="float-soft block rounded-[1.25rem] bg-ivory p-2 text-ink shadow-[var(--shadow-lift)]"
                 >
@@ -144,7 +168,14 @@ export function Hero() {
                     alt=""
                     className="aspect-square rounded-xl"
                   />
-                  {hijab && (
+                  {cardProduct ? (
+                    <p className="px-1.5 pt-2 pb-1 text-[0.72rem] leading-tight text-muted">
+                      <span className="line-clamp-1">{cardProduct.name}</span>
+                      <strong className="text-ink">
+                        {formatMoney(effectivePrice(cardProduct), data.settings)}
+                      </strong>
+                    </p>
+                  ) : hijab && (
                     <p className="px-1.5 pt-2 pb-1 text-[0.72rem] leading-tight text-muted">
                       طرح ابتداءً من{" "}
                       <strong className="text-ink">
