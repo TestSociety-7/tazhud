@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Camera, ImagePlus, Link2, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { upload } from "@vercel/blob/client";
 import { useStore } from "@/components/providers/store-provider";
 import { SmartImage } from "@/components/ui/smart-image";
 
@@ -41,13 +40,23 @@ async function resize(file: File, maxSize: number) {
  */
 export async function prepareImage(file: File, shared: boolean): Promise<string> {
   if (!shared) return (await resize(file, 1200)).toDataURL("image/jpeg", 0.82);
-  const canvas = await resize(file, 1800);
-  const blob = await new Promise<Blob>((resolve, reject) =>
-    canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("تعذّر تجهيز الصورة."))), "image/jpeg", 0.86),
-  );
-  const name = `products/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`;
-  const result = await upload(name, blob, { access: "public", handleUploadUrl: "/api/admin/upload", contentType: "image/jpeg" });
-  return result.url;
+  // Keep each upload under the server limit: shrink a little more if a photo is unusually heavy.
+  let blob: Blob | null = null;
+  for (const [size, quality] of [
+    [1800, 0.86],
+    [1500, 0.8],
+    [1200, 0.74],
+  ] as const) {
+    const canvas = await resize(file, size);
+    blob = await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("تعذّر تجهيز الصورة."))), "image/jpeg", quality),
+    );
+    if (blob.size <= 3.8 * 1024 * 1024) break;
+  }
+  const res = await fetch("/api/admin/upload", { method: "POST", headers: { "Content-Type": "image/jpeg" }, body: blob });
+  const body = (await res.json().catch(() => ({}))) as { url?: string; error?: string };
+  if (!res.ok || !body.url) throw new Error(body.error ?? "تعذّر رفع الصورة. حاول مجددًا.");
+  return body.url;
 }
 
 const isLikelyUrl = (v: string) => /^(https?:\/\/|\/)[^\s]+$/i.test(v.trim());

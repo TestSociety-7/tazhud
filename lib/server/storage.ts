@@ -32,13 +32,17 @@ export function blobToken(): string | undefined {
   return undefined;
 }
 
+/**
+ * Shared storage is on when there is a Blob token, or when the store is connected
+ * the newer way (BLOB_STORE_ID), where Vercel signs requests itself (OIDC).
+ */
 export function hasSharedStorage() {
-  return Boolean(blobToken());
+  return Boolean(blobToken() || process.env.BLOB_STORE_ID);
 }
 
 /** Server-only seed for names and keys that must stay stable and unguessable. */
 export function serverSeed() {
-  return process.env.ADMIN_SESSION_SECRET || blobToken() || "tazhud";
+  return process.env.ADMIN_SESSION_SECRET || blobToken() || process.env.BLOB_STORE_ID || "tazhud";
 }
 
 function privateFolder() {
