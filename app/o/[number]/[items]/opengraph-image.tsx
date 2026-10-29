@@ -13,11 +13,13 @@ export const contentType = "image/png";
 /** Fetches a picture as a data address so the image renderer never has to fetch it itself. */
 async function asData(src: string) {
   try {
-    const url = src.startsWith("http") ? src : `${SITE_URL}${src.startsWith("/") ? "" : "/"}${src}`;
+    const url = new URL(src.startsWith("http") ? src : `${SITE_URL}${src.startsWith("/") ? "" : "/"}${src}`);
+    // Only this site and its own photo storage, never any other address.
+    if (url.protocol !== "https:" || (url.origin !== new URL(SITE_URL).origin && !url.hostname.endsWith(".public.blob.vercel-storage.com"))) return null;
     const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return null;
+    if (!res.ok || Number(res.headers.get("content-length") ?? 0) > 4_000_000) return null;
     const type = res.headers.get("content-type")?.split(";")[0] || "image/jpeg";
-    if (!/^image\/(png|jpeg|svg\+xml)$/.test(type)) return null;
+    if (!/^image\/(png|jpeg)$/.test(type)) return null;
     const buf = Buffer.from(await res.arrayBuffer());
     if (buf.length > 4_000_000) return null;
     return `data:${type};base64,${buf.toString("base64")}`;

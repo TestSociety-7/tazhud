@@ -5,9 +5,13 @@ import { hasSharedStorage, orderExists, readCatalogFresh, writeOrder } from "@/l
 import { catalogToStoreData } from "@/lib/repository";
 import { bundleDetails, deliveryFor, effectivePrice, evaluateCoupon, formatMoney, roundMoney } from "@/lib/commerce";
 import { notifyAdmins } from "@/lib/server/push";
+import { orderFlood } from "@/lib/server/spam";
 import type { OrderLine } from "@/lib/types";
 
 const MAX_ORDERS = 8;
+/** The number the checkout makes, e.g. TZ-261029-4821. */
+const NUMBER_RE = /^TZ-\d{6}-\d{4}$/;
+const PHONE_RE = /^\+?[\d\s\-().]{7,20}$/;
 const WINDOW_MS = 10 * 60 * 1000;
 
 /** Saves a copy of a checkout for the admin. The order itself is sent on WhatsApp. */
@@ -24,9 +28,16 @@ export async function POST(request: Request) {
     return jsonError("طلب غير صالح.", 400);
   }
   if (!order || !order.customer.name || !order.customer.phone) return jsonError("طلب غير صالح.", 400);
+  // Same checks as the checkout form, so hand-made requests can't slip junk in.
+  const digits = order.customer.phone.replace(/\D/g, "");
+  if (!NUMBER_RE.test(order.number) || !PHONE_RE.test(order.customer.phone) || digits.length < 7 || digits.length > 15) {
+    return jsonError("طلب غير صالح.", 400);
+  }
   // Customers can only create new inquiries, never edit existing ones.
   if (await orderExists(order.id)) return jsonError("هذا الطلب محفوظ مسبقًا.", 409);
   hit("orders", ip, WINDOW_MS);
+  const flood = await orderFlood(order.customer.phone);
+  if (flood) return jsonError(flood, 429);
 
   // Prices come from the saved catalogue, never from the browser.
   const store = catalogToStoreData(await readCatalogFresh());
@@ -37,7 +48,11 @@ export async function POST(request: Request) {
       return [{ ...l, kind: "bundle", name: b.name, color: "", size: "", unitPrice: b.price }];
     }
     const p = store.products.find((x) => x.id === l.refId && x.published);
-    return p ? [{ ...l, kind: "product", name: p.name, unitPrice: effectivePrice(p) }] : [];
+    if (!p) return [];
+    // Only a colour and size the piece really comes in.
+    const color = p.colors.some((c) => c.name === l.color) ? l.color : undefined;
+    const size = p.sizes.includes(l.size ?? "") ? l.size : undefined;
+    return [{ ...l, kind: "product", name: p.name, color, size, unitPrice: effectivePrice(p) }];
   });
   if (!lines.length) return jsonError("طلب غير صالح.", 400);
   const subtotal = roundMoney(lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0));

@@ -103,8 +103,23 @@ async function readFolder<T>(folder: string, limit: number): Promise<T[]> {
 }
 
 export async function readOrders(): Promise<OrderInquiry[]> {
-  const orders = await readFolder<OrderInquiry>("orders", 500);
+  const orders = await readFolder<OrderInquiry>("orders", 20_000);
   return orders.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+let lookupCache: { at: number; orders: Promise<OrderInquiry[]> } | null = null;
+
+/**
+ * Orders for customers' own lookups (status, returns). Kept for 20 seconds, so
+ * many lookups in a row can't make the server read every order again and again.
+ */
+export function readOrdersForLookup() {
+  if (!lookupCache || Date.now() - lookupCache.at > 20_000) {
+    const orders = readOrders();
+    lookupCache = { at: Date.now(), orders };
+    orders.catch(() => (lookupCache = null));
+  }
+  return lookupCache.orders;
 }
 
 export async function readSubscribers(): Promise<Subscriber[]> {
@@ -130,6 +145,26 @@ export async function listOrderIds(): Promise<string[]> {
     cursor = page.hasMore ? page.cursor : undefined;
   } while (cursor);
   return ids;
+}
+
+/**
+ * Orders or return requests written in the last `sinceMs` milliseconds, newest
+ * first. The folder listing says when each file was last written, so only
+ * those few files are read. Used to spot floods of fake requests.
+ */
+export async function readRecent<T extends { createdAt: string }>(folder: "orders" | "returns", sinceMs: number, max = 100): Promise<T[]> {
+  const since = Date.now() - sinceMs;
+  const recent: { pathname: string; at: number }[] = [];
+  let cursor: string | undefined;
+  do {
+    const page = await list({ prefix: `${privateFolder()}/${folder}/`, cursor, limit: 1000, token: blobToken() });
+    for (const b of page.blobs) if (b.uploadedAt.getTime() >= since) recent.push({ pathname: b.pathname, at: b.uploadedAt.getTime() });
+    cursor = page.hasMore ? page.cursor : undefined;
+  } while (cursor);
+  recent.sort((a, b) => b.at - a.at);
+  const items = await Promise.all(recent.slice(0, max).map((b) => readJson<T>(b.pathname).catch(() => null)));
+  // Admin edits also rewrite files, so keep only ones actually created recently.
+  return items.filter((it) => !!it && Date.parse(it.createdAt) >= since) as T[];
 }
 
 /* Customers' return and exchange requests. */

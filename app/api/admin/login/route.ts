@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminPasscode, checkPasscode, createSessionToken, sessionCookie } from "@/lib/admin-auth";
-import { jsonError, sameOrigin } from "@/lib/server/guard";
+import { jsonError, readBody, sameOrigin } from "@/lib/server/guard";
 import { blockedFor, clear, clientIp, hit } from "@/lib/server/rate-limit";
 
 const MAX_FAILS = 5;
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   let passcode = "";
   try {
-    const body = (await request.json()) as { passcode?: unknown };
+    const body = (await readBody(request, 2_000)) as { passcode?: unknown };
     passcode = typeof body.passcode === "string" ? body.passcode : "";
   } catch {
     return jsonError("طلب غير صالح.", 400);

@@ -25,12 +25,29 @@ export function vapidKeys() {
   }
 }
 
+/**
+ * The push services browsers really use. The server sends a request to the
+ * saved address, so only these hosts are accepted (nothing inside Vercel or
+ * elsewhere can be reached through it).
+ */
+const PUSH_HOSTS = [/^fcm\.googleapis\.com$/, /^web\.push\.apple\.com$/, /(^|\.)push\.services\.mozilla\.com$/, /\.notify\.windows\.com$/];
+
+function isPushServiceUrl(endpoint: string) {
+  try {
+    const url = new URL(endpoint);
+    return url.protocol === "https:" && !url.port && !url.username && PUSH_HOSTS.some((re) => re.test(url.hostname));
+  } catch {
+    return false;
+  }
+}
+
 export function isValidSubscription(input: unknown): input is PushSubscription {
   const s = input as PushSubscription | null;
   return (
     !!s &&
     typeof s.endpoint === "string" &&
     /^https:\/\/[^\s]{8,800}$/.test(s.endpoint) &&
+    isPushServiceUrl(s.endpoint) &&
     typeof s.keys?.p256dh === "string" &&
     typeof s.keys?.auth === "string" &&
     s.keys.p256dh.length < 200 &&

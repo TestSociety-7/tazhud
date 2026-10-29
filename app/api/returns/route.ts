@@ -4,11 +4,12 @@ import { blockedFor, clientIp, hit } from "@/lib/server/rate-limit";
 import { hasSharedStorage, writeReturn } from "@/lib/server/storage";
 import { findCustomerOrder } from "@/lib/server/returns";
 import { notifyAdmins } from "@/lib/server/push";
+import { returnFlood } from "@/lib/server/spam";
 import { newId } from "@/lib/commerce";
 import { RETURN_REASONS, RETURN_TYPE_LABEL } from "@/lib/returns";
 import type { ReturnRequest } from "@/lib/types";
 
-const MAX_REQUESTS = 5;
+const MAX_REQUESTS = 8;
 const WINDOW_MS = 30 * 60 * 1000;
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 
@@ -18,6 +19,8 @@ export async function POST(request: Request) {
   if (!sameOrigin(request)) return jsonError("طلب غير مسموح.", 403);
   const ip = clientIp(request);
   if (blockedFor("returns", ip, MAX_REQUESTS)) return jsonError("طلبات كثيرة في وقت قصير. راسلينا على واتساب.", 429);
+  // Every try counts, so order numbers can't be guessed here.
+  hit("returns", ip, WINDOW_MS);
 
   let body: Record<string, unknown>;
   try {
@@ -40,7 +43,8 @@ export async function POST(request: Request) {
   const type = body.type === "refund" ? "refund" : body.type === "exchange" ? "exchange" : null;
   const reason = str(body.reason, 120);
   if (!lines.length || !type || !reason) return jsonError("اختاري القطع وسبب الطلب.", 400);
-  hit("returns", ip, WINDOW_MS);
+  const flood = await returnFlood(order.number);
+  if (flood) return jsonError(flood, 429);
 
   const rand = Math.floor(1000 + Math.random() * 9000);
   const ret: ReturnRequest = {
