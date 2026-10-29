@@ -6,11 +6,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  ChevronLeft,
   Menu,
   MessageCircle,
+  Package,
   Search,
   ShoppingBag,
+  Undo2,
 } from "lucide-react";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
@@ -23,6 +24,7 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { Sheet } from "@/components/ui/sheet";
 import { SearchPanel } from "./search-panel";
 import { whatsappLink } from "@/lib/whatsapp";
+import { readMyOrders } from "@/lib/my-orders";
 import { SeasonTrim } from "./season";
 
 export function SiteHeader() {
@@ -32,6 +34,7 @@ export function SiteHeader() {
   // Read when the menu opens, so the header itself never waits on the query string.
   const [currentCategory, setCurrentCategory] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [myOrders, setMyOrders] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [bump, setBump] = useState(false);
@@ -92,6 +95,7 @@ export function SiteHeader() {
                 setCurrentCategory(
                   new URLSearchParams(location.search).get("category"),
                 );
+                setMyOrders(readMyOrders().length);
                 setMenuOpen(true);
               }}
               aria-label="فتح القائمة"
@@ -137,6 +141,9 @@ export function SiteHeader() {
             >
               <Search className="size-5" />
             </button>
+            <Link href="/orders" className="icon-btn hidden lg:inline-grid" aria-label="طلباتي">
+              <Package className="size-5" />
+            </Link>
             <a
               href={data.settings.instagramUrl}
               target="_blank"
@@ -206,78 +213,79 @@ export function SiteHeader() {
             <Search className="size-4 text-gold" /> ابحثي عن قطعة…
           </button>
 
-          <p className="relative mt-7 mb-1 text-xs font-semibold tracking-wide text-gold">
-            الأقسام
-          </p>
-          <ul className="menu-stagger relative">
+          {/* The things customers come back for, one tap away. */}
+          <ul className="menu-stagger relative mt-5 grid grid-cols-2 gap-3">
+            {[
+              { href: "/orders", label: "طلباتي", note: myOrders ? `${myOrders} ${myOrders === 1 ? "طلب" : "طلبات"}` : "تابعي طلباتكِ", icon: Package },
+              { href: "/returns", label: "إرجاع أو استبدال", note: `خلال ${data.settings.returnDays} أيام`, icon: Undo2 },
+              { href: "/cart", label: "السلة", note: hydrated && count ? piecesLabel(count) : "فارغة", icon: ShoppingBag },
+              { href: whatsappLink(data.settings.whatsappNumber), label: "تواصلي معنا", note: "واتساب", icon: MessageCircle, external: true },
+            ].map(({ href, label, note, icon: Icon, external }) => (
+              <li key={label}>
+                <Link
+                  href={href}
+                  {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  aria-current={pathname === href ? "page" : undefined}
+                  className={`press flex h-full flex-col gap-3 rounded-2xl border p-3.5 transition-colors ${pathname === href ? "border-gold/60 bg-gold/15" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"}`}
+                >
+                  <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-gold-bright to-gold-deep text-ink shadow-[0_8px_18px_-8px_rgb(201_162_74/0.7)]">
+                    <Icon className="size-5" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-semibold text-ivory">{label}</span>
+                    <span className="block text-[0.7rem] text-ivory/55">{note}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="relative mt-7 mb-3 flex items-center justify-between">
+            <p className="text-xs font-semibold tracking-wide text-gold">الأقسام</p>
+            <Link href="/shop" className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-gold-soft">
+              كل المنتجات <ArrowLeft className="size-3.5" />
+            </Link>
+          </div>
+          <ul className="menu-stagger relative grid grid-cols-3 gap-x-3 gap-y-4">
             {categories.map((c) => {
               const active = pathname === "/shop" && currentCategory === c.slug;
               return (
-                <li key={c.id} className="border-b border-white/10">
+                <li key={c.id}>
                   <Link
                     href={`/shop?category=${c.slug}`}
                     aria-current={active ? "page" : undefined}
-                    className="group flex min-h-[4.5rem] items-center gap-4 py-2"
+                    className="group block text-center"
                   >
-                    <span className="arch-full relative h-14 w-11 shrink-0 overflow-hidden bg-ink-2 ring-1 ring-gold/30 transition-transform duration-500 group-active:scale-95">
-                      <SmartImage
-                        src={c.image}
-                        alt=""
-                        className="absolute inset-0"
-                        fallbackLabel={c.name}
-                      />
+                    <span className={`arch-full relative block aspect-[3/4] overflow-hidden bg-ink-2 ring-1 transition-transform duration-500 group-active:scale-95 ${active ? "ring-2 ring-gold" : "ring-gold/30"}`}>
+                      <SmartImage src={c.image} alt="" className="absolute inset-0" fallbackLabel={c.name} />
                     </span>
-                    <span className="min-w-0 flex-1">
-                      <span
-                        className={`font-display block text-[1.6rem] leading-tight transition-colors ${active ? "text-gold" : "text-ivory group-hover:text-gold-soft"}`}
-                      >
-                        {c.name}
-                      </span>
-                      <span className="block text-xs text-ivory/50">
-                        {piecesLabel(counts(c.id))}
-                      </span>
-                    </span>
-                    <ChevronLeft className="size-5 text-gold/70 transition-transform duration-300 group-hover:-translate-x-1" />
+                    <span className={`mt-1.5 block text-[0.8rem] leading-tight font-semibold ${active ? "text-gold" : "text-ivory"}`}>{c.name}</span>
+                    <span className="block text-[0.65rem] text-ivory/45">{piecesLabel(counts(c.id))}</span>
                   </Link>
                 </li>
               );
             })}
           </ul>
 
-          <Link
-            href="/shop"
-            className="press sheen btn btn-gold relative mt-6 w-full"
-          >
-            كل المنتجات <ArrowLeft className="size-4" />
-          </Link>
-
           <div className="relative mt-auto pt-8">
-            <div className="grid grid-cols-2 gap-3">
-              <a
-                href={whatsappLink(data.settings.whatsappNumber)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="press btn btn-whatsapp"
-              >
-                <MessageCircle className="size-4" /> واتساب
-              </a>
+            <div className="flex items-center justify-center gap-2">
               {data.settings.instagramUrl && (
                 <a
                   href={data.settings.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="press btn btn-outline border-white/20 text-ivory"
+                  className="press btn btn-sm btn-outline border-white/20 text-ivory"
                 >
                   <InstagramIcon className="size-4" /> إنستغرام
                 </a>
               )}
+              <InstallAppButton className="press btn btn-sm border border-white/15 text-gold-soft" />
             </div>
-            <InstallAppButton className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-white/10 text-sm text-gold-soft" />
             <Link
               href="/policies"
-              className="mt-1 flex min-h-11 items-center justify-center text-sm text-ivory/55 underline-offset-4 hover:text-ivory hover:underline"
+              className="mt-2 flex min-h-11 items-center justify-center text-sm text-ivory/55 underline-offset-4 hover:text-ivory hover:underline"
             >
-              التوصيل والاستبدال
+              التوصيل والإرجاع والسياسات
             </Link>
           </div>
         </nav>

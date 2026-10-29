@@ -10,6 +10,7 @@ import { buildOrderMessage, isValidWhatsappNumber, whatsappLink } from "@/lib/wh
 import { newId, newOrderNumber } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
 import { orderPicturesUrl } from "@/lib/order-pictures";
+import { saveMyOrder } from "@/lib/my-orders";
 import type { OrderInquiry } from "@/lib/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SmartImage } from "@/components/ui/smart-image";
@@ -136,6 +137,7 @@ export function CheckoutView() {
     } catch {
       /* storage unavailable: nothing to remember */
     }
+    saveMyOrder(order);
 
     const res = await update((d) => ({ ...d, orders: [order, ...d.orders] }));
     if (!res.ok) toast.warning("رسالة واتساب جاهزة، لكن تعذّر حفظ نسخة من الطلب. أرسلي الرسالة لإتمام طلبكِ.");
@@ -162,7 +164,7 @@ export function CheckoutView() {
             <Link href="/shop" className="btn btn-ghost">متابعة التسوق</Link>
           </div>
           <p className="mt-6 text-xs text-muted">
-            احتفظي برقم الطلب. إذا احتجتِ لاحقًا إلى إرجاع أو استبدال قطعة، <Link href="/returns" className="font-semibold text-forest underline underline-offset-4">من هنا</Link>.
+            تجدين طلبكِ دائمًا في <Link href="/orders" className="font-semibold text-forest underline underline-offset-4">طلباتي</Link>، ومنها يمكنكِ طلب إرجاع أو استبدال.
           </p>
           <p className="mt-6 text-xs text-muted">لم يفتح واتساب؟ استخدمي الزر أعلاه، أو راسلينا على <span className="ltr inline-block">+{data.settings.whatsappNumber}</span> مع رقم طلبكِ.</p>
         </div>

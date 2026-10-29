@@ -10,6 +10,7 @@ import { useMoney } from "@/components/ui/price";
 import { QuantityControl } from "@/components/ui/quantity";
 import { buildReturnMessage, LAST_ORDER_KEY, RETURN_REASONS } from "@/lib/returns";
 import { whatsappLink } from "@/lib/whatsapp";
+import { readMyOrders } from "@/lib/my-orders";
 import { dateFormat } from "@/lib/arabic";
 import type { OrderLine, ReturnRequest } from "@/lib/types";
 
@@ -32,28 +33,20 @@ export function ReturnsView() {
   const [notes, setNotes] = useState("");
   const [done, setDone] = useState<ReturnRequest | null>(null);
 
-  // Fill in the order this phone placed last.
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(LAST_ORDER_KEY) || "null") as { number?: string; phone?: string } | null;
-      if (!saved) return;
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading this device's last order after hydration
-      setNumber(saved.number ?? "");
-      setPhone(saved.phone ?? "");
-    } catch {
-      /* storage unavailable: the customer types them */
-    }
-  }, []);
 
   const helpLink = whatsappLink(s.whatsappNumber, `السلام عليكم ${s.storeName}، أرغب في إرجاع أو استبدال قطعة من طلبي.`);
 
-  async function lookup(e: React.FormEvent) {
+  function lookup(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     if (number.trim().length < 4 || phone.replace(/\D/g, "").length < 7) {
       setError("اكتبي رقم الطلب ورقم الهاتف كما في رسالة واتساب.");
       return;
     }
+    void find(number, phone);
+  }
+
+  async function find(number: string, phone: string) {
+    setError("");
     setBusy(true);
     try {
       const res = await fetch("/api/returns/lookup", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ number, phone }) });
@@ -71,6 +64,23 @@ export function ReturnsView() {
       setBusy(false);
     }
   }
+
+  // Fill in the order chosen in "My orders" (?n=), or the one this phone placed last.
+  useEffect(() => {
+    try {
+      const wanted = new URLSearchParams(location.search).get("n");
+      const mine = wanted ? readMyOrders().find((o) => o.number === wanted) : undefined;
+      const saved = mine ?? (JSON.parse(localStorage.getItem(LAST_ORDER_KEY) || "null") as { number?: string; phone?: string } | null);
+      if (!saved) return;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading this device's last order after hydration
+      setNumber(saved.number ?? "");
+      setPhone(saved.phone ?? "");
+      // Coming from "My orders": open that order straight away.
+      if (mine) void find(mine.number, mine.phone);
+    } catch {
+      /* storage unavailable: the customer types them */
+    }
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
