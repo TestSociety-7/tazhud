@@ -38,7 +38,7 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
   return (
     <section className="container-x pt-16 sm:pt-24">
       <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
-      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-6">
+      <ul className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-7 lg:gap-5">
         {cats.map((c, i) => (
           <Reveal as="li" key={c.id} delay={i * 80} className="w-[42%] shrink-0 snap-start sm:w-auto">
             <Link href={`/shop?category=${c.slug}`} className="press group block text-center">
@@ -53,7 +53,7 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
                   />
                 </div>
               </Tilt>
-              <p className="font-display mt-3 text-xl text-ink transition-colors group-hover:text-gold-deep">{c.name}</p>
+              <p className="font-display mt-3 text-xl text-ink transition-colors group-hover:text-gold-deep lg:text-lg">{c.name}</p>
               <p className="text-xs text-muted">{piecesLabel(counts(c.id))}</p>
             </Link>
           </Reveal>

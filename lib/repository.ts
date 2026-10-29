@@ -1,5 +1,5 @@
 import { createSeedData } from "./seed";
-import type { OrderInquiry, StoreData, Subscriber } from "./types";
+import type { Category, OrderInquiry, Product, StoreData, Subscriber } from "./types";
 
 /**
  * The storage boundary for everything the admin can edit.
@@ -27,10 +27,40 @@ const STORAGE_KEY = "tazhud:store:v3";
 /** Homepage sections the storefront still renders. */
 const HOME_SECTIONS = new Set(["categories", "newArrivals", "promo"]);
 
+/**
+ * Older saves had one "الخمار وملابس الصلاة" category. Khimars now have their
+ * own page, so split it once: add الخمارات and move every khimar into it.
+ */
+function splitPrayerCategory(categories: Category[], products: Product[]) {
+  const prayer = categories.find((c) => c.id === "cat-prayer");
+  if (!prayer || prayer.name !== "الخمار وملابس الصلاة" || categories.some((c) => c.id === "cat-khimars")) {
+    return { categories, products };
+  }
+  const khimars: Category = {
+    id: "cat-khimars",
+    slug: "khimars",
+    name: "الخمارات",
+    description: "خمارات سهلة اللبس بطبقة أو طبقتين، تنسدل بنعومة وتبقى ثابتة.",
+    image: prayer.image,
+    sortOrder: prayer.sortOrder,
+  };
+  const prayerClothes = { ...prayer, name: "ملابس الصلاة", description: "إسدالات وأطقم صلاة واسعة ومريحة تُطوى بسهولة." };
+  return {
+    categories: [
+      ...categories.map((c) =>
+        c.id === prayer.id ? { ...prayerClothes, sortOrder: c.sortOrder + 1 } : c.sortOrder > prayer.sortOrder ? { ...c, sortOrder: c.sortOrder + 1 } : c,
+      ),
+      khimars,
+    ],
+    products: products.map((p) => (p.categoryId === prayer.id && p.name.includes("خمار") ? { ...p, categoryId: khimars.id } : p)),
+  };
+}
+
 /** Fills in fields added in later versions so older saved data keeps working. */
 export function normalizeStoreData(input: Partial<StoreData> | null | undefined): StoreData {
   const seed = createSeedData();
   if (!input || input.version !== 1) return seed;
+  const { categories, products } = splitPrayerCategory(input.categories ?? seed.categories, input.products ?? seed.products);
   return {
     ...seed,
     ...input,
@@ -52,8 +82,8 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       story: { ...seed.homepage.story, ...input.homepage?.story },
       sections: (input.homepage?.sections?.length ? input.homepage.sections : seed.homepage.sections).filter((x) => HOME_SECTIONS.has(x.key)),
     },
-    categories: input.categories ?? seed.categories,
-    products: input.products ?? seed.products,
+    categories,
+    products,
     bundles: input.bundles ?? seed.bundles,
     coupons: input.coupons ?? seed.coupons,
     orders: input.orders ?? seed.orders,

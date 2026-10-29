@@ -137,6 +137,27 @@ const GARMENTS = {
     ],
     inner: true,
   },
+  isdal: {
+    path: "M300 236 Q400 278 500 236 C640 320 716 600 702 930 Q400 962 98 930 C84 600 160 320 300 236 Z",
+    folds: [
+      ["M260 360 C210 560 170 760 150 920", 34, "d"],
+      ["M340 330 C330 560 322 760 318 945", 22, "l"],
+      ["M460 330 C470 560 478 760 482 945", 26, "d"],
+      ["M540 360 C590 560 630 760 650 920", 30, "l"],
+    ],
+    inner: true,
+  },
+  prayerSet: {
+    path: "M300 236 Q400 278 500 236 C610 296 680 480 704 712 Q400 760 96 712 C120 480 190 296 300 236 Z",
+    lower: "M176 700 L624 700 C646 790 664 870 676 934 Q400 966 124 934 C136 870 154 790 176 700 Z",
+    folds: [
+      ["M270 360 C230 480 200 600 180 720", 30, "d"],
+      ["M360 330 C352 480 346 600 344 740", 20, "l"],
+      ["M450 330 C458 480 464 600 466 740", 24, "d"],
+      ["M530 360 C570 480 600 600 620 720", 28, "l"],
+    ],
+    inner: true,
+  },
 };
 
 function garmentArt(type, color, bg, lowerColor) {
@@ -404,6 +425,19 @@ const products = {
     () => garmentArt("khimar", "#9aaa8f", IVORY),
     () => detailArt("#9aaa8f", IVORY),
     () => garmentArt("khimar", "#efe6d6", SAND),
+  ],
+  "long-single-layer-khimar": [
+    () => garmentArt("khimar", "#26304a", BLUSH),
+    () => detailArt("#26304a", BLUSH),
+  ],
+  "one-piece-prayer-isdal": [
+    () => garmentArt("isdal", "#efe6d6", SAGE_BG),
+    () => detailArt("#efe6d6", SAGE_BG),
+    () => garmentArt("isdal", "#9aaa8f", IVORY),
+  ],
+  "two-piece-prayer-set": [
+    () => garmentArt("prayerSet", "#d9b8ad", IVORY),
+    () => garmentArt("prayerSet", "#8d8a86", SAND),
   ],
 };
 

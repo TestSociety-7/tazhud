@@ -149,11 +149,11 @@ function ColorsEditor({
           {images.length > 0 ? (
             <div className="mt-3">
               <p className="mb-2 text-xs text-muted">صورة هذا اللون (اختياري): اضغط على الصورة المناسبة</p>
-              <ul className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={`صورة ${c.name || `اللون ${i + 1}`}`}>
+              <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label={`صورة ${c.name || `اللون ${i + 1}`}`}>
                 {images.map((src, k) => {
                   const picked = c.image === src;
                   return (
-                    <li key={src + k} className="shrink-0">
+                    <div key={src + k} className="shrink-0">
                       <button
                         type="button"
                         aria-pressed={picked}
@@ -168,10 +168,10 @@ function ColorsEditor({
                           </span>
                         )}
                       </button>
-                    </li>
+                    </div>
                   );
                 })}
-              </ul>
+              </div>
             </div>
           ) : (
             <p className="mt-2 text-xs text-muted">أضف صور المنتج أولًا، ثم اختر صورة لكل لون.</p>
