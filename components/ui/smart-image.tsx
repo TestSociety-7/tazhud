@@ -23,18 +23,40 @@ interface SmartImageProps {
 export function SmartImage({ src, alt, className = "", imgClassName = "", priority, unveil, fallbackLabel }: SmartImageProps) {
   const ref = useRef<HTMLImageElement>(null);
   const [state, setState] = useState<"loading" | "loaded" | "error">(src ? "loading" : "error");
+  const [retried, setRetried] = useState(false);
   const [prevSrc, setPrevSrc] = useState(src);
   if (src !== prevSrc) {
     setPrevSrc(src);
+    setRetried(false);
     setState(src ? "loading" : "error");
   }
+  // One quiet second try (skipping any stale cached copy) before showing the fallback.
+  const shown = retried && src && !src.startsWith("data:") ? `${src}${src.includes("?") ? "&" : "?"}retry=1` : src;
 
-  // Catch images that finished (or failed) before hydration attached handlers.
+  function failed() {
+    if (!retried && src && !src.startsWith("data:")) setRetried(true);
+    else setState("error");
+  }
+
+  // Catch images that finished (or failed) before hydration attached handlers. Safari can
+  // report a finished SVG as 0 wide until it is decoded, so ask it to decode before giving up.
   useEffect(() => {
     const img = ref.current;
     if (!img || !img.complete) return;
-    setState(img.naturalWidth > 0 ? "loaded" : "error");
-  }, [src]);
+    if (img.naturalWidth > 0) {
+      setState("loaded");
+      return;
+    }
+    let alive = true;
+    img.decode().then(
+      () => alive && setState("loaded"),
+      () => alive && failed(),
+    );
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- runs once per address
+  }, [shown]);
 
   return (
     <div className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-sand ${className}`}>
@@ -49,13 +71,13 @@ export function SmartImage({ src, alt, className = "", imgClassName = "", priori
       ) : (
         <img
           ref={ref}
-          src={src}
+          src={shown}
           alt={alt}
           loading={priority ? "eager" : "lazy"}
           fetchPriority={priority ? "high" : undefined}
           decoding="async"
           onLoad={() => setState("loaded")}
-          onError={() => setState("error")}
+          onError={failed}
           data-loaded={state === "loaded"}
           className={`h-full w-full object-cover transition-opacity duration-700 ${state === "loaded" ? "opacity-100" : "opacity-0"} ${unveil ? "unveil" : ""} ${imgClassName}`}
         />
