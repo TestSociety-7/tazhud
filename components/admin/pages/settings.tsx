@@ -11,7 +11,7 @@ import { useSave } from "../use-save";
 import { SaveBar, useDraft } from "../use-draft";
 import { NotificationsPanel } from "../order-alerts";
 
-type Errors = Partial<Record<"storeName" | "whatsappNumber" | "instagramUrl" | "deliveryFee" | "freeDeliveryThreshold", string>>;
+type Errors = Partial<Record<"storeName" | "whatsappNumber" | "instagramUrl" | "deliveryFee" | "freeDeliveryThreshold" | "returnDays", string>>;
 
 const INSTAGRAM_RE = /^https:\/\/(www\.)?instagram\.com\/([^\s/?#]+)\/?/i;
 
@@ -22,6 +22,7 @@ function validate(s: StoreSettings): Errors {
   if (s.instagramUrl && !INSTAGRAM_RE.test(s.instagramUrl.trim())) e.instagramUrl = "اكتب الرابط كاملًا مثل https://www.instagram.com/tazhudd/";
   if (!(s.deliveryFee >= 0)) e.deliveryFee = "اكتب 0 أو أكثر.";
   if (!(s.freeDeliveryThreshold >= 0)) e.freeDeliveryThreshold = "اكتب 0 أو أكثر.";
+  if (!(Number.isInteger(s.returnDays) && s.returnDays >= 0 && s.returnDays <= 60)) e.returnDays = "اكتب عدد أيام من 0 إلى 60.";
   return e;
 }
 
@@ -118,7 +119,7 @@ export function SettingsPage() {
           />
         </Panel>
 
-        <Panel title="التوصيل" description="المبالغ بالشيكل (₪).">
+        <Panel title="التوصيل والإرجاع" description="المبالغ بالشيكل (₪).">
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField label="رسوم التوصيل" htmlFor="s-deliveryFee" error={errors.deliveryFee}>
               <input
@@ -140,7 +141,17 @@ export function SettingsPage() {
                 aria-invalid={!!errors.freeDeliveryThreshold}
               />
             </FormField>
-            <FormField label="ملاحظة التوصيل" htmlFor="s-deliveryNote" className="sm:col-span-2" hint="تظهر للزبونة عند إتمام الطلب.">
+            <FormField label="مدة الإرجاع والاستبدال (أيام)" htmlFor="s-returnDays" error={errors.returnDays} hint="تظهر للزبونة في صفحة الإرجاع وعند إتمام الطلب.">
+              <input
+                id="s-returnDays"
+                className="field"
+                inputMode="numeric"
+                value={Number.isNaN(s.returnDays) ? "" : s.returnDays}
+                onChange={(e) => set("returnDays", num(e.target.value))}
+                aria-invalid={!!errors.returnDays}
+              />
+            </FormField>
+            <FormField label="ملاحظة التوصيل" htmlFor="s-deliveryNote" hint="تظهر للزبونة عند إتمام الطلب.">
               <input id="s-deliveryNote" className="field" value={s.deliveryNote} onChange={(e) => set("deliveryNote", e.target.value)} />
             </FormField>
           </div>

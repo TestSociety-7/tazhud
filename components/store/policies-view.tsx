@@ -1,6 +1,8 @@
 "use client";
 
 import { useStore } from "@/components/providers/store-provider";
+import Link from "next/link";
+import { Undo2 } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
 
 export function PoliciesView() {
@@ -21,6 +23,11 @@ export function PoliciesView() {
           <section key={p.id} id={p.id} className="scroll-mt-28">
             <h2 className="font-display text-3xl text-ink">{p.title}</h2>
             <p className="mt-3 leading-relaxed whitespace-pre-line text-muted">{p.body}</p>
+            {p.id === "pol-returns" && (
+              <Link href="/returns" className="press btn btn-primary mt-5">
+                <Undo2 className="size-4" /> اطلبي إرجاع أو استبدال
+              </Link>
+            )}
           </section>
         ))}
         <section className="card p-6">

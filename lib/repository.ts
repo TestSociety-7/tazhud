@@ -56,6 +56,11 @@ function splitPrayerCategory(categories: Category[], products: Product[]) {
   };
 }
 
+/** Whole days between 0 and 60; anything else falls back to a week. */
+function clampDays(v: unknown) {
+  return typeof v === "number" && Number.isFinite(v) && v >= 0 && v <= 60 ? Math.round(v) : 7;
+}
+
 /** Keeps the chosen hero products only while they still exist. */
 function heroWithProducts(hero: StoreData["homepage"]["hero"], products: StoreData["products"]) {
   const keep = (id: unknown) => (typeof id === "string" && products.some((p) => p.id === id) ? id : "");
@@ -77,8 +82,12 @@ export function normalizeStoreData(input: Partial<StoreData> | null | undefined)
       currency: "ILS",
       locale: "ar-u-nu-latn",
       season: SEASONS.includes(input.settings?.season as never) ? input.settings!.season : "original",
-      // Policies are no longer edited in the admin; never show an empty policies page.
-      policies: input.settings?.policies?.length ? input.settings.policies : seed.settings.policies,
+      returnDays: clampDays(input.settings?.returnDays),
+      // Policies are no longer edited in the admin, so the current wording always applies,
+      // with the return window the admin set.
+      policies: seed.settings.policies.map((p) =>
+        p.id === "pol-returns" ? { ...p, body: p.body.replace("خلال 7 أيام", `خلال ${clampDays(input.settings?.returnDays)} أيام`) } : p,
+      ),
     },
     homepage: {
       ...seed.homepage,

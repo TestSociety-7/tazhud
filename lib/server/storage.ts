@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { del, get, list, put } from "@vercel/blob";
 import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 import { normalizeStoreData, splitStoreData, type Catalog } from "@/lib/repository";
-import type { OrderInquiry, Subscriber } from "@/lib/types";
+import type { OrderInquiry, ReturnRequest, Subscriber } from "@/lib/types";
 
 /**
  * Shared storage on Vercel Blob.
@@ -130,6 +130,16 @@ export async function listOrderIds(): Promise<string[]> {
     cursor = page.hasMore ? page.cursor : undefined;
   } while (cursor);
   return ids;
+}
+
+/* Customers' return and exchange requests. */
+const returnPath = (id: string) => `${privateFolder()}/returns/${id}.json`;
+export const writeReturn = (r: ReturnRequest) => writeJson(returnPath(r.id), r);
+export const readReturn = (id: string) => readJson<ReturnRequest>(returnPath(id));
+export const deleteReturn = async (id: string) => del(returnPath(id), { token: blobToken() });
+export async function readReturns(): Promise<ReturnRequest[]> {
+  const all = await readFolder<ReturnRequest>("returns", 500);
+  return all.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 /* Admin devices that asked for new-order notifications. */

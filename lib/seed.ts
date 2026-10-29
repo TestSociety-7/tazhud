@@ -39,6 +39,7 @@ export const seedSettings: StoreSettings = {
   lowStockThreshold: 5,
   couponsEnabled: false,
     season: "original",
+    returnDays: 7,
   policies: [
     {
       id: "pol-delivery",
@@ -48,7 +49,7 @@ export const seedSettings: StoreSettings = {
     {
       id: "pol-returns",
       title: "الاستبدال والإرجاع",
-      body: "يمكن استبدال القطع غير المستخدمة مع بطاقاتها خلال 7 أيام من الاستلام. الطرح والبونيهات غير قابلة للاستبدال لأسباب صحية إلا في حال وجود عيب. راسلينا على واتساب لترتيب الاستبدال.",
+      body: "يمكن إرجاع أو استبدال القطع غير المستخدمة مع بطاقاتها خلال 7 أيام من الاستلام. الطرح والبونيهات غير قابلة للإرجاع لأسباب صحية إلا في حال وجود عيب. اطلبي الإرجاع أو الاستبدال من صفحة «إرجاع أو استبدال» وسنرتب الاستلام معكِ.",
     },
     {
       id: "pol-payment",

@@ -17,6 +17,7 @@ import {
   Settings,
   Shapes,
   TicketPercent,
+  Undo2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useStore } from "@/components/providers/store-provider";
@@ -28,6 +29,7 @@ import { SeasonSky, SeasonTrim, useSeason } from "@/components/store/season";
 const NAV = [
   { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, exact: true },
   { href: "/admin/orders", label: "الطلبات", icon: Inbox },
+  { href: "/admin/returns", label: "الإرجاع والاستبدال", icon: Undo2 },
   { href: "/admin/products", label: "المنتجات", icon: Package },
   { href: "/admin/categories", label: "الأقسام", icon: Shapes },
   { href: "/admin/coupons", label: "أكواد الخصم", icon: TicketPercent },

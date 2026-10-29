@@ -1,19 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, ShoppingBag } from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
+import { ArrowRight, CheckCircle2, ChevronDown, Plus, RefreshCw, ShieldCheck, ShoppingBag, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { buildOrderMessage, isValidWhatsappNumber, whatsappLink } from "@/lib/whatsapp";
 import { newId, newOrderNumber } from "@/lib/commerce";
+import { piecesLabel } from "@/lib/arabic";
 import type { OrderInquiry } from "@/lib/types";
 import { EmptyState } from "@/components/ui/empty-state";
 import { SmartImage } from "@/components/ui/smart-image";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { useMoney } from "@/components/ui/price";
 import { CouponForm, OrderSummary } from "./cart-parts";
+import { LAST_ORDER_KEY } from "@/lib/returns";
+
+/** Delivery details kept on this phone (only if the customer agrees) to fill the form next time. */
+const DETAILS_KEY = "tz-checkout-details";
 
 type Fields = { name: string; phone: string; address: string; city: string; notes: string };
 type Errors = Partial<Record<keyof Fields, string>>;
@@ -53,6 +58,20 @@ export function CheckoutView() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState<{ order: OrderInquiry; link: string } | null>(null);
+  const [remember, setRemember] = useState(true);
+  const [showNotes, setShowNotes] = useState(false);
+
+  // Fill in the details saved on this device last time.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(DETAILS_KEY) || "null") as Partial<Fields> | null;
+      if (!saved) return;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reading saved details after hydration
+      setFields((f) => ({ ...f, name: saved.name ?? "", phone: saved.phone ?? "", address: saved.address ?? "", city: saved.city ?? "" }));
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
 
   const set = (k: keyof Fields) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFields((f) => ({ ...f, [k]: e.target.value }));
@@ -109,6 +128,14 @@ export function CheckoutView() {
     const win = window.open(link, "_blank");
     if (win) win.opener = null;
 
+    try {
+      if (remember) localStorage.setItem(DETAILS_KEY, JSON.stringify({ name: order.customer.name, phone: order.customer.phone, address: order.customer.address, city: order.customer.city }));
+      else localStorage.removeItem(DETAILS_KEY);
+      localStorage.setItem(LAST_ORDER_KEY, JSON.stringify({ number: order.number, phone: order.customer.phone }));
+    } catch {
+      /* storage unavailable: nothing to remember */
+    }
+
     const res = await update((d) => ({ ...d, orders: [order, ...d.orders] }));
     if (!res.ok) toast.warning("رسالة واتساب جاهزة، لكن تعذّر حفظ نسخة من الطلب. أرسلي الرسالة لإتمام طلبكِ.");
     cart.clear();
@@ -133,6 +160,9 @@ export function CheckoutView() {
             </a>
             <Link href="/shop" className="btn btn-ghost">متابعة التسوق</Link>
           </div>
+          <p className="mt-6 text-xs text-muted">
+            احتفظي برقم الطلب. إذا احتجتِ لاحقًا إلى إرجاع أو استبدال قطعة، <Link href="/returns" className="font-semibold text-forest underline underline-offset-4">من هنا</Link>.
+          </p>
           <p className="mt-6 text-xs text-muted">لم يفتح واتساب؟ استخدمي الزر أعلاه، أو راسلينا على <span className="ltr inline-block">+{data.settings.whatsappNumber}</span> مع رقم طلبكِ.</p>
         </div>
       </div>
@@ -170,7 +200,32 @@ export function CheckoutView() {
         املئي بيانات التوصيل. عند المتابعة سيفتح واتساب وفيه طلبكِ مكتوبًا وجاهزًا للإرسال، ثم نؤكد كل التفاصيل معكِ شخصيًا. لا يتم أي دفع عبر هذا الموقع.
       </p>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_26rem] lg:gap-14">
+      {/* On phones the order sits below the form, so a short summary comes first. */}
+      <details className="card group mt-6 overflow-hidden lg:hidden">
+        <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 [&::-webkit-details-marker]:hidden">
+          <span className="flex -space-x-3 rtl:space-x-reverse">
+            {cart.lines.slice(0, 3).map((l) => (
+              <SmartImage key={l.key} src={l.image} alt="" className="size-9 rounded-full ring-2 ring-paper" />
+            ))}
+          </span>
+          <span className="flex-1 text-sm text-text">
+            {piecesLabel(cart.lines.reduce((n, l) => n + l.quantity, 0))} في طلبكِ
+          </span>
+          <strong className="tabular-nums text-ink">{money(cart.total)}</strong>
+          <ChevronDown className="size-4 text-muted transition-transform group-open:rotate-180" aria-hidden />
+        </summary>
+        <ul className="space-y-3 border-t border-line px-4 py-4">
+          {cart.lines.map((l) => (
+            <li key={l.key} className="flex items-center justify-between gap-3 text-sm">
+              <span className="min-w-0 truncate">{l.quantity} × {l.name}{l.size ? ` · ${l.size}` : ""}</span>
+              <span className="tabular-nums">{money(l.lineTotal)}</span>
+            </li>
+          ))}
+          <li><Link href="/cart" className="text-xs font-semibold text-forest underline underline-offset-4">تعديل السلة</Link></li>
+        </ul>
+      </details>
+
+      <div className="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[1fr_26rem] lg:gap-14">
         <form ref={formRef} onSubmit={submit} noValidate className="space-y-6" aria-describedby={`${uid}-form-note`}>
           <fieldset className="card space-y-5 p-6 sm:p-8">
             <legend className="sr-only">بياناتكِ</legend>
@@ -189,9 +244,19 @@ export function CheckoutView() {
             <Field id={fid("city")} label="المدينة / المنطقة" error={errors.city}>
               <input id={fid("city")} className="field" autoComplete="address-level2" value={fields.city} onChange={set("city")} aria-invalid={!!errors.city} aria-describedby={describedBy("city")} required />
             </Field>
-            <Field id={fid("notes")} label="ملاحظات الطلب (اختياري)" error={errors.notes} hint="ألوان المجموعات، وقت التوصيل المناسب، تغليف هدية…">
-              <textarea id={fid("notes")} className="field" rows={4} maxLength={500} value={fields.notes} onChange={set("notes")} aria-invalid={!!errors.notes} aria-describedby={describedBy("notes", true)} />
-            </Field>
+            {showNotes || fields.notes || errors.notes ? (
+              <Field id={fid("notes")} label="ملاحظات الطلب (اختياري)" error={errors.notes} hint="وقت التوصيل المناسب، تغليف هدية…">
+                <textarea id={fid("notes")} className="field" rows={3} maxLength={500} value={fields.notes} onChange={set("notes")} aria-invalid={!!errors.notes} aria-describedby={describedBy("notes", true)} autoFocus={showNotes && !fields.notes} />
+              </Field>
+            ) : (
+              <button type="button" className="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-forest" onClick={() => setShowNotes(true)}>
+                <Plus className="size-4" /> إضافة ملاحظة للطلب
+              </button>
+            )}
+            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-text">
+              <input type="checkbox" className="size-4 accent-[var(--color-forest)]" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+              تذكّري بياناتي على هذا الجهاز للطلب القادم
+            </label>
           </fieldset>
 
           {!storeNumberOk && (
@@ -207,6 +272,11 @@ export function CheckoutView() {
           <p id={`${uid}-form-note`} className="text-center text-xs text-muted">
             بالمتابعة سيفتح واتساب وفيه طلبكِ. لن يُخصم أي مبلغ هنا.
           </p>
+          <ul className="grid grid-cols-3 gap-2 text-center text-[0.7rem] leading-snug text-muted">
+            <li className="flex flex-col items-center gap-1"><Wallet className="size-4 text-forest" />لا دفع الآن</li>
+            <li className="flex flex-col items-center gap-1"><ShieldCheck className="size-4 text-forest" />نؤكد معكِ قبل التوصيل</li>
+            <li className="flex flex-col items-center gap-1"><RefreshCw className="size-4 text-forest" />إرجاع أو استبدال خلال {data.settings.returnDays} أيام</li>
+          </ul>
         </form>
 
         <aside aria-label="ملخص الطلب" className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">

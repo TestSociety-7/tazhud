@@ -70,6 +70,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link className={link} href="/returns">
+                  إرجاع أو استبدال
+                </Link>
+              </li>
+              <li>
                 <Link className={link} href="/cart">
                   سلة التسوق
                 </Link>

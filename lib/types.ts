@@ -101,8 +101,10 @@ export interface StoreSettings {
   lowStockThreshold: number;
   /** When off, the home promo banner and the coupon box in the cart are hidden. */
   couponsEnabled: boolean;
-  /** Seasonal look of the storefront. The admin always keeps the original look. */
+  /** Seasonal look of the storefront and the admin. */
   season: Season;
+  /** Days after delivery in which customers may ask to return or exchange. */
+  returnDays: number;
   policies: Policy[];
 }
 
@@ -178,6 +180,28 @@ export interface OrderLine {
   size?: string;
   quantity: number;
   unitPrice: number;
+}
+
+export const RETURN_STATUSES = ["new", "contacted", "received", "completed", "rejected"] as const;
+export type ReturnStatus = (typeof RETURN_STATUSES)[number];
+
+/** A customer's request to return or exchange pieces from one order. */
+export interface ReturnRequest {
+  id: ID;
+  number: string;
+  createdAt: string;
+  status: ReturnStatus;
+  orderId: ID;
+  orderNumber: string;
+  orderDate: string;
+  customer: { name: string; phone: string };
+  lines: { refId: ID; name: string; color?: string; size?: string; quantity: number; unitPrice: number }[];
+  type: "exchange" | "refund";
+  reason: string;
+  /** What the customer would like instead (exchanges only). */
+  wish: string;
+  notes: string;
+  adminNote: string;
 }
 
 export interface OrderInquiry {
