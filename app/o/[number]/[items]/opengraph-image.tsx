@@ -28,9 +28,9 @@ async function asData(src: string) {
   }
 }
 
-const INK = "#0f120f";
-const GOLD = "#c9a24a";
-const IVORY = "#f7f2e9";
+const INK = "#0c1024";
+const GOLD = "#ecb9a5";
+const IVORY = "#f4f1f6";
 
 /** The picture WhatsApp shows above the order message: every ordered piece side by side. */
 export default async function Image({ params }: { params: Promise<{ number: string; items: string }> }) {

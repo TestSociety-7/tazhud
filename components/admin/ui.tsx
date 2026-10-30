@@ -14,9 +14,10 @@ export function PageHeader({
 }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className="font-display text-3xl leading-tight text-ink sm:text-[2.6rem]">{title}</h1>
-        {description && <p className="mt-2 max-w-2xl text-sm text-muted">{description}</p>}
+      <div className="min-w-0">
+        <span className="admin-title-mark" aria-hidden />
+        <h1 className="font-display text-[2.1rem] leading-tight text-ink sm:text-[2.7rem]">{title}</h1>
+        {description && <p className="mt-2 max-w-2xl text-[0.9rem] leading-relaxed text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{actions}</div>}
     </div>
@@ -40,9 +41,9 @@ export function Panel({
     <section className={`card min-w-0 p-5 sm:p-6 ${className}`}>
       {(title || actions) && (
         <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
-            {title && <h2 className="text-base font-semibold text-ink">{title}</h2>}
-            {description && <p className="mt-1 text-xs text-muted">{description}</p>}
+          <div className="min-w-0">
+            {title && <h2 className="font-display text-xl leading-tight text-ink">{title}</h2>}
+            {description && <p className="mt-1 text-[0.8rem] leading-relaxed text-muted">{description}</p>}
           </div>
           {actions}
         </div>
@@ -105,9 +106,13 @@ export function Toggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${checked ? "bg-forest" : "bg-line"}`}
+        className={`relative inline-flex h-8 w-[3.4rem] shrink-0 items-center rounded-full transition-[background-color,box-shadow] duration-300 disabled:opacity-50 ${
+          checked ? "bg-forest shadow-[inset_0_1px_3px_rgb(0_0_0/0.3),0_6px_14px_-8px_var(--color-forest)]" : "bg-sand shadow-[inset_0_1px_3px_rgb(12_16_36/0.15),inset_0_0_0_1px_var(--color-line)]"
+        }`}
       >
-        <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform duration-300 ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
+        <span
+          className={`inline-block size-6 rounded-full bg-[radial-gradient(circle_at_35%_30%,#fff,#f4f1f6_60%,#ddd6fb)] shadow-[0_2px_6px_rgb(12_16_36/0.3)] transition-transform duration-500 ease-[var(--ease-spring)] ${checked ? "-translate-x-[1.65rem]" : "-translate-x-1"}`}
+        />
       </button>
     </div>
   );
@@ -116,12 +121,16 @@ export function Toggle({
 export function Badge({ tone = "neutral", children }: { tone?: "neutral" | "green" | "gold" | "red" | "blue"; children: React.ReactNode }) {
   const tones = {
     neutral: "bg-sand text-muted",
-    green: "bg-sage-soft text-forest",
-    gold: "bg-gold-soft/60 text-[#7a5a22]",
+    green: "bg-mint/60 text-success",
+    gold: "bg-gold-soft text-gold-deep",
     red: "bg-danger/10 text-danger",
-    blue: "bg-[#e3e9f2] text-[#2c4a6e]",
+    blue: "bg-iris/15 text-forest-2",
   };
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[0.7rem] leading-none font-semibold whitespace-nowrap shadow-[inset_0_0_0_1px_rgb(255_255_255/0.6)] ${tones[tone]}`}>
+      {children}
+    </span>
+  );
 }
 
 /** Modal built on <dialog>. */
@@ -159,16 +168,19 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/50 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up`}
+      className={`admin-modal m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-[2rem] bg-ivory p-0 text-text shadow-[0_-20px_60px_-20px_rgb(12_16_36/0.5)] sm:rounded-[2rem] sm:shadow-[var(--shadow-lift)] open:flex`}
     >
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        <h2 className="font-display text-2xl text-ink">{title}</h2>
-        <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
+      <span className="sheet-grip" aria-hidden />
+      <div className="flex items-center justify-between gap-3 px-5 pt-3 pb-3 sm:pt-5">
+        <h2 className="font-display text-2xl leading-tight text-ink">{title}</h2>
+        <button type="button" className="icon-btn -me-2 bg-sand/70" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
       </div>
-      <div className="flex-1 overflow-y-auto p-5">{children}</div>
-      {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-line bg-paper px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] [&>*]:flex-1 sm:[&>*]:flex-none">{footer}</div>}
+      <div className="flex-1 overflow-y-auto overscroll-contain px-5 pt-2 pb-5">{children}</div>
+      {footer && (
+        <div className="flex flex-wrap justify-end gap-2 border-t border-line/70 bg-paper/90 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur [&>*]:flex-1 sm:[&>*]:flex-none">{footer}</div>
+      )}
     </dialog>
   );
 }
@@ -226,10 +238,10 @@ export function StatCard({
   tone?: "default" | "dark";
 }) {
   return (
-    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${tone === "dark" ? "on-dark border-ink bg-ink text-ivory" : "border-line bg-paper"}`}>
+    <div className={`stat3d ${tone === "dark" ? "on-dark" : "text-ink"}`} data-dark={tone === "dark"}>
       <div className="flex items-start justify-between gap-3">
-        <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold" : "text-muted"}`}>{label}</p>
-        {icon && <span className={tone === "dark" ? "text-gold" : "text-forest"}>{icon}</span>}
+        <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold-soft" : "text-muted"}`}>{label}</p>
+        {icon && <span className="stat-orb">{icon}</span>}
       </div>
       <p
         className={`font-display mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"} ${tone === "dark" ? "text-ivory" : "text-ink"}`}
@@ -240,3 +252,17 @@ export function StatCard({
     </div>
   );
 }
+
+/** Light that follows the finger or pointer across a `.shine-follow` element. */
+export const shine = {
+  onPointerMove(e: React.PointerEvent<HTMLElement>) {
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+    el.style.setProperty("--my", `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
+    el.style.setProperty("--shine", "1");
+  },
+  onPointerLeave(e: React.PointerEvent<HTMLElement>) {
+    e.currentTarget.style.setProperty("--shine", "0");
+  },
+};

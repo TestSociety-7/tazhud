@@ -536,7 +536,7 @@ export function ProductsPage() {
       )}
 
       {selecting && (
-        <div className="admin-enter fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-2xl bg-ink p-3 text-ivory shadow-[var(--shadow-lift)] lg:inset-x-auto lg:bottom-6 lg:start-[calc(16.5rem+2rem)] lg:end-8">
+        <div className="admin-enter on-dark fixed inset-x-3 bottom-[calc(5.7rem+env(safe-area-inset-bottom))] z-30 rounded-[1.6rem] bg-ink/90 p-3 text-ivory shadow-[var(--shadow-lift),inset_0_0_0_1px_rgb(255_255_255/0.1)] backdrop-blur-xl lg:inset-x-auto lg:bottom-6 lg:start-[calc(17rem+2rem)] lg:end-8">
           <p className="mb-2 px-1 text-xs text-ivory/70">
             {picked.length
               ? `${itemsLabel(picked.length)} محدد`

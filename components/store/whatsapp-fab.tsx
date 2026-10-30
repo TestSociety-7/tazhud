@@ -15,24 +15,32 @@ export function WhatsappFab() {
   const pathname = usePathname();
   const [away, setAway] = useState(false);
 
+  // On the home page the hero has its own buttons, so the bubble waits until it is passed.
+  const home = pathname === "/";
   useEffect(() => {
     let last = window.scrollY;
     let raf = 0;
+    const decide = (initial: boolean) => {
+      const y = window.scrollY;
+      if (home && y < 520) {
+        setAway(true);
+      } else {
+        if (!initial && Math.abs(y - last) < 12) return;
+        setAway(!initial && y > last && y > 320);
+      }
+      last = y;
+    };
     const onScroll = () => {
       cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const y = window.scrollY;
-        if (Math.abs(y - last) < 12) return;
-        setAway(y > last && y > 320);
-        last = y;
-      });
+      raf = requestAnimationFrame(() => decide(false));
     };
+    raf = requestAnimationFrame(() => decide(true));
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("scroll", onScroll);
     };
-  }, []);
+  }, [home]);
 
   if (pathname.startsWith("/product/") || pathname === "/cart" || pathname === "/checkout") return null;
   return (
@@ -41,7 +49,7 @@ export function WhatsappFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="تواصلي معنا على واتساب"
-      className={`fixed end-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30 grid size-14 animate-fade-up place-items-center rounded-full bg-[#1f7a4d] text-white shadow-[0_14px_30px_-10px_rgb(31_122_77/0.7)] transition-[translate,opacity] duration-500 ease-[var(--ease-soft)] [animation-delay:900ms] active:scale-95 sm:end-6 sm:bottom-6 ${
+      className={`fixed end-4 bottom-[calc(5.4rem+env(safe-area-inset-bottom))] z-30 grid size-13 lg:size-14 animate-fade-up place-items-center rounded-full bg-[#1f7a4d] text-white shadow-[0_14px_30px_-10px_rgb(31_122_77/0.7)] transition-[translate,opacity] duration-500 ease-[var(--ease-soft)] [animation-delay:900ms] active:scale-95 lg:end-6 lg:bottom-6 ${
         away ? "pointer-events-none translate-y-24 opacity-0" : ""
       }`}
     >

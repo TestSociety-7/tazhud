@@ -42,8 +42,11 @@ export function useDraft<T>(select: (d: StoreData) => T) {
 
 export function SaveBar({ dirty, saving, onDiscard }: { dirty: boolean; saving?: boolean; onDiscard: () => void }) {
   return (
-    <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
-      <p className="text-sm text-muted" role="status">{dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}</p>
+    <div className="admin-savebar glass">
+      <p className="flex min-w-0 items-center gap-2 text-sm text-muted" role="status">
+        <span className={`size-2 shrink-0 rounded-full transition-colors ${dirty ? "bg-gold shadow-[0_0_10px_var(--color-gold)]" : "bg-success/70"}`} aria-hidden />
+        {dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}
+      </p>
       <div className="flex gap-2">
         {dirty && (
           <button type="button" className="btn btn-ghost" onClick={onDiscard}>

@@ -122,16 +122,16 @@ export function ShopView() {
     <div className="space-y-8">
       <fieldset>
         <legend className="eyebrow mb-3 text-muted">القسم</legend>
-        <ul className="space-y-1">
+        <ul className="space-y-1.5">
           <li>
             <button
               type="button"
               onClick={() => setParam({ category: null })}
-              className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${!category ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+              className={`press flex min-h-11 w-full items-center justify-between rounded-2xl px-4 text-start text-sm transition-colors ${!category ? "bg-ink font-semibold text-ivory" : "hover:bg-sand/70"}`}
               aria-pressed={!category}
             >
               كل المنتجات{" "}
-              <span className="text-xs text-muted">{base.length}</span>
+              <span className={`font-latin text-xs ${!category ? "text-gold-soft" : "text-muted"}`}>{base.length}</span>
             </button>
           </li>
           {categories.map((c) => {
@@ -142,10 +142,10 @@ export function ShopView() {
                 <button
                   type="button"
                   onClick={() => setParam({ category: c.slug })}
-                  className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${active ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+                  className={`press flex min-h-11 w-full items-center justify-between rounded-2xl px-4 text-start text-sm transition-colors ${active ? "bg-ink font-semibold text-ivory" : "hover:bg-sand/70"}`}
                   aria-pressed={active}
                 >
-                  {c.name} <span className="text-xs text-muted">{n}</span>
+                  {c.name} <span className={`font-latin text-xs ${active ? "text-gold-soft" : "text-muted"}`}>{n}</span>
                 </button>
               </li>
             );
@@ -155,29 +155,31 @@ export function ShopView() {
 
       <fieldset>
         <legend className="eyebrow mb-3 text-muted">تصفية</legend>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
-          <input
-            type="checkbox"
-            className="size-4 accent-forest"
-            checked={onlySale}
-            onChange={(e) => setParam({ sale: e.target.checked ? "1" : null })}
-          />
-          عليها خصم
-        </label>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
-          <input
-            type="checkbox"
-            className="size-4 accent-forest"
-            checked={inStock}
-            onChange={(e) => setParam({ stock: e.target.checked ? "1" : null })}
-          />
-          المتوفر فقط
-        </label>
+        <div className="flex flex-wrap gap-2">
+          <label className="cursor-pointer">
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              checked={onlySale}
+              onChange={(e) => setParam({ sale: e.target.checked ? "1" : null })}
+            />
+            <span className="chip">عليها خصم</span>
+          </label>
+          <label className="cursor-pointer">
+            <input
+              type="checkbox"
+              className="peer sr-only"
+              checked={inStock}
+              onChange={(e) => setParam({ stock: e.target.checked ? "1" : null })}
+            />
+            <span className="chip">المتوفر فقط</span>
+          </label>
+        </div>
       </fieldset>
       {allColours.length > 0 && (
         <fieldset>
           <legend className="eyebrow mb-3 text-muted">اللون</legend>
-          <div className="flex flex-wrap gap-2 px-1">
+          <div className="flex flex-wrap gap-1.5">
             {allColours.map(([name, hex]) => (
               <button
                 key={name}
@@ -188,12 +190,9 @@ export function ShopView() {
                 aria-pressed={colour === name}
                 aria-label={name}
                 title={name}
-                className={`grid size-9 place-items-center rounded-full border transition-shadow ${colour === name ? "border-ink ring-2 ring-gold ring-offset-2 ring-offset-ivory" : "border-line"}`}
+                className="swatch"
               >
-                <span
-                  className="size-6 rounded-full ring-1 ring-black/10"
-                  style={{ background: hex }}
-                />
+                <span className="swatch-bead" style={{ background: hex }} />
               </button>
             ))}
           </div>
@@ -203,9 +202,9 @@ export function ShopView() {
   );
 
   return (
-    <div>
-      <header className="border-b border-line bg-paper">
-        <div className="container-x py-8 sm:py-10">
+    <div className="dock-space">
+      <header className="page-wash">
+        <div className="container-x rise pt-6 pb-5 sm:pt-10">
           <nav aria-label="مسار التنقل" className="text-xs text-muted">
             <ol className="flex items-center gap-2">
               <li>
@@ -213,7 +212,7 @@ export function ShopView() {
                   الرئيسية
                 </Link>
               </li>
-              <li aria-hidden>/</li>
+              <li aria-hidden className="text-gold">•</li>
               <li>
                 <Link href="/shop" className="hover:text-ink">
                   المتجر
@@ -221,7 +220,7 @@ export function ShopView() {
               </li>
               {activeCategory && (
                 <>
-                  <li aria-hidden>/</li>
+                  <li aria-hidden className="text-gold">•</li>
                   <li aria-current="page" className="text-ink">
                     {activeCategory.name}
                   </li>
@@ -229,9 +228,14 @@ export function ShopView() {
               )}
             </ol>
           </nav>
-          <h1 className="season-title font-display mt-3 text-4xl text-ink sm:text-5xl">
-            {title}
-          </h1>
+          <div className="mt-3 flex items-end justify-between gap-4 lg:justify-start">
+            <h1 className="season-title font-display text-[2.6rem] leading-[1.1] text-ink sm:text-6xl">
+              {title}
+            </h1>
+            <p className="count-chip glass mb-1 shrink-0 rounded-full px-3 py-1.5 text-xs font-semibold text-forest" role="status" aria-live="polite">
+              {piecesLabel(results.length)}
+            </p>
+          </div>
           {description && (
             <p className="mt-2 max-w-xl text-sm text-muted sm:text-base">
               {description}
@@ -240,7 +244,7 @@ export function ShopView() {
 
           <form
             role="search"
-            className="relative mt-6 max-w-md"
+            className="relative mt-5 max-w-md"
             onSubmit={(e) => {
               e.preventDefault();
               setParam({ q: query.trim() || null });
@@ -250,7 +254,7 @@ export function ShopView() {
               ابحثي في المجموعة
             </label>
             <Search
-              className="pointer-events-none absolute top-1/2 start-4 size-4 -translate-y-1/2 text-muted"
+              className="pointer-events-none absolute top-1/2 start-4 z-[1] size-4 -translate-y-1/2 text-forest"
               aria-hidden
             />
             <input
@@ -259,10 +263,15 @@ export function ShopView() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="ابحثي بالاسم أو القماش أو اللون"
-              className="field !rounded-full !ps-11"
+              className="field glass !min-h-12 !rounded-full !border-transparent !ps-11"
             />
           </form>
-          <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 lg:hidden">
+        </div>
+      </header>
+
+      <div className="shop-bar glass !shadow-[0_12px_24px_-20px_rgb(35_42_92/0.5)] lg:hidden">
+        <div className="container-x flex items-center gap-2 py-2.5">
+          <div role="group" aria-label="الأقسام" className="no-scrollbar -ms-4 flex min-w-0 flex-1 gap-2 overflow-x-auto ps-4 pe-1 [mask-image:linear-gradient(to_left,transparent,#000_1.5rem)] rtl:[mask-image:linear-gradient(to_right,transparent,#000_1.5rem)]">
             {[{ id: "", slug: "", name: "الكل" }, ...categories].map((c) => {
               const active = c.slug === category;
               return (
@@ -271,38 +280,42 @@ export function ShopView() {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setParam({ category: c.slug || null })}
-                  className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
-                    active ? "border-ink bg-ink text-ivory" : "border-line bg-ivory text-text"
-                  }`}
+                  className="chip shrink-0 !min-h-10"
                 >
                   {c.name}
                 </button>
               );
             })}
           </div>
+          <button
+            type="button"
+            className="press relative grid size-11 shrink-0 place-items-center rounded-full bg-ink text-ivory shadow-[var(--shadow-soft)]"
+            onClick={() => setFiltersOpen(true)}
+            aria-label="تصفية"
+          >
+            <SlidersHorizontal className="size-4" />
+            {activeFilters.length > 0 && (
+              <span className="badge-pearl font-latin absolute -top-1 -end-1 grid size-5 place-items-center rounded-full text-[0.65rem] font-bold" aria-hidden>
+                {activeFilters.length}
+              </span>
+            )}
+          </button>
         </div>
-      </header>
+      </div>
 
-      <div className="container-x grid gap-10 py-6 sm:py-10 lg:grid-cols-[15rem_1fr]">
+      <div className="container-x grid gap-10 pt-5 sm:pt-8 lg:grid-cols-[15rem_1fr]">
         <aside className="hidden lg:block" aria-label="عوامل التصفية">
-          <div className="sticky top-[calc(var(--header-h)+1.5rem)]">
+          <div className="glass-card sticky top-[calc(var(--header-h)+1.5rem)] p-5">
             {filterControls}
           </div>
         </aside>
 
         <div>
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted" role="status" aria-live="polite">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <p className="hidden text-sm text-muted lg:block">
               {piecesLabel(results.length)}
             </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="btn btn-outline btn-sm border-line lg:hidden"
-                onClick={() => setFiltersOpen(true)}
-              >
-                <SlidersHorizontal className="size-4" /> تصفية
-              </button>
+            <div className="flex items-center gap-2 max-lg:w-full max-lg:justify-end">
               <label htmlFor="sort" className="sr-only">
                 ترتيب حسب
               </label>
@@ -314,7 +327,7 @@ export function ShopView() {
                     sort: e.target.value === "featured" ? null : e.target.value,
                   })
                 }
-                className="field !min-h-9 !w-auto !rounded-full !py-1.5 !text-sm"
+                className="field glass !min-h-10 !w-auto !rounded-full !border-transparent !py-1.5 !text-sm"
               >
                 {Object.entries(SORTS).map(([k, v]) => (
                   <option key={k} value={k}>
@@ -331,14 +344,14 @@ export function ShopView() {
               aria-label="عوامل التصفية المفعّلة"
             >
               {activeFilters.map((f) => (
-                <li key={f.key}>
+                <li key={f.key} className="line-in">
                   <button
                     type="button"
                     onClick={() => setParam({ [f.key]: null })}
-                    className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-xs font-medium hover:bg-line"
+                    className="press inline-flex min-h-10 items-center gap-1.5 rounded-full bg-ink px-3.5 text-xs font-medium text-ivory"
                     aria-label={`إزالة ${f.label}`}
                   >
-                    {f.label} <X className="size-3.5" />
+                    {f.label} <X className="size-3.5 text-gold-soft" />
                   </button>
                 </li>
               ))}
@@ -348,7 +361,7 @@ export function ShopView() {
                   onClick={() =>
                     setParam({ sale: null, stock: null, colour: null, q: null })
                   }
-                  className="inline-flex min-h-9 items-center px-2 text-xs font-semibold text-forest underline-offset-4 hover:underline"
+                  className="inline-flex min-h-10 items-center px-2 text-xs font-semibold text-forest underline-offset-4 hover:underline"
                 >
                   مسح الكل
                 </button>
@@ -363,7 +376,7 @@ export function ShopView() {
               title="لا توجد نتائج مطابقة"
               body="جرّبي إزالة أحد عوامل التصفية أو البحث عن لون أو قماش آخر."
               action={
-                <Link href="/shop" className="btn btn-primary">
+                <Link href="/shop" className="btn btn-primary press">
                   عرض كل المنتجات
                 </Link>
               }
@@ -382,7 +395,7 @@ export function ShopView() {
         footer={
           <button
             type="button"
-            className="btn btn-primary w-full"
+            className="btn btn-primary press min-h-12 w-full"
             onClick={() => setFiltersOpen(false)}
           >
             عرض {piecesLabel(results.length)}
