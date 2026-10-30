@@ -1,0 +1,335 @@
+/* ------------------------------------------------------------------------------
+   store-pages: the Reels look for the storefront inner pages
+   (shop, product, cart, checkout, orders, returns, policies, 404).
+   ------------------------------------------------------------------------------ */
+
+:root {
+  /* Phone header height (the bar under the announcement). */
+  --store-bar: 3.75rem;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+}
+
+/* Room for the phone tab bar on pages where it shows. */
+.tabbar-pad { padding-bottom: calc(var(--tabbar-h) + var(--safe-b) + 2rem); }
+/* Room for a page's own sticky action bar (product, cart, checkout). */
+.actionbar-pad { padding-bottom: calc(6.5rem + var(--safe-b)); }
+@media (min-width: 1024px) {
+  .tabbar-pad { padding-bottom: 4rem; }
+  .actionbar-pad { padding-bottom: 4rem; }
+}
+
+/* Big, heavy social headline. */
+.reel-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+
+/* Small rounded pill used for counts and labels. */
+.count-pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding-inline: 0.45rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--color-ink);
+  font-family: var(--font-latin);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ---------------- Choice chips (category, size, reason) ---------------- */
+.opt-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding-inline: 1.1rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.07);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.25s var(--ease-soft), color 0.25s, box-shadow 0.25s, transform 0.35s var(--ease-spring);
+}
+.opt-chip:hover { background: rgb(255 255 255 / 0.12); }
+.opt-chip:active { transform: scale(0.92); }
+.opt-chip[aria-pressed="true"],
+.opt-chip[aria-checked="true"],
+:checked + .opt-chip {
+  background: var(--color-ink);
+  color: var(--color-ivory);
+  box-shadow: 0 8px 22px -10px rgb(255 255 255 / 0.5);
+}
+:focus-visible + .opt-chip { outline: 2px solid var(--color-gold); outline-offset: 3px; }
+
+/* Colour swatch with a neon ring when chosen. */
+.swatch {
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: transform 0.35s var(--ease-spring), box-shadow 0.25s;
+}
+.swatch > span { width: 2.1rem; height: 2.1rem; border-radius: 999px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18); }
+.swatch:active { transform: scale(0.88); }
+:checked + .swatch,
+.swatch[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--color-ivory), 0 0 0 4px var(--color-gold), 0 0 18px -2px var(--color-gold);
+  transform: scale(1.06);
+}
+:focus-visible + .swatch { outline: 2px solid var(--color-gold); outline-offset: 5px; }
+
+/* On/off switch built on a real checkbox. */
+.switch {
+  appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: var(--color-line);
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 0.2rem;
+  inset-inline-start: 0.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  background: var(--color-muted);
+  transition: translate 0.35s var(--ease-spring), background-color 0.25s;
+}
+.switch:checked { background: var(--neon); }
+.switch:checked::after { background: #fff; translate: -1.15rem 0; }
+.switch:dir(ltr):checked::after { translate: 1.15rem 0; }
+
+/* ---------------- Product card ---------------- */
+.card-shade {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 45%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.6), transparent);
+  pointer-events: none;
+}
+.price-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  background: rgb(10 10 13 / 0.55);
+  -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.add-fab {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  background: var(--color-forest);
+  color: var(--color-ivory);
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.7);
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.3s;
+}
+.add-fab:hover { transform: scale(1.08) rotate(90deg); }
+.add-fab:active { transform: scale(0.8); }
+
+/* ---------------- Product story ---------------- */
+.pv-story {
+  position: relative;
+  /* Leaves the name and price of the sheet in view above the action bar. */
+  height: calc(100svh - 11rem);
+  min-height: 28rem;
+  max-height: 60rem;
+  background: var(--color-sand);
+}
+@media (min-width: 1024px) {
+  .pv-story { height: auto; min-height: 0; max-height: none; aspect-ratio: 4 / 5; border-radius: 1.75rem; overflow: hidden; }
+}
+.pv-story-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 9rem;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
+  pointer-events: none;
+}
+.pv-story-bottom {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 55%;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.75), rgb(0 0 0 / 0.25) 55%, transparent);
+  pointer-events: none;
+}
+.pv-story-seg {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.32);
+}
+.pv-story-seg > i {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #fff;
+  transform-origin: right;
+  transform: scaleX(0);
+  transition: transform 0.3s var(--ease-soft);
+}
+.pv-story-seg[data-state="done"] > i { transform: scaleX(1); }
+.pv-story-seg[data-state="active"] > i { animation: seg-fill 0.6s var(--ease-soft) forwards; }
+@keyframes seg-fill { to { transform: scaleX(1); } }
+
+.rail-btn {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-shadow: 0 1px 6px rgb(0 0 0 / 0.6);
+}
+.rail-btn > span:first-child {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  background: rgb(14 14 18 / 0.45);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  transition: transform 0.35s var(--ease-spring);
+}
+.rail-btn:active > span:first-child { transform: scale(0.82); }
+
+/* The info sheet starts as glass over the bottom of the photo. */
+.pv-sheet {
+  position: relative;
+  z-index: 10;
+  margin-top: -9.5rem;
+  border-radius: 1.75rem 1.75rem 0 0;
+  background: linear-gradient(to bottom, rgb(14 14 18 / 0.5), var(--color-ivory) 11rem);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.12);
+}
+@media (min-width: 1024px) {
+  .pv-sheet { margin-top: 0; border-radius: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; box-shadow: none; }
+}
+/* In the components layer so utilities like lg:hidden can hide it. */
+@layer components {
+  .grip {
+    display: block;
+    width: 2.75rem;
+    height: 0.3rem;
+    margin-inline: auto;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.3);
+  }
+}
+
+/* ---------------- Sticky bottom action bar ---------------- */
+.action-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 35;
+  padding: 0.75rem 1rem calc(0.75rem + var(--safe-b));
+  background: rgb(10 10 13 / 0.78);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  backdrop-filter: blur(20px) saturate(1.5);
+  box-shadow: 0 -1px 0 rgb(255 255 255 / 0.08), 0 -20px 40px -20px rgb(0 0 0 / 0.8);
+  transition: transform 0.5s var(--ease-soft), opacity 0.3s;
+}
+.action-bar[data-shown="false"] { transform: translateY(110%); opacity: 0; pointer-events: none; }
+
+/* Number that bumps when it changes (keyed in React). */
+.bump { display: inline-block; animation: bump 0.45s var(--ease-spring); }
+@keyframes bump {
+  0% { transform: scale(0.8); opacity: 0.4; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* ---------------- Checkout steps ---------------- */
+.steps { display: flex; align-items: center; gap: 0.4rem; }
+.step { display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; font-weight: 700; color: var(--color-muted); white-space: nowrap; }
+.step-dot {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: var(--color-sand);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  font-family: var(--font-latin);
+  font-size: 0.75rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+.step[data-state="done"] { color: var(--color-text); }
+.step[data-state="done"] .step-dot { background: var(--color-ink); color: var(--color-ivory); box-shadow: none; }
+.step[data-state="active"] { color: var(--color-ink); }
+.step[data-state="active"] .step-dot { background: var(--neon); color: #fff; box-shadow: 0 0 18px -2px var(--color-gold); animation: step-pop 0.6s var(--ease-spring) 0.2s backwards; }
+.step-line { position: relative; flex: 1; min-width: 1rem; height: 2px; border-radius: 999px; background: var(--color-line); overflow: hidden; }
+.step-line > i { position: absolute; inset: 0; background: var(--color-ink); transform-origin: right; transform: scaleX(0); }
+.step-line[data-state="done"] > i { animation: seg-fill 0.6s var(--ease-soft) forwards; }
+@keyframes step-pop {
+  from { transform: scale(0.4); }
+  to { transform: scale(1); }
+}
+
+/* Success: a pulse ring around the tick. */
+.success-pop { position: relative; display: inline-grid; place-items: center; animation: step-pop 0.7s var(--ease-spring) backwards; }
+.success-pop::before {
+  content: "";
+  position: absolute;
+  inset: -0.6rem;
+  border-radius: 999px;
+  border: 2px solid var(--color-success);
+  opacity: 0;
+  animation: ring-out 1.6s var(--ease-soft) 0.3s infinite;
+}
+@keyframes ring-out {
+  from { opacity: 0.8; transform: scale(0.7); }
+  to { opacity: 0; transform: scale(1.5); }
+}
+
+/* Panels: the clean dark sheets used for cart, checkout and forms. */
+.panel {
+  background: var(--color-paper);
+  border-radius: 1.5rem;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+/* Big neon 404. */
+.big-404 {
+  font-family: var(--font-latin);
+  font-weight: 900;
+  font-size: clamp(6rem, 32vw, 11rem);
+  line-height: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-story-seg > i, .step-line > i { animation: none !important; }
+  .pv-story-seg[data-state="active"] > i, .step-line[data-state="done"] > i { transform: scaleX(1); }
+  .success-pop::before { display: none; }
+}

@@ -4,7 +4,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 
 export default function StoreError({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div className="container-x py-16">
+    <div className="container-x tabbar-pad py-16">
       <EmptyState
         as="h1"
         title="حدث خطأ ما"

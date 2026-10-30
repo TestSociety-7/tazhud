@@ -70,7 +70,7 @@ export function SettingsPage() {
     <form onSubmit={submit} noValidate>
       <PageHeader title="الإعدادات" description="الإشعارات، رقم واتساب، إنستغرام والتوصيل." />
 
-      <div className="stagger space-y-6">
+      <div className="studio-list space-y-6">
         <NotificationsPanel />
         <Panel title="المتجر والتواصل">
           <div className="grid gap-5 md:grid-cols-2">

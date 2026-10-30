@@ -76,7 +76,7 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
               <span>
                 · الطلب الأصلي{" "}
                 {order ? (
-                  <Link href={`/admin/orders?open=${order.id}`} className="ltr inline-block font-semibold text-forest underline underline-offset-2">{item.orderNumber}</Link>
+                  <Link href={`/admin/orders?open=${order.id}`} className="ltr inline-block font-semibold text-gold-bright underline underline-offset-2">{item.orderNumber}</Link>
                 ) : (
                   <span className="ltr inline-block">{item.orderNumber}</span>
                 )}{" "}
@@ -102,20 +102,20 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
               </li>
             </ul>
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
-              <div className="rounded-xl bg-sand/60 p-3"><dt className="text-xs text-muted">النوع</dt><dd className="font-semibold text-ink">{RETURN_TYPE_LABEL[item.type]}</dd></div>
-              <div className="rounded-xl bg-sand/60 p-3"><dt className="text-xs text-muted">السبب</dt><dd className="font-semibold text-ink">{item.reason}</dd></div>
-              {item.wish && <div className="rounded-xl bg-sand/60 p-3 sm:col-span-2"><dt className="text-xs text-muted">تريد بدلها</dt><dd className="text-ink">{item.wish}</dd></div>}
-              {item.notes && <div className="rounded-xl bg-sand/60 p-3 sm:col-span-2"><dt className="text-xs text-muted">ملاحظات الزبونة</dt><dd className="text-ink">«{item.notes}»</dd></div>}
+              <div className="rounded-2xl bg-paper p-3 ring-1 ring-line"><dt className="text-xs text-muted">النوع</dt><dd className="font-semibold text-ink">{RETURN_TYPE_LABEL[item.type]}</dd></div>
+              <div className="rounded-2xl bg-paper p-3 ring-1 ring-line"><dt className="text-xs text-muted">السبب</dt><dd className="font-semibold text-ink">{item.reason}</dd></div>
+              {item.wish && <div className="rounded-2xl bg-paper p-3 ring-1 ring-line sm:col-span-2"><dt className="text-xs text-muted">تريد بدلها</dt><dd className="text-ink">{item.wish}</dd></div>}
+              {item.notes && <div className="rounded-2xl bg-paper p-3 ring-1 ring-line sm:col-span-2"><dt className="text-xs text-muted">ملاحظات الزبونة</dt><dd className="text-ink">«{item.notes}»</dd></div>}
             </dl>
             <FormField label="ملاحظة داخلية" hint="تظهر في لوحة التحكم فقط." htmlFor="ret-note">
               <textarea id="ret-note" className="field" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="مثال: الاستلام يوم الأحد، أُعيد المبلغ نقدًا" />
             </FormField>
           </div>
           <aside className="space-y-5">
-            <div className="rounded-xl bg-sand/60 p-4 text-sm">
+            <div className="rounded-2xl bg-paper p-4 text-sm ring-1 ring-line">
               <h3 className="mb-2 text-xs font-semibold text-muted">الزبونة</h3>
               <p className="font-semibold text-ink">{item.customer.name}</p>
-              <a className="text-forest underline-offset-2 hover:underline" href={`tel:${item.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{item.customer.phone}</span></a>
+              <a className="font-semibold text-gold-bright underline-offset-2 hover:underline" href={`tel:${item.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{item.customer.phone}</span></a>
             </div>
             <fieldset>
               <legend className="label">الحالة</legend>
@@ -127,7 +127,7 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
                     aria-pressed={item.status === k}
                     disabled={busy}
                     onClick={() => item.status !== k && patch({ status: k }, `${item.number}: ${RETURN_STATUS_META[k].label}`)}
-                    className={`press min-h-10 rounded-full border text-sm transition-colors ${item.status === k ? "border-ink bg-ink font-semibold text-ivory" : "border-line bg-paper text-text hover:border-gold"}`}
+                    className="studio-chip w-full"
                   >
                     {RETURN_STATUS_META[k].label}
                   </button>
@@ -220,10 +220,10 @@ export function ReturnsPage() {
                 type="button"
                 aria-pressed={status === s}
                 onClick={() => setStatus(s)}
-                className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm transition-colors ${status === s ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+                className="studio-chip"
               >
                 {s === "all" ? "الكل" : RETURN_STATUS_META[s].label}
-                <span className="tabular-nums opacity-70">{count(s)}</span>
+                <span className="studio-chip-count">{count(s)}</span>
               </button>
             ))}
           </div>
@@ -237,13 +237,13 @@ export function ReturnsPage() {
               body="عندما تطلب زبونة إرجاع أو استبدال قطعة من صفحة «إرجاع أو استبدال» يظهر طلبها هنا ويصلك إشعار."
             />
           ) : (
-            <ul className="stagger grid gap-3">
+            <ul className="studio-list grid gap-3">
               {list.map((r) => {
                 const pieces = r.lines.reduce((n, l) => n + l.quantity, 0);
                 return (
                   <li key={r.id}>
-                    <button type="button" onClick={() => setOpen(r.id)} className="press card flex w-full flex-wrap items-center gap-3 p-4 text-start transition-shadow hover:shadow-[var(--shadow-soft)]">
-                      <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${r.type === "exchange" ? "bg-sand text-forest" : "bg-gold/15 text-gold-deep"}`}>
+                    <button type="button" onClick={() => setOpen(r.id)} className="studio-tile card flex w-full flex-wrap items-center gap-3 p-4 text-start">
+                      <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${r.type === "exchange" ? "bg-sky/15 text-sky" : "bg-gold/15 text-gold-bright"}`}>
                         {r.type === "exchange" ? <RefreshCw className="size-5" /> : <Undo2 className="size-5" />}
                       </span>
                       <span className="min-w-0 flex-1">

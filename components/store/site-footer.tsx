@@ -4,11 +4,10 @@ import Link from "next/link";
 import { InstagramIcon, WhatsappIcon } from "@/components/ui/brand-icons";
 import { useStore } from "@/components/providers/store-provider";
 import { LogoCoin } from "@/components/ui/fx";
-import { Mandala } from "@/components/ui/mandala";
 import { InstallAppButton } from "@/components/ui/install-app";
 import { whatsappLink } from "@/lib/whatsapp";
 
-const link = "inline-flex min-h-10 items-center transition-colors hover:text-gold-soft";
+const link = "inline-flex min-h-10 items-center transition-colors hover:text-ink";
 
 export function SiteFooter() {
   const { data } = useStore();
@@ -16,15 +15,14 @@ export function SiteFooter() {
   const categories = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <footer className="on-dark relative mt-24 overflow-hidden bg-ink text-sm text-ivory/70">
-      <div className="gold-rule" aria-hidden />
-      <div className="season-footer-edge" aria-hidden />
-      <Mandala className="pointer-events-none absolute -bottom-48 -start-40 size-[30rem] text-gold/10 motion-safe:animate-spin-slow" />
-      <div className="container-x relative grid gap-10 pt-14 pb-28 sm:pb-14 lg:grid-cols-[1.4fr_2fr]">
+    <footer className="relative mt-24 overflow-hidden border-t border-line bg-black text-sm text-muted">
+            <div className="season-footer-edge" aria-hidden />
+      <div className="pointer-events-none absolute -bottom-40 left-1/2 size-[30rem] -translate-x-1/2 rounded-full bg-gold/10 blur-3xl" aria-hidden />
+      <div className="container-x relative grid gap-10 pt-14 pb-28 lg:pb-14 lg:grid-cols-[1.4fr_2fr]">
         <div className="max-w-sm">
           <div className="flex items-center gap-3">
             <LogoCoin hat float={false} className="size-12" />
-            <p className="font-display text-2xl text-ivory">{s.storeName}</p>
+            <p className="font-display neon-text text-3xl font-black">{s.storeName}</p>
           </div>
           <p className="mt-4 leading-relaxed text-pretty">{s.tagline || "أزياء محتشمة بأقمشة ناعمة ومختارة بعناية."}</p>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -32,7 +30,7 @@ export function SiteFooter() {
               <WhatsappIcon className="size-4" /> واتساب
             </a>
             {s.instagramUrl && (
-              <a href={s.instagramUrl} target="_blank" rel="noopener noreferrer" className="press btn btn-sm btn-outline border-ivory/25 text-ivory">
+              <a href={s.instagramUrl} target="_blank" rel="noopener noreferrer" className="press btn btn-sm btn-outline border-white/20 text-ink">
                 <InstagramIcon className="size-4" /> إنستغرام
               </a>
             )}

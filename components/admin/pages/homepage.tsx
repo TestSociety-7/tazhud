@@ -62,7 +62,7 @@ export function HomepageEditor() {
         }
       />
 
-      <div className="stagger space-y-6">
+      <div className="studio-list space-y-6">
         <Panel title="صور الواجهة" description="اختر المنتج الذي يظهر في الصورة الكبيرة، والمنتج الذي يظهر في البطاقة الصغيرة بجانبها.">
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-4">

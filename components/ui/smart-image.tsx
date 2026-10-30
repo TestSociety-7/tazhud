@@ -62,10 +62,10 @@ export function SmartImage({ src, alt, className = "", imgClassName = "", priori
     <div className={`${/\b(absolute|fixed)\b/.test(className) ? "" : "relative"} overflow-hidden bg-sand ${className}`}>
       {state === "loading" && <div className="skeleton absolute inset-0" aria-hidden />}
       {state === "error" ? (
-        <div className="pattern-geo absolute inset-0 grid place-items-center bg-sand text-muted" role="img" aria-label={alt}>
+        <div className="absolute inset-0 grid place-items-center bg-sand bg-[radial-gradient(120%_80%_at_50%_0%,color-mix(in_oklab,var(--color-gold)_20%,transparent),transparent_65%)] text-muted" role="img" aria-label={alt}>
           <div className="flex flex-col items-center gap-2 px-4 text-center">
             <ImageOff className="size-6 opacity-60" aria-hidden />
-            <span className="font-display text-lg leading-tight">{fallbackLabel ?? "الصورة قريبًا"}</span>
+            <span className="font-display text-lg leading-tight font-bold">{fallbackLabel ?? "الصورة قريبًا"}</span>
           </div>
         </div>
       ) : (

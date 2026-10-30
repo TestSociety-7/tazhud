@@ -55,16 +55,20 @@ function NavList() {
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`press relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-all duration-300 ${
-                active
-                  ? "bg-gradient-to-l from-gold/25 to-white/5 font-semibold text-ivory shadow-[inset_0_0_0_1px_rgb(201_162_74/0.35)]"
-                  : "text-ivory/70 hover:-translate-x-0.5 hover:bg-white/5 hover:text-ivory"
+              className={`studio-tile relative flex min-h-12 items-center gap-3 rounded-2xl px-3 text-sm transition-colors ${
+                active ? "bg-sand font-bold text-ink" : "text-muted hover:bg-sand/60 hover:text-ink"
               }`}
             >
-              <Icon className={`size-[1.1rem] ${active ? "text-gold" : ""}`} />
+              <span
+                className={`grid size-9 place-items-center rounded-xl transition-colors ${
+                  active ? "bg-gradient-to-br from-gold to-gold-deep text-white shadow-[0_8px_20px_-8px_var(--color-gold)]" : "bg-paper"
+                }`}
+              >
+                <Icon className="size-[1.1rem]" />
+              </span>
               <span className="flex-1">{label}</span>
               {href === "/admin/orders" && newOrders > 0 && (
-                <span className="rounded-full bg-gold px-2 py-0.5 text-[0.65rem] font-bold text-ink">{newOrders}</span>
+                <span className="min-w-6 rounded-full bg-gold-deep px-1.5 text-center text-[0.7rem] leading-6 font-extrabold text-white tabular-nums">{newOrders}</span>
               )}
             </Link>
           </li>
@@ -86,23 +90,27 @@ function Sidebar() {
   const router = useRouter();
   const { data } = useStore();
   return (
-    <div className="on-dark flex h-full flex-col bg-ink p-4 text-ivory">
-      <Link href="/admin" className="relative mb-8 flex items-center gap-3 px-2 pt-2 pb-3">
+    <div className="flex h-full flex-col border-e border-line bg-paper/70 p-4 backdrop-blur-xl">
+      <Link href="/admin" className="relative mb-7 flex items-center gap-3 px-1 pt-2 pb-2">
         <SeasonTrim />
-        <LogoCoin hat float={false} className="size-11" />
-        <span>
-          <span className="font-display block text-2xl leading-none">{data.settings.storeName}</span>
-          <span className="text-xs text-gold">لوحة التحكم</span>
+        <span className="story-ring is-live !size-14 shrink-0 [--story-gap:var(--color-paper)]">
+          <span className="story-face overflow-hidden">
+            <LogoCoin hat float={false} className="size-full" />
+          </span>
+        </span>
+        <span className="min-w-0">
+          <span className="studio-title block truncate text-2xl leading-none">{data.settings.storeName}</span>
+          <span className="neon-text text-xs font-bold">لوحة التحكم</span>
         </span>
       </Link>
-      <nav aria-label="قائمة لوحة التحكم" className="flex-1 overflow-y-auto">
+      <nav aria-label="قائمة لوحة التحكم" className="-mx-1 flex-1 overflow-y-auto px-1">
         <NavList />
       </nav>
-      <div className="space-y-1 border-t border-white/10 pt-4">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
+      <div className="space-y-1 border-t border-line pt-4">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="studio-tile flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm text-muted hover:bg-sand/60 hover:text-ink">
           <ExternalLink className="size-[1.1rem]" /> عرض المتجر
         </a>
-        <button type="button" onClick={() => logout(router)} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
+        <button type="button" onClick={() => logout(router)} className="studio-tile flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 text-sm text-muted hover:bg-sand/60 hover:text-ink">
           <LogOut className="size-[1.1rem]" /> تسجيل الخروج
         </button>
       </div>
@@ -116,8 +124,8 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
   const pathname = usePathname();
   const tiles = NAV.filter((n) => !BOTTOM_HREFS.has(n.href));
   return (
-    <div className="on-dark flex h-full flex-col gap-6 bg-ink p-5 text-ivory">
-      <ul className="stagger grid grid-cols-2 gap-3">
+    <div className="flex h-full flex-col gap-5 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <ul className="studio-list grid grid-cols-2 gap-3">
         {tiles.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
           return (
@@ -126,25 +134,25 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
                 href={href}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
-                className={`press flex aspect-[4/3] flex-col justify-between rounded-2xl border p-4 transition-colors ${
-                  active ? "border-gold/60 bg-gold/15" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
+                className={`studio-tile flex aspect-[5/4] flex-col justify-between rounded-[1.4rem] border p-4 ${
+                  active ? "border-gold/60 bg-gold/10" : "border-line bg-paper"
                 }`}
               >
-                <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-gold-bright to-gold-deep text-ink shadow-[0_8px_18px_-8px_rgb(201_162_74/0.7)]">
+                <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-gold to-gold-deep text-white shadow-[0_10px_22px_-10px_var(--color-gold)]">
                   <Icon className="size-5" />
                 </span>
-                <span className="text-sm font-semibold">{label}</span>
+                <span className="text-sm font-bold text-ink">{label}</span>
               </Link>
             </li>
           );
         })}
       </ul>
-      <InstallAppButton className="press btn sheen w-full border border-gold/50 bg-gold/10 text-gold-soft" />
-      <div className="mt-auto grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-white/20 text-ivory">
+      <InstallAppButton className="press btn w-full border border-gold/40 bg-gold/10 font-bold text-gold-bright" />
+      <div className="mt-auto grid grid-cols-2 gap-3 border-t border-line pt-5">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-line text-ink">
           <ExternalLink className="size-4" /> عرض المتجر
         </a>
-        <button type="button" onClick={() => logout(router)} className="press btn btn-outline border-white/20 text-ivory/80">
+        <button type="button" onClick={() => logout(router)} className="press btn btn-outline border-line text-muted">
           <LogOut className="size-4" /> خروج
         </button>
       </div>
@@ -152,7 +160,7 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-/** Thumb-friendly tab bar for phones: the screens used most, plus a quick "add product". */
+/** TikTok-style tab bar for phones: the screens used most, plus a big "add product" in the middle. */
 function BottomBar({ onMore }: { onMore: () => void }) {
   const pathname = usePathname();
   const { data } = useStore();
@@ -160,39 +168,38 @@ function BottomBar({ onMore }: { onMore: () => void }) {
   const tabs = [
     { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, active: pathname === "/admin" },
     { href: "/admin/orders", label: "الطلبات", icon: Inbox, active: pathname.startsWith("/admin/orders"), badge: newOrders },
-    { href: "/admin/products/new", label: "إضافة", icon: Plus, active: pathname === "/admin/products/new", primary: true },
+    { href: "/admin/products/new", label: "إضافة منتج", icon: Plus, active: pathname === "/admin/products/new", primary: true },
     { href: "/admin/products", label: "المنتجات", icon: Package, active: pathname.startsWith("/admin/products") && pathname !== "/admin/products/new" },
   ];
   return (
-    <nav aria-label="التنقل السريع" className="on-dark fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/95 pb-[env(safe-area-inset-bottom)] text-ivory backdrop-blur-md lg:hidden">
-      <ul className="grid grid-cols-5">
+    <nav aria-label="التنقل السريع" className="studio-tabbar fixed inset-x-0 bottom-0 z-30 pb-[env(safe-area-inset-bottom)] lg:hidden">
+      <ul className="grid h-[var(--studio-tab-h)] grid-cols-5">
         {tabs.map(({ href, label, icon: Icon, active, badge, primary }) => (
           <li key={href}>
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`press relative flex min-h-16 flex-col items-center justify-center gap-1 text-[0.7rem] transition-colors ${active ? "text-gold" : "text-ivory/70"}`}
+              className={`studio-tab relative flex h-full flex-col items-center justify-center gap-1 text-[0.68rem] font-semibold ${active ? "text-ink" : "text-muted"}`}
             >
               {primary ? (
-                <span className="sheen -mt-6 grid size-14 place-items-center rounded-full bg-gradient-to-br from-gold-bright via-gold to-gold-deep text-ink shadow-[0_10px_24px_-8px_rgb(201_162_74/0.8),inset_0_-3px_0_rgb(0_0_0/0.15)] ring-4 ring-ink">
-                  <Icon className="size-6" strokeWidth={2.5} />
+                <span className="tt-plus">
+                  <span>
+                    <Icon className="size-6" strokeWidth={3} />
+                  </span>
                 </span>
               ) : (
-                <>
-                  <span className={`absolute top-1.5 h-1 rounded-full bg-gold transition-all duration-300 ${active ? "w-6 opacity-100" : "w-0 opacity-0"}`} />
-                  <Icon className={`size-5 transition-transform duration-300 ${active ? "-translate-y-0.5 scale-110" : ""}`} />
-                </>
+                <Icon className="size-6" strokeWidth={active ? 2.5 : 2} />
               )}
               <span className={primary ? "sr-only" : ""}>{label}</span>
               {badge ? (
-                <span className="absolute top-2 start-[calc(50%+0.4rem)] min-w-4 rounded-full bg-gold px-1 text-center text-[0.6rem] leading-4 font-bold text-ink">{badge}</span>
+                <span className="absolute top-2 start-[calc(50%+0.35rem)] min-w-[1.15rem] rounded-full bg-gold-deep px-1 text-center text-[0.62rem] leading-[1.15rem] font-extrabold text-white shadow-[0_0_0_2px_var(--color-ivory)]">{badge}</span>
               ) : null}
             </Link>
           </li>
         ))}
         <li>
-          <button type="button" onClick={onMore} className="flex min-h-16 w-full flex-col items-center justify-center gap-1 text-[0.7rem] text-ivory/70">
-            <Menu className="size-5" />
+          <button type="button" onClick={onMore} className="studio-tab flex h-full w-full flex-col items-center justify-center gap-1 text-[0.68rem] font-semibold text-muted">
+            <Menu className="size-6" />
             المزيد
           </button>
         </li>
@@ -213,24 +220,24 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div data-season={season} className="admin-season min-h-dvh bg-ivory lg:grid lg:grid-cols-[16.5rem_1fr]">
+    <div data-season={season} className="admin-season min-h-dvh text-text lg:grid lg:grid-cols-[17rem_1fr]">
       <aside className="sticky top-0 hidden h-dvh lg:block">
         <Sidebar />
       </aside>
 
       <div className="min-w-0">
-        <header className="on-dark sticky top-0 z-30 flex h-14 items-center justify-center bg-ink/95 px-3 text-ivory backdrop-blur-md lg:hidden">
-          <Link href="/admin" className="flex items-center gap-2.5">
+        <header className="studio-tabbar sticky top-0 z-30 flex h-14 items-center justify-between px-4 pt-[env(safe-area-inset-top)] lg:hidden">
+          <Link href="/admin" className="flex min-w-0 items-center gap-2.5">
             <LogoCoin hat float={false} className="size-8" />
-            <span className="font-display text-xl">{data.settings.storeName}</span>
-            <span className="rounded-full border border-gold/40 px-2 py-0.5 text-[0.65rem] text-gold">الإدارة</span>
+            <span className="studio-title truncate text-xl">{data.settings.storeName}</span>
           </Link>
+          <span className="chip shrink-0 !bg-gold/15 !text-gold-bright">لوحة التحكم</span>
           <SeasonTrim />
         </header>
 
-        <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
+        <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-5 pb-[calc(var(--studio-tab-h)+env(safe-area-inset-bottom)+2rem)] sm:px-8 sm:pt-10 lg:pb-12">
           {/* Admin screens read the current time and browser storage, so they render on request. */}
-          <Suspense fallback={<div className="skeleton h-96 rounded-2xl" aria-busy="true" />}>
+          <Suspense fallback={<div className="skeleton h-96 rounded-[1.4rem]" aria-busy="true" />}>
             <div key={pathname} className="admin-enter">
               {children}
             </div>
@@ -243,7 +250,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <AdminWelcome />
       <OrderWatcher />
 
-      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="!bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory">
+      <Sheet open={open} onClose={() => setOpen(false)} side="bottom" title="المزيد" className="rounded-t-[1.75rem] border-t border-line backdrop:!bg-black/60 [&>div:first-child]:border-line [&_h2]:font-extrabold">
         <MoreSheet onNavigate={() => setOpen(false)} />
       </Sheet>
     </div>

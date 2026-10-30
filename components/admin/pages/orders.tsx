@@ -106,12 +106,12 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
           </div>
 
           <aside className="space-y-5">
-            <div className="rounded-xl bg-sand/60 p-4 text-sm">
+            <div className="rounded-2xl bg-paper p-4 text-sm ring-1 ring-line">
               <h3 className="mb-2 text-xs font-semibold text-muted">الزبونة</h3>
               <p className="font-semibold text-ink">{order.customer.name}</p>
-              <p><a className="text-forest underline-offset-2 hover:underline" href={`tel:${order.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{order.customer.phone}</span></a></p>
+              <p><a className="font-semibold text-gold-bright underline-offset-2 hover:underline" href={`tel:${order.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{order.customer.phone}</span></a></p>
               <p className="mt-2 text-muted">{order.customer.address}{order.customer.city ? `، ${order.customer.city}` : ""}</p>
-              {order.customer.notes && <p className="mt-2 rounded-lg bg-paper p-2 text-xs">«{order.customer.notes}»</p>}
+              {order.customer.notes && <p className="mt-2 rounded-lg bg-sand p-2 text-xs">«{order.customer.notes}»</p>}
             </div>
             <fieldset>
               <legend className="label">الحالة</legend>
@@ -122,9 +122,7 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
                     type="button"
                     aria-pressed={order.status === k}
                     onClick={() => order.status !== k && setStatus(k)}
-                    className={`press min-h-10 rounded-full border text-sm transition-colors ${
-                      order.status === k ? "border-ink bg-ink font-semibold text-ivory" : "border-line bg-paper text-text hover:border-gold"
-                    }`}
+                    className="studio-chip w-full"
                   >
                     {STATUS_META[k].label}
                   </button>
@@ -203,10 +201,10 @@ export function OrdersPage() {
               type="button"
               aria-pressed={status === s}
               onClick={() => setStatus(s)}
-              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm transition-colors ${status === s ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+              className="studio-chip"
             >
               {s === "all" ? "الكل" : STATUS_META[s].label}
-              <span className={`text-xs ${status === s ? "text-gold" : ""}`}>{counts(s)}</span>
+              <span className="studio-chip-count">{counts(s)}</span>
             </button>
           ))}
         </div>
@@ -222,13 +220,13 @@ export function OrdersPage() {
         </div>
       ) : (
         <>
-          <ul className="stagger grid gap-3 md:grid-cols-2">
+          <ul className="studio-list grid gap-3 md:grid-cols-2">
             {list.map((o) => (
               <li key={o.id}>
                 <button
                   type="button"
                   onClick={() => setOpen(o.id)}
-                  className="press card flex w-full flex-col gap-3 p-4 text-start transition-shadow hover:shadow-[var(--shadow-soft)]"
+                  className="studio-tile card flex w-full flex-col gap-3 p-4 text-start"
                 >
                   <span className="flex w-full items-center justify-between gap-3">
                     <span className="ltr text-xs font-semibold text-muted">{o.number}</span>
@@ -236,12 +234,12 @@ export function OrdersPage() {
                   </span>
                   <span className="flex w-full items-end justify-between gap-3">
                     <span className="min-w-0">
-                      <span className="block truncate text-base font-semibold text-ink">{o.customer.name}</span>
+                      <span className="block truncate text-base font-bold text-ink">{o.customer.name}</span>
                       <span className="block text-xs text-muted">
                         {[o.customer.city, piecesLabel(o.lines.reduce((n, l) => n + l.quantity, 0)), dateFormat(o.createdAt, { day: "numeric", month: "short" })].filter(Boolean).join(" · ")}
                       </span>
                     </span>
-                    <span className="font-display shrink-0 text-2xl leading-none text-ink tabular-nums">{money(o.total)}</span>
+                    <span className="studio-title shrink-0 text-2xl leading-none tabular-nums">{money(o.total)}</span>
                   </span>
                 </button>
               </li>

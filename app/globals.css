@@ -1,32 +1,41 @@
 @import "tailwindcss";
+@import "./styles/reels.css";
+@import "./styles/store-pages.css";
+@import "./styles/admin.css";
 
 @theme {
-  --color-ivory: #f7f2e9;
-  --color-paper: #fbf8f2;
-  --color-sand: #efe7d8;
-  --color-line: #e2d9c8;
-  --color-ink: #0f120f;
-  --color-ink-2: #1a1e1a;
-  --color-forest: #1f3a2e;
-  --color-forest-2: #2c4a3c;
-  --color-sage: #9aaa8f;
-  --color-sage-soft: #dde3d3;
-  --color-gold: #b8955a;
-  --color-gold-bright: #d4b26a;
-  --color-gold-soft: #e8d9b5;
-  --color-gold-deep: #7f6230;
-  --color-text: #1e2420;
-  --color-muted: #5e655d;
-  --color-danger: #9b3b2f;
-  --color-success: #2f6b4a;
+  /* "Reels": a dark, full-screen shop. The light/dark token names are swapped on purpose:
+     "ivory" is now the dark page and "ink" the light text, so every existing
+     bg-ivory/text-ink pairing turns dark, and old "dark bands" become bright ones. */
+  --color-ivory: #0a0a0d;
+  --color-paper: #141419;
+  --color-sand: #1d1d24;
+  --color-line: #2b2b35;
+  --color-ink: #f6f6f8;
+  --color-ink-2: #e6e6ec;
+  --color-forest: #f6f6f8;
+  --color-forest-2: #ffffff;
+  --color-sage: #6c6c7a;
+  --color-sage-soft: #24242c;
+  --color-gold: #ff5c7a;
+  --color-gold-bright: #ff86a0;
+  --color-gold-soft: #ffd3dc;
+  --color-gold-deep: #ff3d64;
+  --color-text: #e9e9ef;
+  --color-muted: #a0a0ae;
+  --color-danger: #ff6b6b;
+  --color-success: #4ade80;
+  --color-volt: #c8ff3e;
+  --color-sky: #5cc8ff;
 
-  --font-display: "El Messiri Variable", "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-display: "Alexandria Variable", "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
-  --font-latin: "Cormorant Garamond", ui-serif, Georgia, serif;
+  --font-latin: "Alexandria Variable", ui-sans-serif, system-ui, sans-serif;
 
   --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --shadow-soft: 0 1px 2px rgb(15 18 15 / 0.04), 0 8px 24px -12px rgb(15 18 15 / 0.18);
-  --shadow-lift: 0 2px 4px rgb(15 18 15 / 0.05), 0 24px 48px -20px rgb(15 18 15 / 0.35);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --shadow-soft: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 10px 30px -14px rgb(0 0 0 / 0.8);
+  --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 30px 60px -20px rgb(0 0 0 / 0.9);
 
   --animate-shimmer: shimmer 1.6s linear infinite;
   --animate-spin-slow: spin 60s linear infinite;
@@ -43,7 +52,7 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   --header-h: 4.25rem;
 }
 
@@ -130,15 +139,15 @@ body {
   }
   .btn:active:not(:disabled) { transform: scale(0.98); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-primary { background: var(--color-forest); color: var(--color-ivory); }
-  .btn-primary:hover:not(:disabled) { background: var(--color-ink); box-shadow: var(--shadow-soft); }
-  .btn-gold { background: var(--color-gold-bright); color: var(--color-ink); }
-  .btn-gold:hover:not(:disabled) { background: var(--color-gold-soft); }
+  .btn-primary { background: var(--color-forest); color: #0a0a0d; font-weight: 700; }
+  .btn-primary:hover:not(:disabled) { background: var(--color-forest-2); box-shadow: 0 0 0 4px rgb(255 255 255 / 0.08); }
+  .btn-gold { background: linear-gradient(120deg, var(--color-gold-deep), var(--color-gold) 55%, var(--color-gold-bright)); color: #fff; font-weight: 700; box-shadow: 0 12px 30px -12px var(--color-gold); }
+  .btn-gold:hover:not(:disabled) { filter: brightness(1.08); }
   .btn-outline { border: 1px solid currentColor; background: transparent; }
-  .btn-outline:hover:not(:disabled) { background: rgb(15 18 15 / 0.05); }
+  .btn-outline:hover:not(:disabled) { background: rgb(255 255 255 / 0.06); }
   .on-dark .btn-outline:hover:not(:disabled) { background: rgb(255 255 255 / 0.08); }
   .btn-ghost { background: transparent; }
-  .btn-ghost:hover:not(:disabled) { background: rgb(15 18 15 / 0.06); }
+  .btn-ghost:hover:not(:disabled) { background: rgb(255 255 255 / 0.07); }
   .btn-danger { background: var(--color-danger); color: #fff; }
   .btn-danger:hover:not(:disabled) { background: #7f2f25; }
   .btn-sm { min-height: 2.25rem; padding: 0.45rem 0.95rem; font-size: 0.8rem; }
@@ -153,7 +162,7 @@ body {
     border-radius: 999px;
     transition: background-color 0.2s;
   }
-  .icon-btn:hover { background: rgb(15 18 15 / 0.06); }
+  .icon-btn:hover { background: rgb(255 255 255 / 0.08); }
   .on-dark .icon-btn:hover { background: rgb(255 255 255 / 0.1); }
 
   .field {
@@ -170,15 +179,15 @@ body {
   @media (min-width: 640px) {
     .field { font-size: 0.925rem; }
   }
-  .field::placeholder { color: #9a9f97; }
-  .field:hover { border-color: #cfc4ae; }
-  .field:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 3px rgb(184 149 90 / 0.22); background: #fff; }
+  .field::placeholder { color: #6f6f7d; }
+  .field:hover { border-color: #3d3d4a; }
+  .field:focus { outline: none; border-color: var(--color-gold); box-shadow: 0 0 0 4px rgb(255 92 122 / 0.22); background: var(--color-sand); }
   .field[aria-invalid="true"] { border-color: var(--color-danger); }
   .field[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px rgb(155 59 47 / 0.18); }
   textarea.field { min-height: 6rem; resize: vertical; }
   select.field {
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235e655d' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a0a0ae' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: left 0.9rem center;
     padding-left: 2.25rem;
@@ -197,18 +206,19 @@ body {
   .card {
     background: var(--color-paper);
     border: 1px solid var(--color-line);
-    border-radius: 1.25rem;
+    border-radius: 1.4rem;
   }
 
   .skeleton {
-    background: linear-gradient(90deg, #ede5d6 0%, #f6f0e6 50%, #ede5d6 100%);
+    background: linear-gradient(90deg, #17171d 0%, #23232b 50%, #17171d 100%);
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
   }
 
   /* Arched frame, echoing a mihrab. */
-  .arch { border-radius: 999px 999px 1.25rem 1.25rem; }
-  .arch-full { border-radius: 999px 999px 0 0; }
+  /* Photo frames: soft phone-screen corners. */
+  .arch { border-radius: 1.4rem; }
+  .arch-full { border-radius: 1.75rem; }
 
   .pattern-geo {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%23b8955a' stroke-width='0.8' opacity='0.5'%3E%3Cpath d='M40 14 47.6 21.6 58.4 21.6 58.4 32.4 66 40 58.4 47.6 58.4 58.4 47.6 58.4 40 66 32.4 58.4 21.6 58.4 21.6 47.6 14 40 21.6 32.4 21.6 21.6 32.4 21.6Z'/%3E%3Cpath d='M40 22 52.7 27.3 58 40 52.7 52.7 40 58 27.3 52.7 22 40 27.3 27.3Z'/%3E%3Ccircle cx='0' cy='0' r='6'/%3E%3Ccircle cx='80' cy='0' r='6'/%3E%3Ccircle cx='0' cy='80' r='6'/%3E%3Ccircle cx='80' cy='80' r='6'/%3E%3C/g%3E%3C/svg%3E");
@@ -311,7 +321,7 @@ input[type="url"],
   inset: 0;
   border-radius: 9999px;
   backface-visibility: hidden;
-  box-shadow: 0 0 0 2px rgb(201 162 74 / 0.7), 0 14px 30px -12px rgb(201 162 74 / 0.6);
+  box-shadow: 0 0 0 2px #ff5c7a, 0 0 0 3.5px rgb(176 124 255 / 0.6), 0 14px 30px -12px rgb(255 92 122 / 0.6);
 }
 .coin-back { transform: rotateY(180deg); }
 /* Light crossing the front face just after the coin lands. */
@@ -449,7 +459,7 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
 .page-enter { animation: page-enter 0.45s ease-out backwards; }
 @keyframes page-enter { from { opacity: 0; } }
 
-/* Opening shown once per visit: coin turns in, then two doors part. */
+/* Opening shown once per visit: the logo appears in a story ring, then zooms through the screen. */
 .brand-intro {
   position: fixed;
   inset: 0;
@@ -457,34 +467,23 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   display: grid;
   place-items: center;
   pointer-events: none;
-  animation: intro-gone 0s linear 1.6s forwards;
+  animation: intro-gone 0s linear 1.7s forwards;
 }
 .no-intro .brand-intro { display: none; }
-.intro-door {
+/* A black screen behind the logo; it zooms through the viewer as the store appears. */
+.intro-screen {
   position: absolute;
-  inset-block: 0;
-  width: 50.5%;
-  background: var(--color-ink);
-  animation: intro-door 0.75s cubic-bezier(0.7, 0, 0.2, 1) 0.8s forwards;
+  inset: 0;
+  background: radial-gradient(60% 40% at 50% 45%, #1f1420, #000);
+  animation: intro-screen-out 0.6s cubic-bezier(0.7, 0, 0.2, 1) 1s forwards;
 }
-.intro-door::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  width: 1px;
-  background: linear-gradient(transparent, var(--color-gold) 30%, var(--color-gold) 70%, transparent);
-  opacity: 0.7;
-}
-.intro-door-a { right: 0; --to: 100%; }
-.intro-door-a::after { left: 0; }
-.intro-door-b { left: 0; --to: -100%; }
-.intro-door-b::after { right: 0; }
+@keyframes intro-screen-out { to { opacity: 0; transform: scale(1.25); } }
 .intro-mark {
   position: relative;
   display: grid;
   justify-items: center;
   gap: 0.9rem;
-  animation: intro-mark-out 0.3s ease-in 0.7s forwards;
+  animation: intro-mark-out 0.45s cubic-bezier(0.7, 0, 0.2, 1) 0.95s forwards;
 }
 .intro-coin {
   display: block;
@@ -492,42 +491,48 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   height: 5.5rem;
   border-radius: 999px;
   overflow: hidden;
-  box-shadow: 0 0 0 2px rgb(201 162 74 / 0.8), 0 0 60px -6px rgb(212 178 106 / 0.6);
+  border: 3px solid #000;
+  box-shadow: 0 0 0 3px #ff5c7a, 0 0 0 5px #b07cff, 0 0 60px -6px rgb(255 92 122 / 0.7);
   animation: welcome-coin 0.75s var(--ease-soft) both;
 }
 .intro-coin img { width: 100%; height: 100%; object-fit: cover; }
 .intro-name {
   font-size: 2rem;
   line-height: 1;
-  background: linear-gradient(100deg, var(--color-gold-deep), var(--color-gold-bright) 45%, var(--color-gold-soft));
+  font-weight: 900;
+  background: linear-gradient(100deg, #ff3d64, #ff86a0 45%, #b07cff);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   animation: welcome-text 0.6s var(--ease-soft) 0.25s both;
 }
-@keyframes intro-door { to { translate: var(--to) 0; } }
-@keyframes intro-mark-out { to { opacity: 0; transform: scale(1.08); } }
+@keyframes intro-mark-out { to { opacity: 0; transform: scale(2.2); filter: blur(6px); } }
 @keyframes intro-gone { to { visibility: hidden; } }
 
 /* ----------------------------- Seasons ----------------------------- */
 /* Christmas keeps the gold and adds pine green and berry red. */
+/* Christmas: pine-green buttons, berry red and gold accents. */
 [data-season="christmas"] {
-  --color-forest: #174030;
-  --color-forest-2: #20523d;
-  --color-season-a: #c0303a;
-  --color-season-b: #e9c46a;
-  --color-season-c: #3f9e6b;
+  --color-forest: #9be3b4;
+  --color-forest-2: #c3f0d2;
+  --color-gold: #ff4d5e;
+  --color-gold-bright: #ff7b87;
+  --color-gold-deep: #e63346;
+  --color-season-a: #ff4d5e;
+  --color-season-b: #f5cf6b;
+  --color-season-c: #4fd18b;
 }
-/* Halloween turns the gold into pumpkin and the dark green into night purple. */
+/* Halloween: pumpkin buttons and violet night. */
 [data-season="halloween"] {
-  --color-ink: #120d18;
-  --color-ink-2: #1d1526;
-  --color-forest: #3b2452;
-  --color-forest-2: #4b2f66;
-  --color-gold: #d9822b;
-  --color-gold-bright: #f0a04b;
-  --color-gold-soft: #f7d6ad;
-  --color-gold-deep: #9a5414;
+  --color-ivory: #0d0912;
+  --color-paper: #17111f;
+  --color-sand: #211a2b;
+  --color-forest: #ffa24c;
+  --color-forest-2: #ffb870;
+  --color-gold: #b07cff;
+  --color-gold-bright: #c9a2ff;
+  --color-gold-soft: #ead9ff;
+  --color-gold-deep: #9a5cff;
   --color-season-a: #f08a24;
   --color-season-b: #9d5cd6;
   --color-season-c: #b6e05a;

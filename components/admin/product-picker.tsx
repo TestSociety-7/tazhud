@@ -47,7 +47,7 @@ export function ProductPicker({
         {current ? (
           <SmartImage src={current.images[0]} alt="" className="size-16 shrink-0 rounded-xl" />
         ) : (
-          <span className="grid size-16 shrink-0 place-items-center rounded-xl bg-sand text-gold-deep">
+          <span className="grid size-16 shrink-0 place-items-center rounded-xl bg-sand text-gold">
             <Sparkles className="size-6" />
           </span>
         )}
@@ -55,7 +55,7 @@ export function ProductPicker({
           <span className="block truncate font-semibold text-ink">{current ? current.name : autoLabel}</span>
           <span className="block truncate text-xs text-muted">{current ? money(effectivePrice(current)) : autoNote}</span>
         </span>
-        <span className="shrink-0 rounded-full bg-sand px-3 py-1.5 text-xs font-semibold text-forest">تغيير</span>
+        <span className="shrink-0 rounded-full bg-sand px-3 py-1.5 text-xs font-semibold text-gold-bright">تغيير</span>
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title={label} size="lg">
@@ -72,7 +72,7 @@ export function ProductPicker({
                 aria-pressed={!value}
                 className={`press flex h-full w-full flex-col overflow-hidden rounded-2xl border text-start ${!value ? "border-gold ring-2 ring-gold/40" : "border-line"}`}
               >
-                <span className="grid aspect-square w-full place-items-center bg-sand text-gold-deep">
+                <span className="grid aspect-square w-full place-items-center bg-sand text-gold">
                   <Sparkles className="size-8" />
                 </span>
                 <span className="p-2.5">
@@ -94,7 +94,7 @@ export function ProductPicker({
                 >
                   <SmartImage src={p.images[0]} alt="" className="aspect-square w-full" />
                   {on && (
-                    <span className="absolute top-2 end-2 grid size-7 place-items-center rounded-full bg-gold text-ink shadow">
+                    <span className="absolute top-2 end-2 grid size-7 place-items-center rounded-full bg-gold text-white shadow">
                       <Check className="size-4" />
                     </span>
                   )}

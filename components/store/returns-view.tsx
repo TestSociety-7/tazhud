@@ -112,20 +112,20 @@ export function ReturnsView() {
   if (done) {
     const link = whatsappLink(s.whatsappNumber, buildReturnMessage(done, s));
     return (
-      <div className="container-x py-14">
-        <div className="card mx-auto max-w-xl px-6 py-12 text-center sm:px-12">
-          <CheckCircle2 className="mx-auto size-12 text-success" />
-          <h1 className="font-display mt-4 text-4xl text-ink">وصلنا طلبكِ</h1>
+      <div className="container-x tabbar-pad pt-8 sm:pt-14">
+        <div className="panel mx-auto max-w-xl animate-fade-up px-6 py-12 text-center sm:px-12">
+          <span className="success-pop mx-auto grid size-16 place-items-center rounded-full bg-success/15 text-success"><CheckCircle2 className="size-10" /></span>
+          <h1 className="reel-title mt-5 text-4xl">وصلنا طلبكِ</h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-muted" role="status">
             رقم طلب {done.type === "exchange" ? "الاستبدال" : "الإرجاع"} <strong className="ltr inline-block text-ink">{done.number}</strong>. سنتواصل معكِ على واتساب لترتيب استلام القطع.
           </p>
           <ol className="mx-auto mt-8 max-w-sm space-y-3 text-start text-sm text-text">
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">1</span>أرسلي الطلب على واتساب، ويمكنكِ إضافة صور للقطعة.</li>
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">2</span>جهّزي القطع غير مستخدمة ومعها بطاقاتها.</li>
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">3</span>نرتب معكِ الاستلام، ثم {done.type === "exchange" ? "نرسل لكِ القطعة البديلة" : "نعيد لكِ المبلغ"}.</li>
+            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-[image:var(--neon)] font-latin text-xs font-bold text-white">1</span>أرسلي الطلب على واتساب، ويمكنكِ إضافة صور للقطعة.</li>
+            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-[image:var(--neon)] font-latin text-xs font-bold text-white">2</span>جهّزي القطع غير مستخدمة ومعها بطاقاتها.</li>
+            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-[image:var(--neon)] font-latin text-xs font-bold text-white">3</span>نرتب معكِ الاستلام، ثم {done.type === "exchange" ? "نرسل لكِ القطعة البديلة" : "نعيد لكِ المبلغ"}.</li>
           </ol>
           <div className="mt-8 grid gap-3">
-            <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp min-h-12">
+            <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp pop min-h-13 text-base">
               <WhatsappIcon className="size-5" /> أرسلي الطلب على واتساب
             </a>
             <Link href="/shop" className="btn btn-ghost">العودة إلى المتجر</Link>
@@ -139,19 +139,19 @@ export function ReturnsView() {
   const late = found && found.days > found.returnDays;
 
   return (
-    <div className="container-x max-w-3xl py-10 sm:py-14">
-      <p className="eyebrow text-gold-deep">المساعدة</p>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">إرجاع أو استبدال</h1>
+    <div className="container-x tabbar-pad max-w-3xl pt-6 sm:pt-14">
+      <p className="chip">المساعدة</p>
+      <h1 className="season-title reel-title mt-3 text-[2.6rem] sm:text-6xl">إرجاع أو استبدال</h1>
       <p className="mt-2 text-sm text-muted">اختاري القطع من طلبكِ وسنرتب كل شيء معكِ على واتساب.</p>
 
-      <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+      <ul className="stagger mt-6 grid gap-2.5 sm:grid-cols-3">
         {[
           { icon: CalendarClock, text: `خلال ${daysLabel(s.returnDays)} من الاستلام` },
           { icon: Tag, text: "القطع غير مستخدمة ومعها بطاقاتها" },
           { icon: PackageOpen, text: "نرتب استلام القطع من عندكِ" },
         ].map(({ icon: Icon, text }) => (
-          <li key={text} className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-3 text-sm text-text">
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-sand text-forest"><Icon className="size-4" /></span>
+          <li key={text} className="panel flex items-center gap-3 p-3 text-sm text-text">
+            <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-gold/15 text-gold-bright"><Icon className="size-4" /></span>
             {text}
           </li>
         ))}
@@ -161,8 +161,8 @@ export function ReturnsView() {
       </p>
 
       {!found ? (
-        <form onSubmit={lookup} noValidate className="card mt-8 space-y-5 p-6 sm:p-8">
-          <p className="font-display text-3xl text-ink">ابحثي عن طلبكِ</p>
+        <form onSubmit={lookup} noValidate className="panel mt-6 space-y-5 p-5 sm:p-8">
+          <p className="reel-title text-2xl">ابحثي عن طلبكِ</p>
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label htmlFor={`${uid}-n`} className="label">رقم الطلب</label>
@@ -176,23 +176,23 @@ export function ReturnsView() {
             </div>
           </div>
           {error && <p className="error-text" role="alert">{error}</p>}
-          <button type="submit" className="press btn btn-primary min-h-12 w-full" disabled={busy}>
+          <button type="submit" className="pop btn btn-neon min-h-13 w-full text-base" disabled={busy}>
             <Search className="size-4" /> {busy ? "جارٍ البحث…" : "ابحثي عن طلبي"}
           </button>
           <p className="text-center text-xs text-muted">
             لا تجدين رقم الطلب؟{" "}
-            <a href={helpLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-forest underline underline-offset-4">راسلينا على واتساب</a>
+            <a href={helpLink} target="_blank" rel="noopener noreferrer" className="font-semibold text-success underline underline-offset-4">راسلينا على واتساب</a>
           </p>
         </form>
       ) : (
         <form onSubmit={submit} noValidate className="mt-8 space-y-6">
-          <div className="card flex flex-wrap items-center justify-between gap-3 p-5">
+          <div className="panel flex flex-wrap items-center justify-between gap-3 p-5">
             <div>
               <p className="text-xs text-muted">طلب {found.order.name}</p>
               <p className="ltr text-start font-semibold text-ink" dir="ltr">{found.order.number}</p>
               <p className="text-xs text-muted">{dateFormat(found.order.createdAt)}</p>
             </div>
-            <button type="button" className="btn btn-sm btn-ghost" onClick={() => { setFound(null); setError(""); }}>طلب آخر</button>
+            <button type="button" className="pop btn btn-sm bg-white/[0.07]" onClick={() => { setFound(null); setError(""); }}>طلب آخر</button>
           </div>
 
           {late && (
@@ -201,16 +201,16 @@ export function ReturnsView() {
             </p>
           )}
 
-          <fieldset className="card p-5 sm:p-6">
+          <fieldset className="panel p-5 sm:p-6">
             <legend className="sr-only">القطع</legend>
-            <p aria-hidden className="font-display text-2xl text-ink">أي القطع؟</p>
-            <ul className="mt-4 divide-y divide-line">
+            <p aria-hidden className="reel-title text-2xl">أي القطع؟</p>
+            <ul className="mt-4 divide-y divide-white/[0.06]">
               {found.order.lines.map((l, i) => {
                 const q = qty[i] ?? 0;
                 return (
                   <li key={i} className="flex items-center gap-3 py-3">
                     <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
-                      <input type="checkbox" className="size-5 shrink-0 accent-[var(--color-forest)]" checked={q > 0} onChange={(e) => setQty((x) => ({ ...x, [i]: e.target.checked ? l.quantity : 0 }))} />
+                      <input type="checkbox" className="size-5 shrink-0 accent-[var(--color-gold)]" checked={q > 0} onChange={(e) => setQty((x) => ({ ...x, [i]: e.target.checked ? l.quantity : 0 }))} />
                       <SmartImage src={l.image} alt="" className="h-16 w-12 shrink-0 rounded-lg" />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-ink">{l.name}</span>
@@ -225,9 +225,9 @@ export function ReturnsView() {
             </ul>
           </fieldset>
 
-          <fieldset className="card space-y-5 p-5 sm:p-6">
+          <fieldset className="panel space-y-5 p-5 sm:p-6">
             <legend className="sr-only">نوع الطلب والسبب</legend>
-            <p aria-hidden className="font-display text-2xl text-ink">ماذا تفضّلين؟</p>
+            <p aria-hidden className="reel-title text-2xl">ماذا تفضّلين؟</p>
             <div role="radiogroup" aria-label="نوع الطلب" className="grid grid-cols-2 gap-3">
               {([
                 ["exchange", "استبدال", "مقاس أو لون آخر", RefreshCw],
@@ -239,9 +239,9 @@ export function ReturnsView() {
                   role="radio"
                   aria-checked={type === id}
                   onClick={() => setType(id)}
-                  className={`press flex items-center gap-3 rounded-2xl border p-3 text-start transition-colors ${type === id ? "border-forest bg-forest/5 ring-2 ring-forest/30" : "border-line bg-paper"}`}
+                  className={`press flex items-center gap-3 rounded-2xl border p-3 text-start transition-colors ${type === id ? "border-gold bg-gold/10 ring-2 ring-gold/30" : "border-white/[0.08] bg-white/[0.03]"}`}
                 >
-                  <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${type === id ? "bg-forest text-ivory" : "bg-sand text-forest"}`}><Icon className="size-5" /></span>
+                  <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${type === id ? "btn-neon" : "bg-sand text-ink"}`}><Icon className="size-5" /></span>
                   <span>
                     <span className="block font-semibold text-ink">{title}</span>
                     <span className="block text-xs text-muted">{note}</span>
@@ -260,7 +260,7 @@ export function ReturnsView() {
                     role="radio"
                     aria-checked={reason === r}
                     onClick={() => setReason(r)}
-                    className={`press min-h-10 rounded-full border px-4 text-sm transition-colors ${reason === r ? "border-ink bg-ink text-ivory" : "border-line bg-paper text-text hover:border-gold"}`}
+                    className="opt-chip"
                   >
                     {r}
                   </button>
@@ -281,7 +281,7 @@ export function ReturnsView() {
           </fieldset>
 
           {error && <p className="error-text" role="alert">{error}</p>}
-          <button type="submit" className="press btn btn-primary min-h-14 w-full text-base" disabled={busy}>
+          <button type="submit" className="pop btn btn-neon min-h-14 w-full text-base" disabled={busy}>
             {busy ? "جارٍ الإرسال…" : chosen ? `أرسلي طلب ${type === "exchange" ? "الاستبدال" : "الإرجاع"} · ${chosen} ${chosen === 1 ? "قطعة" : "قطع"}` : "أرسلي الطلب"}
           </button>
         </form>

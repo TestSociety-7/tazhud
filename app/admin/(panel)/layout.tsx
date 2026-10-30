@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     // The provider sits inside the boundary so its data loads only after the shell has hydrated.
-    <Suspense fallback={<div className="min-h-dvh bg-ink" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-dvh bg-ivory" aria-busy="true" />}>
       <StoreProvider shared={hasSharedStorage()} scope="admin">
         <AdminShell>{children}</AdminShell>
       </StoreProvider>

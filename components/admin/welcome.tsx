@@ -14,14 +14,38 @@ export function greeting(hour: number) {
   return "مساء الخير";
 }
 
-/** The logo coin inside two gold rings turning in 3D. Used on every admin welcome. */
-export function WelcomeMark({ size = "size-28", pad = "p-6" }: { size?: string; pad?: string }) {
+/** The logo coin inside a turning story ring, zooming in like the first frame of a reel. */
+export function WelcomeMark({ size = "size-28", pad = "p-1" }: { size?: string; pad?: string }) {
   return (
-    <div className={`orbit-stage welcome-coin relative mx-auto grid w-fit shrink-0 place-items-center ${pad}`}>
-      <span className="orbit orbit-a" aria-hidden />
-      <span className="orbit orbit-b" aria-hidden />
-      <LogoCoin hat float={false} className={size} />
+    <div className={`cine-zoom relative mx-auto w-fit shrink-0 ${pad}`}>
+      <span className={`story-ring is-live !size-auto !p-1`}>
+        <span className="story-face overflow-hidden !border-4">
+          <LogoCoin hat float={false} className={size} />
+        </span>
+      </span>
     </div>
+  );
+}
+
+/** Instagram-style story bars that fill once over `ms`. */
+export function StoryBars({ ms, count = 3 }: { ms: number; count?: number }) {
+  return (
+    <div className="story-progress fixed inset-x-4 top-[max(0.75rem,env(safe-area-inset-top))] z-[95] mx-auto max-w-md" aria-hidden>
+      {Array.from({ length: count }, (_, i) => (
+        <i key={i} style={{ "--d": `${ms / count}ms`, "--delay": `${(ms / count) * i}ms` } as React.CSSProperties} />
+      ))}
+    </div>
+  );
+}
+
+/** The dark stage with drifting neon light behind the sign-in and the welcome. */
+export function StudioBackdrop() {
+  return (
+    <>
+      <span className="studio-blob studio-blob-a" aria-hidden />
+      <span className="studio-blob studio-blob-b" aria-hidden />
+      <span className="studio-blob studio-blob-c" aria-hidden />
+    </>
   );
 }
 
@@ -65,21 +89,25 @@ export function AdminWelcome() {
     <div
       role="status"
       onClick={() => setPhase("off")}
-      className={`on-dark fixed inset-0 z-[90] grid place-items-center overflow-hidden bg-ink px-4 text-center text-ivory transition-opacity duration-500 ${phase === "leaving" ? "opacity-0" : ""}`}
+      className={`studio-stage fixed inset-0 z-[90] grid place-items-center px-6 text-center transition-[opacity,transform] duration-500 ${phase === "leaving" ? "scale-105 opacity-0" : ""}`}
     >
-      <div className="pattern-geo absolute inset-0 opacity-[0.07]" aria-hidden />
-      <div className="welcome-glow pointer-events-none absolute top-1/2 left-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/25 blur-3xl" aria-hidden />
+      <StudioBackdrop />
+      <StoryBars ms={1700} />
       <div className="relative">
         <WelcomeMark />
-        <p className="welcome-text mt-8 text-sm text-gold">{greeting(new Date().getHours())}</p>
-        <p className="welcome-text font-display mt-1 text-4xl sm:text-5xl" style={{ animationDelay: "450ms" }}>
-          أهلًا بك في {data.settings.storeName}
+        <p className="cine-mask mt-8"><span className="cine-line text-sm font-bold text-gold-bright" style={{ animationDelay: "300ms" }}>{greeting(new Date().getHours())}</span></p>
+        <p className="cine-mask mt-1">
+          <span className="cine-line studio-title text-[2.6rem] sm:text-6xl" style={{ animationDelay: "420ms" }}>
+            أهلًا بك في <span className="neon-text">{data.settings.storeName}</span>
+          </span>
         </p>
-        <p className="welcome-text mt-3 text-sm text-ivory/70" style={{ animationDelay: "600ms" }}>
-          {fresh > 0 ? `عندك ${fresh} ${fresh === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك` : "كل شيء جاهز"}
+        <p className="cine-mask mt-3">
+          <span className="cine-line text-base text-text" style={{ animationDelay: "560ms" }}>
+            {fresh > 0 ? `عندك ${fresh} ${fresh === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك` : "كل شيء جاهز"}
+          </span>
         </p>
         {season !== "original" && (
-          <p className="welcome-text season-chip mt-4 inline-block rounded-full px-3.5 py-1.5 text-xs font-semibold" style={{ animationDelay: "750ms" }}>
+          <p className="welcome-text season-chip chip mt-5" style={{ animationDelay: "750ms" }}>
             {SEASON_WORDS[season].hello}
           </p>
         )}

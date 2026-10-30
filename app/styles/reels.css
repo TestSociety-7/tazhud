@@ -1,0 +1,348 @@
+/* ------------------------------------------------------------------------------
+   Reels: the shared look. Dark, full-screen, swipe-first, neon rose accents.
+   Page-specific styles live in store-pages.css / admin.css.
+   ------------------------------------------------------------------------------ */
+
+:root {
+  --neon: linear-gradient(120deg, var(--color-gold-deep), var(--color-gold) 45%, #b07cff 100%);
+  --tabbar-h: 4.25rem;
+}
+
+/* Blurred dark panel for anything floating over a photo. */
+.glass-dark {
+  background: rgb(14 14 18 / 0.55);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--color-ink);
+}
+
+.neon-text {
+  background: var(--neon);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: neon-drift 5s ease-in-out infinite alternate;
+}
+@keyframes neon-drift { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
+.neon-ring { position: relative; }
+.neon-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: var(--neon);
+  background-size: 200% 100%;
+  animation: neon-drift 4s ease-in-out infinite alternate;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.btn-neon {
+  background: var(--neon);
+  background-size: 200% 100%;
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 14px 34px -12px var(--color-gold), inset 0 1px 0 rgb(255 255 255 / 0.25);
+  animation: neon-drift 5s ease-in-out infinite alternate;
+}
+.btn-neon:hover:not(:disabled) { filter: brightness(1.08); }
+
+.pop { transition: transform 0.35s var(--ease-spring); }
+.pop:active { transform: scale(0.88); }
+
+/* Double-tap heart. */
+.heart-burst {
+  position: absolute;
+  pointer-events: none;
+  color: var(--color-gold);
+  filter: drop-shadow(0 6px 24px rgb(255 92 122 / 0.7));
+  animation: heart-burst 0.9s var(--ease-spring) forwards;
+}
+@keyframes heart-burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(-15deg); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(6deg); }
+  60% { opacity: 1; transform: translate(-50%, -50%) scale(0.95) rotate(0deg); }
+  100% { opacity: 0; transform: translate(-50%, -90%) scale(1.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-text, .neon-ring::before, .btn-neon { animation: none; }
+}
+
+/* ----------------------------- Phone tab bar ----------------------------- */
+.tab-bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 45;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgb(6 6 8 / 0.88);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  border-top: 1px solid rgb(255 255 255 / 0.07);
+}
+.tab-item {
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: rgb(255 255 255 / 0.55);
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s;
+}
+.tab-item[aria-current="page"] { color: #fff; }
+.tab-item svg { transition: transform 0.4s var(--ease-spring); }
+.tab-item:active svg { transform: scale(0.8); }
+.tab-item[aria-current="page"] svg { stroke-width: 2.6; }
+.tab-cart {
+  position: relative;
+  justify-self: center;
+  width: 3.4rem;
+  height: 2.4rem;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Two neon edges peek out from behind the white face, like a layered sticker. */
+.tab-cart::before,
+.tab-cart::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.8rem;
+  transition: transform 0.4s var(--ease-spring);
+}
+.tab-cart::before { background: var(--color-gold); transform: translateX(-4px); }
+.tab-cart::after { background: var(--color-sky); transform: translateX(4px); }
+.tab-cart-face {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: #fff;
+  color: #0a0a0d;
+  transition: transform 0.4s var(--ease-spring);
+}
+.tab-cart:active .tab-cart-face { transform: scale(0.9); }
+.tab-cart[data-bump="true"] .tab-cart-face { animation: cart-bump 0.6s var(--ease-spring); }
+.tab-cart[data-bump="true"]::before { transform: translateX(-8px) rotate(-6deg); }
+.tab-cart[data-bump="true"]::after { transform: translateX(8px) rotate(6deg); }
+@keyframes cart-bump { 40% { transform: scale(1.2) rotate(-8deg); } }
+.tab-cart-count {
+  position: absolute;
+  z-index: 2;
+  top: -0.45rem;
+  inset-inline-end: -0.5rem;
+  min-width: 1.25rem;
+  padding-inline: 0.3rem;
+  border-radius: 999px;
+  background: var(--color-gold);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.25rem;
+  text-align: center;
+  box-shadow: 0 0 0 2px #060608;
+}
+
+/* ----------------------------- Home feed ----------------------------- */
+html.reels-snap { scroll-snap-type: y mandatory; }
+.reel {
+  position: relative;
+  height: 100svh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  overflow: hidden;
+  background: #060608;
+}
+.reels-after { scroll-snap-align: start; padding-bottom: 2rem; }
+.reel-face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+/* On wide screens a reel is a phone-shaped column with the blurred picture around it. */
+.reel-photo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+@media (min-width: 1024px) {
+  .product-reel .reel-photo {
+    inset: 5.5rem auto 1.5rem 50%;
+    width: min(30rem, 46vh);
+    translate: -50% 0;
+    border-radius: 2rem;
+    box-shadow: 0 40px 80px -30px #000, inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  }
+}
+
+.reel-rail {
+  position: absolute;
+  z-index: 10;
+  inset-inline-end: 0.6rem;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 1rem);
+  display: grid;
+  gap: 1rem;
+}
+.reel-action {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 4px rgb(0 0 0 / 0.6);
+  -webkit-tap-highlight-color: transparent;
+}
+.reel-action:disabled { opacity: 0.5; }
+.reel-action-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 999px;
+  color: #fff;
+  background: rgb(255 255 255 / 0.14);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.15);
+  transition: transform 0.35s var(--ease-spring);
+}
+.reel-action:active .reel-action-icon { transform: scale(0.85); }
+.reel-caption {
+  position: absolute;
+  z-index: 10;
+  inset-inline-start: 1rem;
+  inset-inline-end: 4.6rem;
+  bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom) + 1rem);
+}
+@media (min-width: 1024px) {
+  .reel-rail { inset-inline-end: calc(50% - min(30rem, 46vh) / 2 - 5rem); bottom: 3rem; }
+  .reel-caption { inset-inline-start: calc(50% - min(30rem, 46vh) / 2 + 1.25rem); inset-inline-end: calc(50% - min(30rem, 46vh) / 2 + 1.25rem); bottom: 3rem; }
+}
+
+/* Words rise into place when a reel is reached. */
+.reel-rise { animation: reel-rise 0.8s var(--ease-soft) backwards; }
+@keyframes reel-rise { from { opacity: 0; transform: translate3d(0, 24px, 0); filter: blur(8px); } }
+
+/* Cover: three pieces fanned like cards, turning slowly in 3D. */
+.cover-fan {
+  position: relative;
+  width: min(62vw, 15rem, 30svh);
+  aspect-ratio: 3 / 4;
+  perspective: 900px;
+  transform-style: preserve-3d;
+  animation: fan-sway 8s ease-in-out infinite;
+}
+.cover-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  box-shadow: 0 30px 50px -24px #000, inset 0 0 0 1px rgb(255 255 255 / 0.12);
+  transform: translateX(calc(var(--i) * -38%)) translateZ(calc((1 - var(--i) * var(--i)) * 60px)) rotateY(calc(var(--i) * 28deg)) rotate(calc(var(--i) * -6deg));
+  animation: fan-in 1s var(--ease-spring) backwards;
+  animation-delay: calc((var(--i) + 1) * 120ms);
+}
+.cover-card:nth-child(2) { z-index: 2; }
+.cover-logo { position: absolute; z-index: 3; bottom: -1.5rem; left: 50%; translate: -50% 0; }
+@keyframes fan-in { from { opacity: 0; transform: translateY(40px) scale(0.8); } }
+@keyframes fan-sway {
+  0%, 100% { transform: rotateY(-8deg) rotateX(4deg); }
+  50% { transform: rotateY(8deg) rotateX(-2deg); }
+}
+.swipe-hint svg { animation: swipe-hint 1.6s ease-in-out infinite; }
+@keyframes swipe-hint { 0%, 100% { transform: translateY(4px); opacity: 0.5; } 50% { transform: translateY(-6px); opacity: 1; } }
+
+/* Clothes rail. */
+.rack-reel { background: radial-gradient(80% 60% at 50% 35%, #1c1c26, #060608); }
+.rack-bar {
+  height: 6px;
+  margin-inline: 0.75rem;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e7e7ee, #8c8c99 60%, #4a4a55);
+  box-shadow: 0 6px 14px -4px #000;
+}
+.rack {
+  display: flex;
+  gap: 0.9rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 0 1rem 1.5rem;
+  margin-top: -3px;
+  --swing: 0deg;
+}
+.rack-item { flex: 0 0 auto; width: min(52vw, 13rem); scroll-snap-align: center; }
+.rack-hanger {
+  transform-origin: 50% 0;
+  transform: rotate(var(--swing));
+  transition: transform 0.9s var(--ease-spring);
+  animation: hang-idle 5s ease-in-out infinite;
+  animation-delay: var(--d);
+}
+.rack-hook { display: block; width: 3.4rem; margin-inline: auto; color: #c9c9d3; }
+.rack-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  margin-top: -2px;
+  overflow: hidden;
+  border-radius: 1.4rem;
+  background: var(--color-sand);
+  box-shadow: 0 30px 40px -24px #000, inset 0 0 0 1px rgb(255 255 255 / 0.1);
+  transition: transform 0.35s var(--ease-spring);
+}
+.rack-hanger:active .rack-card { transform: scale(0.96); }
+@keyframes hang-idle {
+  0%, 100% { rotate: -1.2deg; }
+  50% { rotate: 1.2deg; }
+}
+
+/* Panels (bundles, offer) centred inside a reel. */
+.panel-reel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+  background: radial-gradient(80% 60% at 50% 30%, #1d1420, #060608);
+}
+@media (min-width: 1024px) { .panel-reel { padding-bottom: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  html.reels-snap { scroll-snap-type: y proximity; }
+  .cover-fan, .cover-card, .rack-hanger, .reel-rise, .swipe-hint svg { animation: none; }
+}
+
+/* Utilities sit in a lower cascade layer than this file, so hide the phone bar here on wide screens. */
+@media (min-width: 1024px) {
+  .tab-bar { display: none; }
+}

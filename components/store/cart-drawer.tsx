@@ -32,7 +32,7 @@ export function CartDrawer() {
           <div className="space-y-4">
             <OrderSummary />
             <div className="grid gap-2">
-              <Link href="/checkout" onClick={close} className={`btn btn-primary w-full ${blocked ? "pointer-events-none opacity-50" : ""}`} aria-disabled={blocked}>
+              <Link href="/checkout" onClick={close} className={`btn btn-neon pop min-h-12 w-full ${blocked ? "pointer-events-none opacity-50" : ""}`} aria-disabled={blocked}>
                 إتمام الطلب عبر واتساب
               </Link>
               <Link href="/cart" onClick={close} className="btn btn-ghost w-full">
@@ -55,7 +55,7 @@ export function CartDrawer() {
           }
         />
       ) : (
-        <ul className="divide-y divide-line px-5">
+        <ul className="divide-y divide-white/[0.06] px-5">
           {lines.map((l) => (
             <CartLineItem key={l.key} line={l} compact onNavigate={close} />
           ))}

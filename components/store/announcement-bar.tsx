@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useStore } from "@/components/providers/store-provider";
 
 const FREE_RE = /(توصيل مجاني للطلبات فوق\s*₪?\s*)[\d,.]+/;
 
 export function AnnouncementBar() {
   const { data } = useStore();
+  const pathname = usePathname();
   const { enabled, messages, link } = data.homepage.announcement;
   const free = data.settings.freeDeliveryThreshold;
   // The free-delivery line always shows the amount set in Settings.
@@ -28,7 +30,7 @@ export function AnnouncementBar() {
   const current = items[index % items.length];
 
   return (
-    <div className="season-band on-dark bg-ink text-gold-soft">
+    <div className={`season-band bg-black text-white/80 ${pathname === "/" ? "hidden" : ""}`}>
       <div className="container-x flex min-h-9 items-center justify-center gap-3 py-2 text-center text-[0.82rem]">
         <p aria-live="polite" key={current} className="animate-fade-up">
           {link ? (

@@ -86,7 +86,7 @@ export function BundlesPage() {
       />
 
       {homeSection && !homeSection.enabled && data.bundles.length > 0 && (
-        <p className="mb-5 rounded-2xl border border-gold/40 bg-gold-soft/40 p-4 text-sm text-[#5c4519]">قسم المجموعات مخفي من الصفحة الرئيسية. أظهره من «واجهة المتجر» ← ترتيب الصفحة.</p>
+        <p className="mb-5 rounded-[1.4rem] border border-gold/40 bg-gold/10 p-4 text-sm font-semibold text-gold-soft">قسم المجموعات مخفي من الصفحة الرئيسية. أظهره من «واجهة المتجر» ← ترتيب الصفحة.</p>
       )}
 
       {data.bundles.length === 0 ? (
@@ -94,11 +94,11 @@ export function BundlesPage() {
           <EmptyState icon={<Gift className="size-6" />} title="لا توجد مجموعات بعد" body="أنشئ أول مجموعة وستظهر للزبائن في الصفحة الرئيسية." />
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="studio-list grid gap-4 sm:grid-cols-2">
           {data.bundles.map((b) => {
             const d = bundleDetails(b, data.products);
             return (
-              <li key={b.id} className="card flex gap-4 p-4">
+              <li key={b.id} className="card studio-tile flex gap-4 p-4">
                 <div className="relative h-24 w-20 shrink-0">
                   {d.items.slice(0, 3).map((it, i) => (
                     <span key={it.productId} className="absolute" style={{ insetInlineStart: i * 12, top: i * 6, zIndex: 3 - i }}>
@@ -160,10 +160,10 @@ export function BundlesPage() {
                 {list.map((p) => {
                   const n = qtyOf(p.id);
                   return (
-                    <li key={p.id} className={`relative overflow-hidden rounded-2xl border bg-paper ${n ? "border-forest ring-2 ring-forest/30" : "border-line"}`}>
+                    <li key={p.id} className={`relative overflow-hidden rounded-2xl border bg-paper ${n ? "border-gold ring-2 ring-gold/30" : "border-line"}`}>
                       <button type="button" className="block w-full text-start" onClick={() => setQty(p.id, n ? 0 : 1)} aria-pressed={n > 0}>
                         <SmartImage src={p.images[0]} alt="" className="aspect-square w-full" />
-                        {n > 0 && <span className="absolute top-2 end-2 grid size-7 place-items-center rounded-full bg-forest text-ivory shadow"><Check className="size-4" /></span>}
+                        {n > 0 && <span className="absolute top-2 end-2 grid size-7 place-items-center rounded-full bg-gold text-white shadow"><Check className="size-4" /></span>}
                         <span className="block p-2">
                           <span className="line-clamp-1 text-xs font-semibold text-ink">{p.name}</span>
                           <span className="block text-[0.7rem] text-muted">{money(effectivePrice(p))}</span>

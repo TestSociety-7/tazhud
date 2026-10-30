@@ -8,22 +8,25 @@ export function PoliciesView() {
   const { data } = useStore();
   const s = data.settings;
   return (
-    <div className="container-x max-w-3xl py-14">
-      <p className="eyebrow text-gold-deep">المساعدة</p>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">سياسات المتجر</h1>
-      <nav aria-label="السياسات" className="mt-6 flex flex-wrap gap-2">
-        {s.policies.map((p) => (
-          <a key={p.id} href={`#${p.id}`} className="btn btn-sm btn-outline border-line">{p.title}</a>
-        ))}
+    <div className="tabbar-pad mx-auto w-full max-w-3xl pt-6 sm:px-6 sm:pt-14 lg:px-10">
+      <div className="px-4 sm:px-0">
+        <p className="chip">المساعدة</p>
+        <h1 className="season-title reel-title mt-3 text-[2.6rem] sm:text-6xl">سياسات المتجر</h1>
+      </div>
+      <nav aria-label="السياسات" className="sticky top-[var(--store-bar)] z-20 mt-5 bg-ivory/80 backdrop-blur-xl lg:top-[var(--header-h)]">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 py-2.5 sm:px-0">
+          {s.policies.map((p) => (
+            <a key={p.id} href={`#${p.id}`} className="opt-chip shrink-0">{p.title}</a>
+          ))}
+        </div>
       </nav>
-      <hr className="my-8 border-line" />
-      <div className="space-y-12">
+      <div className="mt-4 space-y-3 px-4 sm:px-0">
         {s.policies.map((p) => (
-          <section key={p.id} id={p.id} className="scroll-mt-28">
-            <h2 className="font-display text-3xl text-ink">{p.title}</h2>
-            <p className="mt-3 leading-relaxed whitespace-pre-line text-muted">{p.body}</p>
+          <section key={p.id} id={p.id} className="panel scroll-mt-36 p-5 sm:p-7">
+            <h2 className="reel-title text-2xl">{p.title}</h2>
+            <p className="mt-3 text-[0.95rem] leading-relaxed whitespace-pre-line text-text/80">{p.body}</p>
             {p.id === "pol-returns" && (
-              <Link href="/returns" className="press btn btn-primary mt-5">
+              <Link href="/returns" className="pop btn btn-neon mt-5">
                 <Undo2 className="size-4" /> اطلبي إرجاع أو استبدال
               </Link>
             )}

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Check, ChevronDown, ShoppingBag, Truck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Share2, ShoppingBag, Truck } from "lucide-react";
+import { toast } from "sonner";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { discountPercent, effectivePrice, isOnSale, stockState, visibleProducts } from "@/lib/commerce";
@@ -16,17 +17,17 @@ import { StockBadge } from "@/components/ui/stock-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { WhatsappIcon } from "@/components/ui/brand-icons";
 import { ProductCard } from "./product-card";
-import { BackToListButton, useBackToList } from "./return-spot";
+import { useBackToList } from "./return-spot";
 import { Sheet } from "@/components/ui/sheet";
 import { piecesLabel } from "@/lib/arabic";
 
-function Gallery({ product, focus }: { product: Product; focus?: string }) {
+function Gallery({ product, focus, children }: { product: Product; focus?: string; children?: React.ReactNode }) {
   const images = product.images.length ? product.images : [""];
   const [active, setActive] = useState(0);
   const scroller = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
 
-  // Choosing a colour slides to that colour's photo; onScroll then updates the dots.
+  // Choosing a colour slides to that colour's photo; onScroll then updates the segments.
   useEffect(() => {
     const i = focus ? product.images.indexOf(focus) : -1;
     const el = scroller.current;
@@ -43,24 +44,38 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
     if (el) el.scrollTo({ left: dir * el.clientWidth * i, behavior: "smooth" });
   }
 
+  // Story taps: the reading-start side goes back, the other side goes forward.
+  function onTap(e: React.MouseEvent<HTMLDivElement>) {
+    if (images.length < 2) return;
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    const forward = rtl ? x < 0.4 : x > 0.6;
+    const back = rtl ? x > 0.6 : x < 0.4;
+    if (forward) goTo((active + 1) % images.length);
+    else if (back) goTo(Math.max(0, active - 1));
+  }
+
   return (
     <div className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:grid lg:grid-cols-[4.5rem_1fr] lg:gap-4">
       <ul className="hidden flex-col gap-3 lg:flex" aria-label="صور المنتج">
         {images.map((src, i) => (
           <li key={src + i}>
-            <button type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} aria-current={active === i} className={`block overflow-hidden rounded-xl ring-offset-2 ring-offset-ivory transition ${active === i ? "ring-2 ring-gold" : "opacity-70 hover:opacity-100"}`}>
+            <button type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} aria-current={active === i} className={`block overflow-hidden rounded-xl ring-offset-2 ring-offset-ivory transition ${active === i ? "ring-2 ring-gold" : "opacity-60 hover:opacity-100"}`}>
               <SmartImage src={src} alt="" className="aspect-[4/5] w-full" />
             </button>
           </li>
         ))}
       </ul>
-      <div className="relative">
+      <div className="pv-story">
         <div
           ref={scroller}
           tabIndex={0}
           role="region"
           aria-label={`صور ${product.name}، اسحبي لرؤية المزيد`}
-          className="no-scrollbar arch flex aspect-[4/5] snap-x snap-mandatory overflow-x-auto bg-sand"
+          className="no-scrollbar flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain bg-sand"
+          onClick={onTap}
           onScroll={(e) => {
             const el = e.currentTarget;
             const i = Math.round(Math.abs(el.scrollLeft) / el.clientWidth);
@@ -70,7 +85,7 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
           {images.map((src, i) => (
             <div
               key={src + i}
-              className="relative h-full w-full shrink-0 snap-center overflow-hidden"
+              className="relative h-full w-full shrink-0 snap-center snap-always overflow-hidden"
               onPointerMove={(e) => {
                 if (e.pointerType !== "mouse") return;
                 const r = e.currentTarget.getBoundingClientRect();
@@ -84,7 +99,7 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
                 priority={i === 0}
                 unveil={i === 0}
                 className="h-full w-full"
-                imgClassName="transition-transform duration-300 ease-out"
+                imgClassName={`transition-transform duration-[1.2s] ease-[var(--ease-soft)] ${active === i ? "scale-100" : "scale-[1.06]"}`}
                 fallbackLabel={product.name}
               />
               {zoom && active === i && (
@@ -97,18 +112,23 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
             </div>
           ))}
         </div>
-        {isOnSale(product) && (
-          <span className="absolute top-[14%] start-4 rounded-full bg-ink px-3 py-1 text-xs font-bold tracking-widest text-gold-soft">−{discountPercent(product)}%</span>
-        )}
+        <span className="pv-story-top" aria-hidden />
+        <span className="pv-story-bottom" aria-hidden />
         {images.length > 1 && (
-          <div className="mt-4 flex justify-center gap-2 lg:hidden">
+          <div className="absolute inset-x-3 top-2 z-[3] flex gap-1">
             {images.map((_, i) => (
-              <button key={i} type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} className="grid size-6 place-items-center">
-                <span className={`block h-1.5 rounded-full transition-all ${active === i ? "w-6 bg-forest" : "w-1.5 bg-line"}`} />
+              <button key={i} type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} aria-current={active === i} className="flex h-6 flex-1 items-center">
+                <span className="pv-story-seg" data-state={i < active ? "done" : i === active ? "active" : "next"}>
+                  <i key={i === active ? `a${active}` : "x"} />
+                </span>
               </button>
             ))}
           </div>
         )}
+        {isOnSale(product) && (
+          <span className="btn-neon absolute top-20 end-4 z-[3] rounded-full px-3 py-1 font-latin text-sm">−{discountPercent(product)}%</span>
+        )}
+        {children}
       </div>
     </div>
   );
@@ -116,10 +136,12 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
 
 function Disclosure({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   return (
-    <details className="group border-b border-line" open={defaultOpen}>
-      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
+    <details className="group panel px-4" open={defaultOpen}>
+      <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-bold text-ink [&::-webkit-details-marker]:hidden">
         {title}
-        <ChevronDown className="size-4 transition-transform duration-300 group-open:rotate-180" />
+        <span className="grid size-8 place-items-center rounded-full bg-white/[0.07] transition-transform duration-500 ease-[var(--ease-spring)] group-open:rotate-180">
+          <ChevronDown className="size-4" />
+        </span>
       </summary>
       <div className="pb-5 text-sm leading-relaxed text-muted">{children}</div>
     </details>
@@ -151,11 +173,13 @@ export function ProductView({ slug }: { slug: string }) {
   }
 
   const buyRef = useRef<HTMLDivElement>(null);
+  const addRowRef = useRef<HTMLDivElement>(null);
   const [showSticky, setShowSticky] = useState(false);
+  // The bottom bar keeps "add to cart" in the thumb zone whenever the in-page button is off screen.
   useEffect(() => {
-    const el = buyRef.current;
+    const el = addRowRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
-    const io = new IntersectionObserver(([e]) => setShowSticky(!e.isIntersecting && e.boundingClientRect.top < 0), { threshold: 0 });
+    const io = new IntersectionObserver(([e]) => setShowSticky(!e.isIntersecting), { threshold: 0 });
     io.observe(el);
     return () => io.disconnect();
   }, [product?.id]);
@@ -169,18 +193,18 @@ export function ProductView({ slug }: { slug: string }) {
   if (!product) {
     if (!ready) {
       return (
-        <div className="container-x grid gap-10 py-10 lg:grid-cols-2" aria-busy="true">
-          <div className="arch skeleton aspect-[4/5]" />
-          <div className="space-y-4 pt-6">
-            <div className="skeleton h-10 w-3/4 rounded" />
-            <div className="skeleton h-5 w-1/3 rounded" />
-            <div className="skeleton h-24 w-full rounded" />
+        <div className="grid gap-6 lg:mx-auto lg:max-w-[84rem] lg:px-10 lg:grid-cols-2 lg:gap-10 lg:py-10" aria-busy="true">
+          <div className="pv-story skeleton" />
+          <div className="space-y-4 px-4 lg:px-0 lg:pt-6">
+            <div className="skeleton h-10 w-3/4 rounded-full" />
+            <div className="skeleton h-5 w-1/3 rounded-full" />
+            <div className="skeleton h-24 w-full rounded-2xl" />
           </div>
         </div>
       );
     }
     return (
-      <div className="container-x py-16">
+      <div className="container-x py-16 actionbar-pad">
         <EmptyState
           as="h1"
           title="هذه القطعة غير متوفرة"
@@ -222,48 +246,77 @@ export function ProductView({ slug }: { slug: string }) {
 
   const askText = `السلام عليكم ${data.settings.storeName}، أنا مهتمة بـ ${product.name}${selectedColor ? ` باللون ${selectedColor}` : ""}${selectedSize ? `، مقاس ${selectedSize}` : ""}. هل هي متوفرة؟`;
 
+  async function share() {
+    const url = location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: product!.name, text: product!.tagline, url });
+      else {
+        await navigator.clipboard.writeText(url);
+        toast.success("تم نسخ الرابط");
+      }
+    } catch {
+      /* closed the share sheet */
+    }
+  }
+
+  const ask = whatsappLink(data.settings.whatsappNumber, askText);
+
   return (
-    <div className="pb-28 lg:pb-0">
-      <div className="container-x pt-4 lg:pt-6">
-        <BackToListButton className="lg:hidden" />
-        <nav aria-label="مسار التنقل" className="hidden text-xs text-muted lg:block">
-          <ol className="flex flex-wrap items-center gap-2">
-            <li><Link href="/" className="hover:text-ink">الرئيسية</Link></li>
-            <li aria-hidden>/</li>
-            <li><Link href="/shop" className="hover:text-ink">المتجر</Link></li>
-            {category && (<><li aria-hidden>/</li><li><Link href={`/shop?category=${category.slug}`} className="hover:text-ink">{category.name}</Link></li></>)}
-          </ol>
-        </nav>
-      </div>
+    <div className="actionbar-pad">
+      <div className="lg:mx-auto lg:grid lg:max-w-[84rem] lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:gap-16 lg:pt-6">
+        <div>
+          <nav aria-label="مسار التنقل" className="mb-4 hidden text-xs text-muted lg:block">
+            <ol className="flex flex-wrap items-center gap-2">
+              <li><Link href="/" className="hover:text-ink">الرئيسية</Link></li>
+              <li aria-hidden>/</li>
+              <li><Link href="/shop" className="hover:text-ink">المتجر</Link></li>
+              {category && (<><li aria-hidden>/</li><li><Link href={`/shop?category=${category.slug}`} className="hover:text-ink">{category.name}</Link></li></>)}
+            </ol>
+          </nav>
+          <Gallery product={product} focus={product.colors.find((c) => c.name === selectedColor)?.image}>
+            <button type="button" onClick={backToList} className="pop glass-dark absolute top-9 start-3 z-[3] inline-flex min-h-11 items-center gap-1.5 rounded-full ps-3 pe-4 text-sm font-bold text-white lg:hidden">
+              <ArrowRight className="size-4" /> رجوع
+            </button>
+            <div className="absolute end-3 bottom-[calc(9.5rem+1rem)] z-[3] flex flex-col gap-4 lg:bottom-5">
+              <button type="button" onClick={share} className="rail-btn">
+                <span><Share2 className="size-5" /></span>
+                <span>مشاركة</span>
+              </button>
+              <a href={ask} target="_blank" rel="noopener noreferrer" className="rail-btn" aria-label={soldOut ? "اسألي عن موعد توفرها عبر واتساب" : "اسألي عبر واتساب"}>
+                <span className="!bg-[#1f7a4d]/80"><WhatsappIcon className="size-5" /></span>
+                <span aria-hidden>اسألي</span>
+              </a>
+            </div>
+          </Gallery>
+        </div>
 
-      <div className="container-x grid gap-10 pt-6 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
-        <Gallery product={product} focus={product.colors.find((c) => c.name === selectedColor)?.image} />
-
-        <div className="lg:pt-4">
-          {product.newArrival && <p className="eyebrow text-gold-deep">وصل حديثًا</p>}
-          <h1 className="font-display mt-2 text-4xl leading-[1.2] text-ink sm:text-5xl">{product.name}</h1>
-          <p className="mt-2 text-muted">{product.tagline}</p>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
+        <div className="pv-sheet px-4 pt-2.5 sm:px-6 lg:px-0 lg:pt-4">
+          <span className="grip lg:hidden" aria-hidden />
+          <div className="mt-4 flex flex-wrap items-center gap-2 lg:mt-0">
+            {category && <Link href={`/shop?category=${category.slug}`} className="chip hover:bg-white/20">{category.name}</Link>}
+            {product.newArrival && <span className="chip !bg-volt !text-ivory">وصل حديثًا</span>}
+          </div>
+          <h1 className="reel-title mt-3 text-[2.1rem] text-balance sm:text-5xl">{product.name}</h1>
+          <p className="mt-1.5 text-sm text-text/80">{product.tagline}</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <Price price={effectivePrice(product)} compareAt={product.price} size="lg" />
             <StockBadge stock={product.stock} />
           </div>
-          {isOnSale(product) && <p className="mt-1 text-xs text-success">توفّرين {money(product.price - effectivePrice(product))}</p>}
+          {isOnSale(product) && <p className="mt-2 inline-flex rounded-full bg-success/10 px-2.5 py-1 text-xs font-bold text-success">توفّرين {money(product.price - effectivePrice(product))}</p>}
 
-          <hr className="my-7 border-line" />
-
-          <div ref={buyRef} className="space-y-6">
+          <div ref={buyRef} className="mt-7 space-y-6 scroll-mt-28">
             {product.colors.length > 0 && (
               <fieldset aria-describedby={errors.color ? "color-err" : undefined}>
                 <legend className="mb-3 text-sm">
-                  <span className="font-semibold text-ink">اللون</span>
+                  <span className="font-bold text-ink">اللون</span>
                   {selectedColor && <span className="text-muted">: {selectedColor}</span>}
                 </legend>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-3">
                   {product.colors.map((c) => (
                     <label key={c.name} className="cursor-pointer" title={c.name}>
                       <input type="radio" name="color" value={c.name} checked={selectedColor === c.name} onChange={() => { setColor(c.name); setErrors((e) => ({ ...e, color: undefined })); }} className="peer sr-only" />
-                      <span className="grid size-11 place-items-center rounded-full border border-line transition-all peer-checked:border-ink peer-checked:ring-2 peer-checked:ring-gold peer-checked:ring-offset-2 peer-checked:ring-offset-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-gold">
-                        <span className="size-8 rounded-full ring-1 ring-black/10" style={{ background: c.hex }} />
+                      <span className="swatch">
+                        <span style={{ background: c.hex }} />
                       </span>
                       <span className="sr-only">{c.name}</span>
                     </label>
@@ -275,12 +328,12 @@ export function ProductView({ slug }: { slug: string }) {
 
             {product.sizes.length > 0 && (
               <fieldset aria-describedby={errors.size ? "size-err" : undefined}>
-                <legend className="mb-3 text-sm font-semibold text-ink">المقاس</legend>
+                <legend className="mb-3 text-sm font-bold text-ink">المقاس</legend>
                 <div className="flex flex-wrap gap-2">
                   {product.sizes.map((s) => (
                     <label key={s} className="cursor-pointer">
                       <input type="radio" name="size" value={s} checked={selectedSize === s} onChange={() => { setSize(s); setErrors((e) => ({ ...e, size: undefined })); }} className="peer sr-only" />
-                      <span className="inline-flex min-h-11 min-w-14 items-center justify-center rounded-full border border-line px-4 text-sm transition-colors peer-checked:border-forest peer-checked:bg-forest peer-checked:text-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gold hover:border-ink">
+                      <span className="opt-chip min-w-14 font-latin">
                         {s}
                       </span>
                     </label>
@@ -290,27 +343,27 @@ export function ProductView({ slug }: { slug: string }) {
               </fieldset>
             )}
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div ref={addRowRef} className="flex flex-wrap items-center gap-3">
               <QuantityControl value={qty} onChange={setQty} max={Math.max(1, product.stock)} />
-              <button type="button" onClick={add} disabled={soldOut} className="btn btn-primary min-h-12 flex-1 sm:min-w-56">
-                {soldOut ? "نفدت الكمية" : added ? (<><Check className="size-4" /> تمت الإضافة</>) : (<><ShoppingBag className="size-4" /> أضيفي إلى السلة</>)}
+              <button type="button" onClick={add} disabled={soldOut} className={`btn pop min-h-12 flex-1 text-base sm:min-w-56 ${added ? "btn-primary" : "btn-neon"}`}>
+                {soldOut ? "نفدت الكمية" : added ? (<><Check className="size-5" /> تمت الإضافة</>) : (<><ShoppingBag className="size-5" /> أضيفي إلى السلة</>)}
               </button>
             </div>
-            <a href={whatsappLink(data.settings.whatsappNumber, askText)} target="_blank" rel="noopener noreferrer" className="btn btn-outline w-full border-line">
-              <WhatsappIcon className="size-4 text-[#1f7a4d]" /> {soldOut ? "اسألي عن موعد توفرها" : "اسألي عبر واتساب"}
+            <a href={ask} target="_blank" rel="noopener noreferrer" className="btn btn-outline w-full border-white/10 bg-white/[0.04]">
+              <WhatsappIcon className="size-4 text-success" /> {soldOut ? "اسألي عن موعد توفرها" : "اسألي عبر واتساب"}
             </a>
-            <p className="flex items-start gap-2 rounded-xl bg-sand/70 p-3 text-xs leading-relaxed text-muted">
-              <Truck className="mt-0.5 size-4 shrink-0 text-forest" /> {data.settings.deliveryNote}
+            <p className="flex items-start gap-2.5 rounded-2xl bg-white/[0.05] p-3.5 text-xs leading-relaxed text-muted">
+              <Truck className="mt-0.5 size-4 shrink-0 text-gold-bright" /> {data.settings.deliveryNote}
             </p>
           </div>
 
-          <div className="mt-8 border-t border-line">
+          <div className="mt-6 space-y-2.5">
             <Disclosure title="الوصف" defaultOpen>
               <p className="text-pretty">{product.description}</p>
             </Disclosure>
             {product.details.length > 0 && (
               <Disclosure title="التفاصيل والعناية">
-                <ul className="list-disc space-y-1 ps-5">
+                <ul className="list-disc space-y-1 ps-5 marker:text-gold">
                   {product.details.map((d) => <li key={d}>{d}</li>)}
                 </ul>
                 <p className="mt-3 text-xs">رمز المنتج: <span className="ltr inline-block">{product.sku}</span></p>
@@ -324,30 +377,30 @@ export function ProductView({ slug }: { slug: string }) {
       </div>
 
       {related.length > 0 && (
-        <section className="container-x pt-24" aria-labelledby="related-heading">
-          <h2 id="related-heading" className="season-title font-display mb-8 text-4xl text-ink">قد يعجبكِ أيضًا</h2>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
+        <section className="container-x pt-16 lg:pt-24" aria-labelledby="related-heading">
+          <h2 id="related-heading" className="season-title reel-title mb-5 text-3xl sm:text-4xl">قد يعجبكِ أيضًا</h2>
+          <ul className="grid grid-cols-2 gap-x-2.5 gap-y-6 sm:gap-x-4 lg:grid-cols-4">
             {related.map((p) => <li key={p.id}><ProductCard product={p} /></li>)}
           </ul>
         </section>
       )}
 
-      <div className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory/95 p-3 backdrop-blur-md transition-transform duration-500 lg:hidden ${showSticky ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showSticky}>
+      <div className="action-bar lg:hidden" data-shown={showSticky} aria-hidden={!showSticky}>
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-ink">{product.name}</p>
-            <Price price={effectivePrice(product)} compareAt={product.price} size="sm" />
+            <p className="truncate text-xs font-semibold text-muted">{product.name}</p>
+            <Price price={effectivePrice(product)} compareAt={product.price} size="md" />
           </div>
-          <button type="button" onClick={add} disabled={soldOut} tabIndex={showSticky ? 0 : -1} className="btn btn-primary">
-            {soldOut ? "نفدت الكمية" : "أضيفي إلى السلة"}
+          <button type="button" onClick={add} disabled={soldOut} tabIndex={showSticky ? 0 : -1} className="btn btn-neon pop min-h-12 px-6 text-base">
+            {soldOut ? "نفدت الكمية" : added ? (<><Check className="size-5" /> تمت الإضافة</>) : (<><ShoppingBag className="size-5" /> أضيفي إلى السلة</>)}
           </button>
         </div>
       </div>
 
       <Sheet open={!!justAdded} onClose={() => setJustAdded(null)} side="bottom" title="أُضيفت إلى سلتكِ"
         heading={
-          <h2 className="flex items-center gap-2 text-base font-semibold text-ink">
-            <span className="grid size-7 place-items-center rounded-full bg-success text-white"><Check className="size-4" /></span>
+          <h2 className="flex items-center gap-2.5 text-base font-bold text-ink">
+            <span className="success-pop grid size-8 place-items-center rounded-full bg-success text-ivory"><Check className="size-4" strokeWidth={3} /></span>
             أُضيفت إلى سلتكِ
           </h2>
         }
@@ -356,20 +409,20 @@ export function ProductView({ slug }: { slug: string }) {
           <div className="flex items-center gap-4">
             <SmartImage src={product.images[0]} alt="" className="arch h-24 w-20 shrink-0 bg-sand" />
             <div className="min-w-0 flex-1">
-              <p className="font-display text-xl leading-tight text-ink">{product.name}</p>
+              <p className="reel-title text-xl">{product.name}</p>
               {justAdded?.options && <p className="mt-1 text-xs text-muted">{justAdded.options}</p>}
-              <p className="mt-1 text-sm text-ink tabular-nums">{justAdded?.quantity} × {money(effectivePrice(product))}</p>
+              <p className="mt-1 text-sm font-semibold text-ink tabular-nums">{justAdded?.quantity} × {money(effectivePrice(product))}</p>
             </div>
           </div>
-          <p className="mt-5 flex items-center justify-between rounded-xl bg-sand/70 px-4 py-3 text-sm">
+          <p className="mt-5 flex items-center justify-between rounded-2xl bg-white/[0.05] px-4 py-3 text-sm">
             <span className="text-muted">في سلتكِ الآن: {piecesLabel(cart.count)}</span>
-            <strong className="text-ink tabular-nums">{money(cart.subtotal)}</strong>
+            <strong className="font-display text-ink tabular-nums">{money(cart.subtotal)}</strong>
           </p>
           <div className="mt-5 grid gap-3">
-            <button type="button" className="press btn btn-primary min-h-12" onClick={() => { setJustAdded(null); router.push("/checkout"); }}>
+            <button type="button" className="pop btn btn-neon min-h-13 text-base" onClick={() => { setJustAdded(null); router.push("/checkout"); }}>
               إتمام الطلب <ArrowLeft className="size-4" />
             </button>
-            <button type="button" className="press btn btn-outline min-h-12 border-line" onClick={() => { setJustAdded(null); backToList(); }}>
+            <button type="button" className="pop btn btn-outline min-h-12 border-white/10" onClick={() => { setJustAdded(null); backToList(); }}>
               متابعة التسوق
             </button>
           </div>

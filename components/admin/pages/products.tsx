@@ -345,10 +345,10 @@ export function ProductsPage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(f.id)}
-                className={`press inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm transition-colors ${active ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+                className="studio-chip"
               >
                 {f.label}
-                <span className={`text-xs ${active ? "text-gold" : ""}`}>
+                <span className="studio-chip-count">
                   {n}
                 </span>
               </button>
@@ -359,7 +359,7 @@ export function ProductsPage() {
           type="button"
           aria-pressed={selecting}
           onClick={() => (selecting ? stopSelecting() : setSelecting(true))}
-          className={`press inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold ring-1 transition-colors ${selecting ? "bg-gold-soft text-ink ring-gold" : "bg-paper text-forest ring-line"}`}
+          className="studio-chip !text-ink"
         >
           <ListChecks className="size-4" /> {selecting ? "إلغاء" : "تحديد"}
         </button>
@@ -402,13 +402,13 @@ export function ProductsPage() {
           />
         </div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="card studio-list divide-y divide-line">
           {selecting && (
             <li className="flex items-center justify-between gap-3 bg-sand/40 px-4 py-2.5 text-sm sm:px-5">
               <span className="text-muted">اضغط على المنتجات لتحديدها</span>
               <button
                 type="button"
-                className="font-semibold text-forest"
+                className="font-semibold text-gold-bright"
                 onClick={() =>
                   setSelected(
                     list.every((p) => selected.has(p.id))
@@ -431,10 +431,10 @@ export function ProductsPage() {
                 <SmartImage
                   src={p.images[0]}
                   alt=""
-                  className={`h-16 w-13 shrink-0 rounded-lg ${p.published ? "" : "opacity-50"}`}
+                  className={`h-[4.5rem] w-14 shrink-0 rounded-xl ${p.published ? "" : "opacity-50"}`}
                 />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-medium text-ink">
+                  <span className="block truncate font-bold text-ink">
                     {p.name}
                   </span>
                   <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
@@ -461,7 +461,7 @@ export function ProductsPage() {
             return (
               <li
                 key={p.id}
-                className={`transition-colors ${isPicked ? "bg-gold-soft/30" : ""}`}
+                className={`transition-colors ${isPicked ? "bg-gold/10" : ""}`}
               >
                 {selecting ? (
                   <label className="flex cursor-pointer items-center gap-3 p-3 sm:gap-4 sm:px-5">
@@ -486,7 +486,7 @@ export function ProductsPage() {
                       <button
                         type="button"
                         onClick={() => togglePublish(p)}
-                        className={`icon-btn shrink-0 ${p.published ? "text-forest" : "text-muted"}`}
+                        className={`icon-btn pop shrink-0 ${p.published ? "text-ink" : "text-muted"}`}
                         aria-label={
                           p.published
                             ? `إخفاء ${p.name} من المتجر`
@@ -514,7 +514,7 @@ export function ProductsPage() {
                         <button
                           type="button"
                           onClick={() => soldOut([p])}
-                          className="flex w-20 flex-col items-center justify-center gap-1 bg-gold-soft text-xs font-semibold text-ink"
+                          className="flex w-20 flex-col items-center justify-center gap-1 bg-sand text-xs font-semibold text-gold-bright"
                         >
                           <PackageX className="size-5" /> نفدت
                         </button>
@@ -536,8 +536,8 @@ export function ProductsPage() {
       )}
 
       {selecting && (
-        <div className="admin-enter fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-2xl bg-ink p-3 text-ivory shadow-[var(--shadow-lift)] lg:inset-x-auto lg:bottom-6 lg:start-[calc(16.5rem+2rem)] lg:end-8">
-          <p className="mb-2 px-1 text-xs text-ivory/70">
+        <div className="studio-sheet-in glass-dark fixed inset-x-3 bottom-[calc(var(--studio-tab-h)+env(safe-area-inset-bottom)+0.5rem)] z-30 rounded-[1.4rem] p-3 text-ink shadow-[var(--shadow-lift)] lg:inset-x-auto lg:bottom-6 lg:start-[calc(17rem+2rem)] lg:end-8">
+          <p className="mb-2 px-1 text-xs text-muted">
             {picked.length
               ? `${itemsLabel(picked.length)} محدد`
               : "لم تحدد شيئًا بعد"}
@@ -583,7 +583,7 @@ export function ProductsPage() {
                 type="button"
                 disabled={!picked.length}
                 onClick={a.run}
-                className={`press flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold disabled:opacity-40 ${a.danger ? "bg-danger text-white" : "bg-white/10 hover:bg-white/15"}`}
+                className={`press flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl text-xs font-semibold disabled:opacity-40 ${a.danger ? "bg-danger text-white" : "bg-white/10 hover:bg-white/15"} pop`}
               >
                 <a.icon className="size-4" /> {a.label}
               </button>

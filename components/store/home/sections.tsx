@@ -10,13 +10,10 @@ import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { Reveal } from "@/components/ui/reveal";
 import { SmartImage } from "@/components/ui/smart-image";
-import { Mandala, Star8 } from "@/components/ui/mandala";
-import { Tilt } from "@/components/ui/fx";
 import { bundleDetails, formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
-import type { Bundle, HomeSection, Product } from "@/lib/types";
+import type { Bundle, HomeSection } from "@/lib/types";
 import { ProductCard } from "../product-card";
-import { SEASON_WORDS, SeasonIcon, useSeason } from "../season";
 
 export function SectionHeading({ title, href, linkLabel = "عرض الكل" }: { title: string; href?: string; linkLabel?: string }) {
   return (
@@ -32,54 +29,6 @@ export function SectionHeading({ title, href, linkLabel = "عرض الكل" }: {
         </Link>
       )}
     </Reveal>
-  );
-}
-
-export function CategoriesSection({ section }: { section: HomeSection }) {
-  const { data } = useStore();
-  const cats = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
-  const counts = (id: string) => visibleProducts(data).filter((p) => p.categoryId === id).length;
-  return (
-    <section className="container-x pt-16 sm:pt-24">
-      <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
-      <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-7 lg:gap-5" style={{ "--cf-pad": "29vw" } as React.CSSProperties}>
-        {cats.map((c, i) => (
-          <Reveal as="li" key={c.id} delay={i * 80} className="w-[42vw] shrink-0 snap-center sm:w-auto">
-            <Link href={`/shop?category=${c.slug}`} className="press group block text-center">
-              <Tilt max={8} className="rounded-t-full">
-                <div className="arch-full relative aspect-[3/4] overflow-hidden bg-sand ring-1 ring-line transition-shadow duration-500 group-hover:shadow-[var(--shadow-lift)] group-hover:ring-gold/60">
-                  <SmartImage
-                    src={c.image}
-                    alt=""
-                    className="absolute inset-0"
-                    imgClassName="transition-transform duration-[1.2s] ease-[var(--ease-soft)] group-hover:scale-[1.07]"
-                    fallbackLabel={c.name}
-                  />
-                </div>
-              </Tilt>
-              <p className="font-display mt-3 text-xl text-ink transition-colors group-hover:text-gold-deep lg:text-lg">{c.name}</p>
-              <p className="text-xs text-muted">{piecesLabel(counts(c.id))}</p>
-            </Link>
-          </Reveal>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-export function ProductRail({ section, products, href }: { section: HomeSection; products: Product[]; href: string }) {
-  if (products.length === 0) return null;
-  return (
-    <section className="container-x pt-16 sm:pt-24">
-      <SectionHeading title={section.title} href={href} />
-      <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-        {products.slice(0, 8).map((p, i) => (
-          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className={`w-[62vw] shrink-0 snap-center sm:w-auto ${i >= 4 ? "lg:hidden" : ""}`}>
-            <ProductCard product={p} />
-          </Reveal>
-        ))}
-      </ul>
-    </section>
   );
 }
 
@@ -109,20 +58,20 @@ export function PromoSection() {
 
   return (
     <section className="container-x pt-16 sm:pt-24">
-      <Reveal className="ticket on-dark relative mx-auto flex max-w-4xl flex-col overflow-hidden rounded-[1.75rem] bg-ink text-ivory shadow-[var(--shadow-lift)] sm:flex-row">
+      <Reveal className="ticket neon-ring relative mx-auto flex max-w-4xl flex-col overflow-hidden rounded-[2rem] bg-paper text-ink shadow-[0_30px_80px_-30px_rgb(255_92_122/0.45)] sm:flex-row">
         <div className="pointer-events-none absolute -bottom-24 start-10 size-72 rounded-full bg-gold/20 blur-3xl" aria-hidden />
-        <Mandala className="pointer-events-none absolute -top-24 -start-24 size-72 text-gold/10 motion-safe:animate-spin-slow" />
+        <div className="pointer-events-none absolute -top-24 -end-24 size-72 rounded-full bg-[#b07cff]/20 blur-3xl" aria-hidden />
         <div className="relative flex-1 px-7 py-9 sm:px-10 sm:py-12">
           <p className="eyebrow text-gold-bright">{promo.eyebrow || "عرض خاص"}</p>
           <h2 className="font-display mt-2 text-3xl leading-tight text-balance sm:text-[2.6rem]">{title}</h2>
-          {promo.body && <p className="mt-3 max-w-md text-sm text-ivory/70 sm:text-base">{promo.body}</p>}
-          {coupon.minSubtotal ? <p className="mt-3 text-xs text-ivory/60">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
+          {promo.body && <p className="mt-3 max-w-md text-sm text-muted sm:text-base">{promo.body}</p>}
+          {coupon.minSubtotal ? <p className="mt-3 text-xs text-muted">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
         </div>
         <div className="ticket-stub relative flex shrink-0 flex-col items-center justify-center gap-3 px-7 py-8 text-center sm:w-64 sm:py-10">
           {big ? (
             <p className="font-display text-6xl leading-none text-gold-bright tabular-nums sm:text-7xl" dir="ltr">
               {big}
-              <span className="block pt-1 text-base text-ivory/70" dir="rtl">{small}</span>
+              <span className="block pt-1 text-base text-muted" dir="rtl">{small}</span>
             </p>
           ) : (
             <p className="font-display text-3xl text-gold-bright">{small}</p>
@@ -136,7 +85,7 @@ export function PromoSection() {
             {coupon.code}
             {copied ? <Check className="size-4" /> : <Copy className="size-4 opacity-70" />}
           </button>
-          <p className="h-4 text-xs text-ivory/60" role="status">{copied ? "تم نسخ الكود ✓" : "اضغطي لنسخ الكود"}</p>
+          <p className="h-4 text-xs text-muted" role="status">{copied ? "تم نسخ الكود ✓" : "اضغطي لنسخ الكود"}</p>
         </div>
       </Reveal>
     </section>
@@ -166,9 +115,8 @@ export function BundlesSection({ section }: { section: HomeSection }) {
           const pieces = d.items.reduce((n, it) => n + it.quantity, 0);
           return (
             <Reveal as="li" key={b.id} delay={i * 80} id={`bundle-${b.slug}`} className={`${list.length === 1 ? "w-full" : "w-[82vw]"} max-w-sm shrink-0 snap-center scroll-mt-24 sm:w-[calc(50%-0.75rem)] sm:max-w-md lg:w-[calc(33.333%-1rem)]`}>
-              <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-paper shadow-[var(--shadow-soft)]">
-                <div className="relative flex h-56 items-end justify-center overflow-hidden bg-sand pt-6">
-                  <Star8 className="pointer-events-none absolute -top-10 -end-10 size-40 text-gold/15" />
+              <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-paper shadow-[var(--shadow-soft)] transition-transform duration-300 active:scale-[0.98]">
+                <div className="relative flex h-56 items-end justify-center overflow-hidden bg-[radial-gradient(80%_80%_at_50%_100%,rgb(255_92_122/0.25),var(--color-sand))] pt-6">
                   {pics.length === 1 ? (
                     <SmartImage src={pics[0]} alt="" className="arch h-full w-40" fallbackLabel=" " />
                   ) : (
@@ -189,9 +137,9 @@ export function BundlesSection({ section }: { section: HomeSection }) {
                     </div>
                   )}
                   {d.savings > 0 && (
-                    <span className="absolute top-4 start-4 z-10 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-gold-bright">وفّري {money(d.savings)}</span>
+                    <span className="absolute top-4 start-4 z-10 rounded-full bg-gold px-3 py-1.5 text-xs font-bold text-white">وفّري {money(d.savings)}</span>
                   )}
-                  <span className="absolute top-4 end-4 z-10 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-semibold text-forest backdrop-blur">{piecesLabel(pieces)}</span>
+                  <span className="absolute top-4 end-4 z-10 rounded-full bg-black/50 px-3 py-1.5 text-xs font-semibold text-white backdrop-blur">{piecesLabel(pieces)}</span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-display text-2xl leading-tight text-ink">{b.name}</h3>
@@ -262,7 +210,7 @@ export function AllProductsSection() {
                 setLimit(8);
               }}
               className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
-                active ? "border-ink bg-ink text-ivory shadow-[0_8px_18px_-10px_rgb(15_18_15/0.6)]" : "border-line bg-paper text-text hover:border-gold"
+                active ? "border-transparent bg-white font-bold text-[#0a0a0d]" : "border-line bg-paper text-text hover:border-gold"
               }`}
             >
               {t.name}
@@ -288,39 +236,6 @@ export function AllProductsSection() {
   );
 }
 
-/** A slow ribbon of the store's promises under the hero. */
-export function TrustBand() {
-  const { data } = useStore();
-  const s = data.settings;
-  const season = useSeason();
-  const items = [
-    ...(season === "original" ? [] : [SEASON_WORDS[season].ribbon]),
-    "اطلبي عبر واتساب بخطوة واحدة",
-    s.freeDeliveryThreshold > 0 ? `توصيل مجاني للطلبات فوق ${formatMoney(s.freeDeliveryThreshold, s)}` : "توصيل إلى باب البيت",
-    "نؤكد طلبكِ معكِ قبل التوصيل",
-    "استبدال سهل للقطع غير المستخدمة",
-    "أقمشة مختارة بعناية",
-  ];
-  const row = (hidden: boolean) => (
-    <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
-      {items.map((t) => (
-        <li key={t} className="flex items-center gap-6 px-6 whitespace-nowrap">
-          {season === "original" ? <Star8 className="size-3 text-gold" /> : <SeasonIcon season={season} className="size-3.5 text-gold" />}
-          {t}
-        </li>
-      ))}
-    </ul>
-  );
-  return (
-    <section aria-label="لماذا تزهّد" className="season-band on-dark relative overflow-hidden border-y border-gold/25 bg-ink-2 py-3.5 text-sm text-gold-soft">
-      <div className="marquee flex w-max">
-        {row(false)}
-        {row(true)}
-      </div>
-    </section>
-  );
-}
-
 const STEPS = [
   { icon: ShoppingBag, title: "اختاري قطعتكِ", body: "اختاري اللون والمقاس وأضيفيها إلى السلة." },
   { icon: MessageCircle, title: "أرسلي الطلب عبر واتساب", body: "نجهّز لكِ رسالة الطلب كاملة، فقط اضغطي إرسال." },
@@ -331,9 +246,8 @@ const STEPS = [
 export function HowToOrder() {
   return (
     <section className="container-x pt-16 sm:pt-24">
-      <Reveal className="on-dark relative overflow-hidden rounded-[2rem] bg-ink px-5 py-10 text-ivory sm:px-12 sm:py-14">
-        <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
-        <Mandala className="pointer-events-none absolute -top-32 -start-32 size-80 text-gold/15 motion-safe:animate-spin-slow" />
+      <Reveal className="relative overflow-hidden rounded-[2rem] border border-line bg-paper px-5 py-10 text-ink sm:px-12 sm:py-14">
+        <div className="pointer-events-none absolute -top-32 -start-32 size-80 rounded-full bg-gold/15 blur-3xl" aria-hidden />
         <div className="relative">
           <p className="text-sm font-semibold text-gold">بدون تعقيد</p>
           <h2 className="font-display mt-1 text-3xl leading-tight sm:text-[2.6rem]">كيف تطلبين؟</h2>
@@ -341,13 +255,13 @@ export function HowToOrder() {
             <span className="reveal-line absolute inset-x-[16%] top-8 hidden h-px bg-gradient-to-l from-gold/0 via-gold/70 to-gold/0 sm:block" aria-hidden />
             {STEPS.map(({ icon: Icon, title, body }, i) => (
               <li key={title} className="relative flex gap-4 sm:flex-col sm:items-center sm:text-center">
-                <span className="relative grid size-16 shrink-0 place-items-center rounded-t-full rounded-b-2xl bg-gradient-to-b from-gold-bright to-gold-deep text-ink shadow-[0_18px_30px_-16px_rgb(212_178_106/0.8)]">
+                <span className="relative grid size-16 shrink-0 place-items-center rounded-2xl bg-[image:var(--neon)] text-white shadow-[0_18px_30px_-16px_rgb(255_92_122/0.8)]">
                   <Icon className="size-6" />
                   <span className="absolute -top-2 -end-2 grid size-6 place-items-center rounded-full bg-ivory text-xs font-bold text-ink">{i + 1}</span>
                 </span>
                 <div>
-                  <h3 className="font-display text-xl text-ivory">{title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-ivory/65">{body}</p>
+                  <h3 className="font-display text-xl font-bold text-ink">{title}</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-muted">{body}</p>
                 </div>
               </li>
             ))}

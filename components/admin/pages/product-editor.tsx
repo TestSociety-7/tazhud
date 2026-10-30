@@ -163,7 +163,7 @@ function ColorsEditor({
                       >
                         <SmartImage src={src} alt="" className="absolute inset-0" />
                         {picked && (
-                          <span className="absolute inset-x-0 bottom-0 grid place-items-center bg-ink/70 py-0.5 text-white">
+                          <span className="absolute inset-x-0 bottom-0 grid place-items-center bg-black/60 py-0.5 text-white">
                             <Check className="size-3.5" />
                           </span>
                         )}
@@ -253,7 +253,7 @@ function SizesEditor({
             key={k}
             type="button"
             onClick={() => onChange(v)}
-            className="rounded-full px-2 text-xs font-semibold text-forest underline-offset-2 hover:underline"
+            className="chip pop !text-gold-bright"
           >
             {k}
           </button>
@@ -515,9 +515,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   .map((c) => (
                     <label
                       key={c.id}
-                      className={`press flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold ${
-                        draft.categoryId === c.id ? "border-forest bg-forest text-ivory" : "border-line bg-paper text-text hover:border-gold"
-                      }`}
+                      className="studio-chip min-h-11 cursor-pointer has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold"
                     >
                       <input
                         type="radio"
@@ -611,7 +609,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
         </details>
       </div>
 
-      <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
+      <div className="studio-tabbar sticky bottom-[calc(var(--studio-tab-h)+env(safe-area-inset-bottom))] z-20 -mx-4 mt-8 flex items-center justify-between gap-3 px-4 py-3 sm:-mx-8 sm:px-8 lg:bottom-0">
         <p className="hidden text-sm text-muted sm:block" role="status">
           {dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}
         </p>

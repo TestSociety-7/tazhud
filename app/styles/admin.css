@@ -1,0 +1,304 @@
+/* ------------------------------------------------------------------------------
+   Admin "creator studio" (Reels option). Dark, bold numbers, story rings,
+   a TikTok-style tab bar and springy sheets. Colours come from the tokens, so
+   the Christmas and Halloween seasons recolour everything through data-season.
+   ------------------------------------------------------------------------------ */
+
+.admin-season {
+  --studio-tab-h: 4.25rem;
+  background:
+    radial-gradient(60rem 30rem at 100% -10%, color-mix(in oklab, var(--color-gold) 9%, transparent), transparent 60%),
+    var(--color-ivory);
+}
+
+/* ---------- Big, tight headings ---------- */
+.studio-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.12;
+  color: var(--color-ink);
+}
+
+/* ---------- Pills used for filters and status pickers ---------- */
+.studio-chip {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 2.6rem;
+  padding: 0 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  transition: transform 0.35s var(--ease-spring), background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+.studio-chip:hover { color: var(--color-ink); }
+.studio-chip:active { transform: scale(0.92); }
+.studio-chip[aria-pressed="true"],
+.studio-chip[aria-checked="true"],
+.studio-chip:has(input:checked) {
+  color: #fff;
+  background: linear-gradient(120deg, var(--color-gold-deep), var(--color-gold));
+  box-shadow: 0 10px 24px -12px var(--color-gold);
+}
+.studio-chip .studio-chip-count {
+  min-width: 1.4rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  line-height: 1.25rem;
+  text-align: center;
+  background: rgb(255 255 255 / 0.08);
+  font-variant-numeric: tabular-nums;
+}
+.studio-chip[aria-pressed="true"] .studio-chip-count { background: rgb(0 0 0 / 0.2); }
+
+/* ---------- List rows that spring in ---------- */
+@keyframes studio-rise {
+  from { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.studio-list > * { animation: studio-rise 0.5s var(--ease-spring) backwards; }
+.studio-list > :nth-child(2) { animation-delay: 40ms; }
+.studio-list > :nth-child(3) { animation-delay: 80ms; }
+.studio-list > :nth-child(4) { animation-delay: 120ms; }
+.studio-list > :nth-child(5) { animation-delay: 160ms; }
+.studio-list > :nth-child(6) { animation-delay: 200ms; }
+.studio-list > :nth-child(n + 7) { animation-delay: 240ms; }
+
+.studio-tile {
+  transition: transform 0.35s var(--ease-spring), border-color 0.25s ease, background-color 0.25s ease;
+}
+.studio-tile:hover { border-color: color-mix(in oklab, var(--color-gold) 45%, var(--color-line)); }
+.studio-tile:active { transform: scale(0.97); }
+
+/* ---------- Story rings (quick actions) ---------- */
+.story {
+  display: flex;
+  width: 4.6rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+  transition: transform 0.35s var(--ease-spring);
+}
+.story:active { transform: scale(0.9); }
+.story-ring {
+  position: relative;
+  display: grid;
+  width: 4.1rem;
+  height: 4.1rem;
+  place-items: center;
+  border-radius: 999px;
+  padding: 2.5px;
+  background: var(--color-line);
+}
+.story-ring.is-live {
+  background: conic-gradient(from 200deg, var(--color-gold-deep), var(--color-gold), #b07cff, var(--color-gold-bright), var(--color-gold-deep));
+  animation: story-spin 6s linear infinite;
+}
+.story-ring.is-live > * { animation: story-spin 6s linear infinite reverse; }
+@keyframes story-spin { to { transform: rotate(360deg); } }
+.story-face {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-sand);
+  color: var(--color-ink);
+  border: 3px solid var(--story-gap, var(--color-ivory));
+}
+.story-badge {
+  position: absolute;
+  bottom: -0.2rem;
+  inset-inline-start: 50%;
+  translate: 50% 0;
+  min-width: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  line-height: 1.25rem;
+  color: #fff;
+  background: var(--color-gold-deep);
+  box-shadow: 0 0 0 2px var(--color-ivory);
+}
+[dir="ltr"] .story-badge { translate: -50% 0; }
+
+/* ---------- Insight cards ---------- */
+.insight {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.insight-hot {
+  background:
+    radial-gradient(18rem 12rem at 0% 0%, color-mix(in oklab, var(--color-gold) 38%, transparent), transparent 70%),
+    radial-gradient(14rem 10rem at 100% 100%, rgb(176 124 255 / 0.28), transparent 70%),
+    var(--color-paper);
+  border-color: color-mix(in oklab, var(--color-gold) 40%, var(--color-line)) !important;
+}
+.spark-line {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: spark-draw 1.2s var(--ease-soft) 0.2s forwards;
+}
+@keyframes spark-draw { to { stroke-dashoffset: 0; } }
+.spark-area { opacity: 0; animation: spark-fade 0.8s ease 0.7s forwards; }
+@keyframes spark-fade { to { opacity: 1; } }
+.bar-grow { transform-origin: bottom; transform: scaleY(0); animation: bar-grow 0.7s var(--ease-spring) forwards; }
+@keyframes bar-grow { to { transform: scaleY(1); } }
+.meter-grow { transform-origin: right; transform: scaleX(0); animation: meter-grow 0.9s var(--ease-soft) 0.2s forwards; }
+[dir="ltr"] .meter-grow { transform-origin: left; }
+@keyframes meter-grow { to { transform: scaleX(1); } }
+
+/* ---------- Season preview cards ---------- */
+.season-card {
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.3s ease;
+}
+.season-card:active { transform: scale(0.96); }
+.season-card[aria-checked="true"] { transform: translateY(-4px); }
+
+/* ---------- TikTok-style tab bar ---------- */
+.studio-tabbar {
+  background: color-mix(in oklab, var(--color-ivory) 92%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+.studio-tab { transition: color 0.25s ease; }
+.studio-tab svg { transition: transform 0.4s var(--ease-spring); }
+.studio-tab:active svg { transform: scale(0.8); }
+.studio-tab[aria-current="page"] svg { transform: translateY(-2px) scale(1.12); }
+
+/* The big centre "+": a white key with rose and violet edges peeking out. */
+.tt-plus {
+  position: relative;
+  display: grid;
+  width: 3.4rem;
+  height: 2.35rem;
+  place-items: center;
+  transition: transform 0.4s var(--ease-spring);
+}
+.tt-plus::before,
+.tt-plus::after,
+.tt-plus > span {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.8rem;
+}
+.tt-plus::before { content: ""; background: #b07cff; transform: translateX(-4px); }
+.tt-plus::after { content: ""; background: var(--color-gold); transform: translateX(4px); }
+.tt-plus > span {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+.studio-tab:active .tt-plus { transform: scale(0.86) rotate(-6deg); }
+.studio-tab[aria-current="page"] .tt-plus > span { background: var(--color-gold-soft); }
+
+/* ---------- Sheets and modals ---------- */
+@keyframes studio-sheet-up {
+  from { transform: translate3d(0, 100%, 0); }
+  70% { transform: translate3d(0, -1.5%, 0); }
+  to { transform: none; }
+}
+@keyframes studio-pop-in {
+  from { opacity: 0; transform: translate3d(0, 24px, 0) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+.studio-modal[open] { animation: studio-sheet-up 0.5s var(--ease-soft) both; }
+@media (min-width: 40rem) {
+  .studio-modal[open] { animation: studio-pop-in 0.42s var(--ease-spring) both; }
+}
+.studio-modal::backdrop {
+  background: rgb(0 0 0 / 0.6);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* ---------- Sign-in and welcome ---------- */
+.studio-stage {
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--color-ivory);
+}
+.studio-blob {
+  position: absolute;
+  z-index: -1;
+  border-radius: 999px;
+  filter: blur(64px);
+  opacity: 0.55;
+  pointer-events: none;
+  animation: blob-drift 12s ease-in-out infinite alternate;
+}
+.studio-blob-a { width: 22rem; height: 22rem; top: -6rem; inset-inline-end: -6rem; background: var(--color-gold); }
+.studio-blob-b { width: 18rem; height: 18rem; bottom: -5rem; inset-inline-start: -6rem; background: #7c4dff; animation-delay: -4s; }
+.studio-blob-c { width: 12rem; height: 12rem; top: 45%; inset-inline-start: 30%; background: var(--color-sky); opacity: 0.25; animation-delay: -8s; }
+@keyframes blob-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(2rem, 3rem, 0) scale(1.15); }
+}
+
+/* Story-style progress bars along the top of the welcome. */
+.story-progress { display: flex; gap: 0.3rem; }
+.story-progress i {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.22);
+}
+.story-progress i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: right;
+  animation: story-fill var(--d, 1.6s) linear var(--delay, 0s) forwards;
+}
+[dir="ltr"] .story-progress i::after { transform-origin: left; }
+@keyframes story-fill { to { transform: scaleX(1); } }
+
+@keyframes cine-zoom {
+  from { opacity: 0; transform: scale(1.6); filter: blur(10px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes cine-line {
+  from { opacity: 0; transform: translate3d(0, 110%, 0); }
+  to { opacity: 1; transform: none; }
+}
+.cine-zoom { animation: cine-zoom 0.9s var(--ease-soft) both; }
+.cine-mask { display: block; overflow: hidden; padding-bottom: 0.15em; }
+.cine-line { display: block; animation: cine-line 0.7s var(--ease-soft) both; }
+
+.studio-field {
+  min-height: 3.5rem;
+  border-radius: 1rem;
+  font-size: 1.1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-ring.is-live,
+  .story-ring.is-live > *,
+  .studio-blob { animation: none; }
+  .spark-line { stroke-dashoffset: 0; }
+  .spark-area { opacity: 1; }
+  .bar-grow, .meter-grow { transform: none; }
+}
+
+/* Floating action bars (bulk select) rise like a sheet. */
+.studio-sheet-in { animation: studio-sheet-up 0.5s var(--ease-soft) both; }

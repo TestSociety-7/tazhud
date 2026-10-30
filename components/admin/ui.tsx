@@ -15,8 +15,9 @@ export function PageHeader({
   return (
     <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
       <div>
-        <h1 className="font-display text-3xl leading-tight text-ink sm:text-[2.6rem]">{title}</h1>
-        {description && <p className="mt-2 max-w-2xl text-sm text-muted">{description}</p>}
+        <span className="season-rule mb-3 block h-1 w-10 rounded-full bg-gradient-to-l from-gold-deep to-gold" aria-hidden />
+        <h1 className="studio-title season-title text-[2.1rem] sm:text-5xl">{title}</h1>
+        {description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{actions}</div>}
     </div>
@@ -37,11 +38,11 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`card min-w-0 p-5 sm:p-6 ${className}`}>
+    <section className={`card min-w-0 p-5 shadow-[var(--shadow-soft)] sm:p-6 ${className}`}>
       {(title || actions) && (
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            {title && <h2 className="text-base font-semibold text-ink">{title}</h2>}
+            {title && <h2 className="font-display text-lg font-bold text-ink">{title}</h2>}
             {description && <p className="mt-1 text-xs text-muted">{description}</p>}
           </div>
           {actions}
@@ -105,9 +106,9 @@ export function Toggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${checked ? "bg-forest" : "bg-line"}`}
+        className={`relative inline-flex h-8 w-[3.25rem] shrink-0 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${checked ? "bg-gradient-to-l from-gold-deep to-gold shadow-[0_6px_18px_-8px_var(--color-gold)]" : "bg-line"}`}
       >
-        <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform duration-300 ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
+        <span className={`inline-block size-6 rounded-full bg-ink shadow-[0_2px_6px_rgb(0_0_0/0.4)] transition-transform duration-500 ease-[var(--ease-spring)] ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
       </button>
     </div>
   );
@@ -116,12 +117,12 @@ export function Toggle({
 export function Badge({ tone = "neutral", children }: { tone?: "neutral" | "green" | "gold" | "red" | "blue"; children: React.ReactNode }) {
   const tones = {
     neutral: "bg-sand text-muted",
-    green: "bg-sage-soft text-forest",
-    gold: "bg-gold-soft/60 text-[#7a5a22]",
-    red: "bg-danger/10 text-danger",
-    blue: "bg-[#e3e9f2] text-[#2c4a6e]",
+    green: "bg-success/15 text-success",
+    gold: "bg-gold/15 text-gold-bright",
+    red: "bg-danger/15 text-danger",
+    blue: "bg-sky/15 text-sky",
   };
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
+  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7rem] font-bold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
 }
 
 /** Modal built on <dialog>. */
@@ -159,10 +160,11 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/50 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up`}
+      className={`studio-modal m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-[1.75rem] border border-b-0 border-line bg-ivory p-0 text-text shadow-[var(--shadow-lift)] sm:rounded-[1.75rem] sm:border-b open:flex`}
     >
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        <h2 className="font-display text-2xl text-ink">{title}</h2>
+      <span className="mx-auto mt-2.5 block h-1 w-10 shrink-0 rounded-full bg-line sm:hidden" aria-hidden />
+      <div className="flex items-center justify-between border-b border-line px-5 pt-2 pb-3 sm:py-4">
+        <h2 className="studio-title text-2xl">{title}</h2>
         <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
@@ -226,17 +228,17 @@ export function StatCard({
   tone?: "default" | "dark";
 }) {
   return (
-    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${tone === "dark" ? "on-dark border-ink bg-ink text-ivory" : "border-line bg-paper"}`}>
+    <div className={`insight min-w-0 rounded-[1.4rem] border border-line p-4 sm:p-5 ${tone === "dark" ? "insight-hot" : "bg-paper"}`}>
       <div className="flex items-start justify-between gap-3">
-        <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold" : "text-muted"}`}>{label}</p>
-        {icon && <span className={tone === "dark" ? "text-gold" : "text-forest"}>{icon}</span>}
+        <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold-soft" : "text-muted"}`}>{label}</p>
+        {icon && <span className="text-gold">{icon}</span>}
       </div>
       <p
-        className={`font-display mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"} ${tone === "dark" ? "text-ivory" : "text-ink"}`}
+        className={`studio-title mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"}`}
       >
         {value}
       </p>
-      {hint && <p className={`mt-2 text-xs ${tone === "dark" ? "text-ivory/60" : "text-muted"}`}>{hint}</p>}
+      {hint && <p className="mt-2 text-xs text-muted">{hint}</p>}
     </div>
   );
 }

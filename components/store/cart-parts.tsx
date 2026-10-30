@@ -9,34 +9,34 @@ import { SmartImage } from "@/components/ui/smart-image";
 import { QuantityControl } from "@/components/ui/quantity";
 import { Price, useMoney } from "@/components/ui/price";
 
-export function CartLineItem({ line, compact = false, onNavigate }: { line: ResolvedLine; compact?: boolean; onNavigate?: () => void }) {
+export function CartLineItem({ line, compact = false, card = false, onNavigate }: { line: ResolvedLine; compact?: boolean; /** Show as its own rounded panel (cart page). */ card?: boolean; onNavigate?: () => void }) {
   const { setQuantity, remove } = useCart();
   const options = [line.color, line.size].filter(Boolean).join(" · ");
   const overStock = line.maxQuantity > 0 && line.quantity > line.maxQuantity;
   return (
-    <li className="flex gap-4 py-5">
+    <li className={`flex gap-3.5 ${card ? "panel p-3" : "py-4"}`}>
       <Link href={line.href} onClick={onNavigate} className="shrink-0" tabIndex={-1} aria-hidden>
-        <SmartImage src={line.image} alt="" className={`${compact ? "h-28 w-22" : "h-36 w-28"} rounded-xl`} />
+        <SmartImage src={line.image} alt="" className={`${compact ? "h-28 w-22" : "h-32 w-24 sm:h-36 sm:w-28"} rounded-2xl`} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <Link href={line.href} onClick={onNavigate} className="font-display text-xl leading-tight text-ink hover:underline">
+            <Link href={line.href} onClick={onNavigate} className="font-display text-base leading-snug font-bold text-ink hover:text-gold-bright sm:text-lg">
               {line.name}
             </Link>
-            {line.kind === "bundle" && <p className="eyebrow mt-1 text-gold-deep">مجموعة</p>}
+            {line.kind === "bundle" && <p className="chip mt-1.5 !min-h-6 !bg-gold/15 !text-gold-soft">مجموعة</p>}
             {options && <p className="mt-1 text-xs text-muted">{options}</p>}
           </div>
           <button
             type="button"
             onClick={() => remove(line.key)}
-            className="icon-btn -mt-2 -me-2 size-10 text-muted hover:text-danger"
+            className="pop icon-btn -mt-1 -me-1 size-10 text-muted hover:bg-danger/10 hover:text-danger"
             aria-label={`إزالة ${line.name}`}
           >
             <Trash2 className="size-4" />
           </button>
         </div>
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 pt-3">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3">
           <QuantityControl
             size="sm"
             value={line.quantity}
@@ -69,11 +69,11 @@ export function CouponForm() {
   if (couponCode) {
     const ok = Boolean(coupon?.ok);
     return (
-      <div className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-sm ${ok ? "border-sage bg-sage-soft/60" : "border-[#e2c58f] bg-[#fbf3e2]"}`}>
+      <div className={`flex animate-fade-up items-center justify-between gap-3 rounded-2xl border px-3 py-2.5 text-sm ${ok ? "border-success/30 bg-success/10" : "border-gold/40 bg-gold/10"}`}>
         <span className="flex min-w-0 items-center gap-2">
-          {ok ? <Check className="size-4 shrink-0 text-success" /> : <AlertCircle className="size-4 shrink-0 text-[#855a14]" />}
+          {ok ? <Check className="size-4 shrink-0 text-success" /> : <AlertCircle className="size-4 shrink-0 text-gold-bright" />}
           <span className="min-w-0">
-            <strong className="font-mono font-semibold tracking-wide">{couponCode}</strong>
+            <strong className="font-mono font-semibold tracking-wide text-ink">{couponCode}</strong>
             <span className="block text-xs text-muted">{coupon?.message}</span>
           </span>
         </span>
@@ -107,14 +107,14 @@ export function CouponForm() {
               setCode(e.target.value.toUpperCase());
               setMessage(null);
             }}
-            className="field ltr !ps-9 uppercase"
+            className="field ltr !rounded-full !ps-9 uppercase"
             placeholder="مثال: WELCOME10"
             autoComplete="off"
             aria-invalid={message ? !message.ok : undefined}
             aria-describedby={message ? "coupon-msg" : undefined}
           />
         </div>
-        <button type="submit" className="btn btn-outline shrink-0" disabled={!code.trim()}>
+        <button type="submit" className="btn btn-primary pop shrink-0" disabled={!code.trim()}>
           تطبيق
         </button>
       </div>
@@ -154,16 +154,16 @@ export function OrderSummary({ className = "" }: { className?: string }) {
         <dd className="font-medium tabular-nums">{lines.length === 0 ? "—" : delivery === 0 ? "مجاني" : money(delivery)}</dd>
       </div>
       {lines.length > 0 && remaining > 0 && !freeByCoupon && (
-        <div className="rounded-lg bg-sand px-3 py-2 text-xs text-muted">
+        <div className="rounded-2xl bg-white/[0.05] px-3.5 py-2.5 text-xs text-muted">
           أضيفي <strong className="text-ink">{money(remaining)}</strong> للحصول على توصيل مجاني.
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-line" aria-hidden>
-            <div className="h-full rounded-full bg-gold transition-[width] duration-700" style={{ width: `${Math.min(100, ((subtotal - discount) / threshold) * 100)}%` }} />
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-line" aria-hidden>
+            <div className="h-full rounded-full bg-[image:var(--neon)] shadow-[0_0_10px_var(--color-gold)] transition-[width] duration-700" style={{ width: `${Math.min(100, ((subtotal - discount) / threshold) * 100)}%` }} />
           </div>
         </div>
       )}
-      <div className="flex items-baseline justify-between border-t border-line pt-3">
+      <div className="flex items-baseline justify-between border-t border-white/[0.08] pt-3">
         <dt className="font-semibold text-ink">الإجمالي</dt>
-        <dd className="font-display text-3xl text-ink tabular-nums">{money(total)}</dd>
+        <dd key={total} className="bump font-display text-2xl font-extrabold text-ink tabular-nums">{money(total)}</dd>
       </div>
     </dl>
   );

@@ -66,16 +66,17 @@ export function Sheet({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`fixed inset-0 m-0 flex max-h-dvh flex-col overflow-hidden bg-ivory p-0 text-text shadow-[var(--shadow-lift)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/45 backdrop:backdrop-blur-[2px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
+      className={`fixed inset-0 m-0 flex max-h-dvh flex-col overflow-hidden bg-paper p-0 text-text shadow-[var(--shadow-lift),inset_0_0_0_1px_rgb(255_255_255/0.06)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-black/65 backdrop:backdrop-blur-[6px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
     >
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        {heading ?? <h2 className="font-display text-2xl text-ink">{title}</h2>}
-        <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
+      {side === "bottom" && <span className="grip mt-2.5 sm:hidden" aria-hidden />}
+      <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-3.5">
+        {heading ?? <h2 className="reel-title text-xl">{title}</h2>}
+        <button type="button" className="pop icon-btn -me-2 bg-white/[0.07] text-ink" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
       </div>
       <div className="flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain">{children}</div>
-      {footer && <div className="border-t border-line bg-paper px-5 py-4">{footer}</div>}
+      {footer && <div className="border-t border-white/[0.06] bg-ivory/60 px-5 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">{footer}</div>}
     </dialog>
   );
 }

@@ -228,7 +228,7 @@ export function NotificationsPanel() {
       <Panel title="إشعارات الطلبات" description="فعّلها على كل هاتف أو كمبيوتر تريد أن يصله تنبيه.">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="flex items-start gap-3 text-sm text-text">
-            <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${state === "on" ? "bg-forest text-ivory" : "bg-sand text-forest"}`}>
+            <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${state === "on" ? "bg-gradient-to-br from-gold to-gold-deep text-white" : "bg-sand text-gold"}`}>
               {state === "on" ? <BellRing className="size-5" /> : state === "install-first" ? <Smartphone className="size-5" /> : state === "denied" || state === "unsupported" ? <BellOff className="size-5" /> : <Bell className="size-5" />}
             </span>
             <span className="pt-2">{text[state]}</span>

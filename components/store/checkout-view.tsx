@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, ChevronDown, Plus, RefreshCw, ShieldCheck, ShoppingBag, Wallet } from "lucide-react";
+import { ArrowRight, Check, CheckCircle2, ChevronDown, Plus, RefreshCw, ShieldCheck, ShoppingBag, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
@@ -47,6 +47,27 @@ function Field({
       {children}
       {error ? <p id={`${id}-err`} className="error-text" role="alert">{error}</p> : hint ? <p id={`${id}-hint`} className="hint">{hint}</p> : null}
     </div>
+  );
+}
+
+/** Cart → details → WhatsApp, with the line filling as each step is done. */
+function Steps({ at }: { at: 1 | 2 }) {
+  const items = ["السلة", "بياناتكِ", "واتساب"];
+  return (
+    <ol className="steps" aria-label="خطوات الطلب">
+      {items.map((label, i) => {
+        const state = i < at ? "done" : i === at ? "active" : "next";
+        return (
+          <li key={label} className="contents">
+            {i > 0 && <span className="step-line" data-state={i <= at ? "done" : "next"} aria-hidden><i /></span>}
+            <span className="step" data-state={state} aria-current={state === "active" ? "step" : undefined}>
+              <span className="step-dot">{state === "done" ? <Check className="size-3.5" strokeWidth={3} /> : i + 1}</span>
+              {label}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -149,22 +170,24 @@ export function CheckoutView() {
 
   if (sent) {
     return (
-      <div className="container-x py-14">
-        <div className="card relative mx-auto max-w-xl overflow-hidden px-6 py-12 text-center sm:px-12">
-          <CheckCircle2 className="relative mx-auto size-12 text-success" />
-          <h1 className="font-display relative mt-4 text-4xl text-ink">بقيت خطوة واحدة يا {sent.order.customer.name.split(" ")[0]}</h1>
+      <div className="container-x actionbar-pad pt-6 sm:pt-12">
+        <div className="mx-auto mb-6 max-w-xl"><Steps at={2} /></div>
+        <div className="panel relative mx-auto max-w-xl animate-fade-up overflow-hidden px-6 py-12 text-center sm:px-12">
+          <div className="pointer-events-none absolute -top-24 start-1/2 size-72 -translate-x-1/2 rounded-full bg-success/20 blur-3xl rtl:translate-x-1/2" aria-hidden />
+          <span className="success-pop mx-auto grid size-16 place-items-center rounded-full bg-success/15 text-success"><CheckCircle2 className="size-10" /></span>
+          <h1 className="reel-title relative mt-5 text-3xl text-balance sm:text-4xl">بقيت خطوة واحدة يا {sent.order.customer.name.split(" ")[0]}</h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-muted" role="status">
             تم تجهيز طلبكِ <strong className="text-ink ltr inline-block">{sent.order.number}</strong> كرسالة واتساب. اضغطي <strong>إرسال</strong> في واتساب لإتمامه، وسنؤكد معكِ التوفر والتوصيل وطريقة الدفع.
           </p>
-          <p className="font-display mt-6 text-3xl text-ink">{money(sent.order.total)}</p>
+          <p className="font-display mt-6 text-4xl font-extrabold text-ink tabular-nums">{money(sent.order.total)}</p>
           <div className="mt-8 grid gap-3">
-            <a href={sent.link} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp min-h-12">
+            <a href={sent.link} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp pop min-h-13 text-base shadow-[0_14px_30px_-12px_#1f7a4d]">
               <WhatsappIcon className="size-5" /> افتحي واتساب للإرسال
             </a>
             <Link href="/shop" className="btn btn-ghost">متابعة التسوق</Link>
           </div>
           <p className="mt-6 text-xs text-muted">
-            تجدين طلبكِ دائمًا في <Link href="/orders" className="font-semibold text-forest underline underline-offset-4">طلباتي</Link>، ومنها يمكنكِ طلب إرجاع أو استبدال.
+            تجدين طلبكِ دائمًا في <Link href="/orders" className="font-semibold text-gold-bright underline underline-offset-4">طلباتي</Link>، ومنها يمكنكِ طلب إرجاع أو استبدال.
           </p>
           <p className="mt-6 text-xs text-muted">لم يفتح واتساب؟ استخدمي الزر أعلاه، أو راسلينا على <span className="ltr inline-block">+{data.settings.whatsappNumber}</span> مع رقم طلبكِ.</p>
         </div>
@@ -173,12 +196,12 @@ export function CheckoutView() {
   }
 
   if (!cart.hydrated) {
-    return <div className="container-x py-16"><div className="skeleton h-96 rounded-2xl" aria-busy="true" /></div>;
+    return <div className="container-x py-10"><div className="skeleton h-96 rounded-3xl" aria-busy="true" /></div>;
   }
 
   if (cart.lines.length === 0) {
     return (
-      <div className="container-x py-16">
+      <div className="container-x actionbar-pad py-16">
         <EmptyState
           as="h1"
           icon={<ShoppingBag className="size-6" />}
@@ -194,45 +217,48 @@ export function CheckoutView() {
   const describedBy = (k: keyof Fields, hint?: boolean) => (errors[k] ? `${fid(k)}-err` : hint ? `${fid(k)}-hint` : undefined);
 
   return (
-    <div className="container-x py-10 sm:py-14">
-      <Link href="/cart" className="inline-flex min-h-10 items-center gap-2 text-sm text-muted hover:text-ink">
-        <ArrowRight className="size-4" /> العودة إلى السلة
-      </Link>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">إتمام الطلب</h1>
+    <div className="container-x pt-5 pb-10 sm:pt-12">
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/cart" className="pop inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-white/[0.06] ps-3 pe-4 text-sm font-semibold text-text hover:text-ink">
+          <ArrowRight className="size-4" /> العودة إلى السلة
+        </Link>
+      </div>
+      <div className="mt-5 max-w-md"><Steps at={1} /></div>
+      <h1 className="season-title reel-title mt-5 text-[2.6rem] sm:text-6xl">إتمام الطلب</h1>
       <p className="mt-2 max-w-xl text-sm text-muted">
         املئي بيانات التوصيل. عند المتابعة سيفتح واتساب وفيه طلبكِ مكتوبًا وجاهزًا للإرسال، ثم نؤكد كل التفاصيل معكِ شخصيًا. لا يتم أي دفع عبر هذا الموقع.
       </p>
 
       {/* On phones the order sits below the form, so a short summary comes first. */}
-      <details className="card group mt-6 overflow-hidden lg:hidden">
+      <details className="panel group mt-6 overflow-hidden lg:hidden">
         <summary className="flex min-h-14 cursor-pointer list-none items-center gap-3 px-4 [&::-webkit-details-marker]:hidden">
           <span className="flex -space-x-3 rtl:space-x-reverse">
             {cart.lines.slice(0, 3).map((l) => (
-              <SmartImage key={l.key} src={l.image} alt="" className="size-9 rounded-full ring-2 ring-paper" />
+              <SmartImage key={l.key} src={l.image} alt="" className="size-10 rounded-full ring-2 ring-paper" />
             ))}
           </span>
           <span className="flex-1 text-sm text-text">
             {piecesLabel(cart.lines.reduce((n, l) => n + l.quantity * (l.bundle ? l.bundle.items.reduce((k, it) => k + it.quantity, 0) : 1), 0))} في طلبكِ
           </span>
-          <strong className="tabular-nums text-ink">{money(cart.total)}</strong>
-          <ChevronDown className="size-4 text-muted transition-transform group-open:rotate-180" aria-hidden />
+          <strong className="font-display tabular-nums text-ink">{money(cart.total)}</strong>
+          <ChevronDown className="size-4 text-muted transition-transform duration-500 ease-[var(--ease-spring)] group-open:rotate-180" aria-hidden />
         </summary>
-        <ul className="space-y-3 border-t border-line px-4 py-4">
+        <ul className="space-y-3 border-t border-white/[0.06] px-4 py-4">
           {cart.lines.map((l) => (
             <li key={l.key} className="flex items-center justify-between gap-3 text-sm">
               <span className="min-w-0 truncate">{l.quantity} × {l.name}{l.size ? ` · ${l.size}` : ""}</span>
               <span className="tabular-nums">{money(l.lineTotal)}</span>
             </li>
           ))}
-          <li><Link href="/cart" className="text-xs font-semibold text-forest underline underline-offset-4">تعديل السلة</Link></li>
+          <li><Link href="/cart" className="inline-flex min-h-9 items-center text-xs font-semibold text-gold-bright underline underline-offset-4">تعديل السلة</Link></li>
         </ul>
       </details>
 
       <div className="mt-8 grid gap-10 lg:mt-10 lg:grid-cols-[1fr_26rem] lg:gap-14">
         <form ref={formRef} onSubmit={submit} noValidate className="space-y-6" aria-describedby={`${uid}-form-note`}>
-          <fieldset className="card space-y-5 p-6 sm:p-8">
+          <fieldset className="panel space-y-5 p-5 sm:p-8">
             <legend className="sr-only">بياناتكِ</legend>
-            <p aria-hidden className="font-display text-3xl text-ink">بياناتكِ</p>
+            <p aria-hidden className="reel-title text-2xl">بياناتكِ</p>
             <div className="grid gap-5 sm:grid-cols-2">
               <Field id={fid("name")} label="الاسم الكامل" error={errors.name}>
                 <input id={fid("name")} className="field" autoComplete="name" value={fields.name} onChange={set("name")} aria-invalid={!!errors.name} aria-describedby={describedBy("name")} required />
@@ -252,13 +278,13 @@ export function CheckoutView() {
                 <textarea id={fid("notes")} className="field" rows={3} maxLength={500} value={fields.notes} onChange={set("notes")} aria-invalid={!!errors.notes} aria-describedby={describedBy("notes", true)} autoFocus={showNotes && !fields.notes} />
               </Field>
             ) : (
-              <button type="button" className="inline-flex min-h-10 items-center gap-1.5 text-sm font-semibold text-forest" onClick={() => setShowNotes(true)}>
+              <button type="button" className="pop inline-flex min-h-10 items-center gap-1.5 rounded-full bg-white/[0.06] px-4 text-sm font-semibold text-ink" onClick={() => setShowNotes(true)}>
                 <Plus className="size-4" /> إضافة ملاحظة للطلب
               </button>
             )}
-            <label className="flex cursor-pointer items-center gap-2.5 text-sm text-text">
-              <input type="checkbox" className="size-4 accent-[var(--color-forest)]" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+            <label className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl bg-white/[0.04] px-4 py-3 text-sm text-text">
               تذكّري بياناتي على هذا الجهاز للطلب القادم
+              <input type="checkbox" className="switch" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
             </label>
           </fieldset>
 
@@ -268,35 +294,38 @@ export function CheckoutView() {
             </p>
           )}
 
-          <button type="submit" className="btn btn-whatsapp min-h-14 w-full text-base" disabled={submitting || blocked || !storeNumberOk}>
-            <WhatsappIcon className="size-5" />
-            {submitting ? "جارٍ تجهيز رسالتكِ…" : `أرسلي الطلب عبر واتساب · ${money(cart.total)}`}
-          </button>
+          {/* Phones: the send button rides along at the bottom while the form is on screen. */}
+          <div className="sticky bottom-0 z-20 -mx-4 bg-ivory/80 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] shadow-[0_-1px_0_rgb(255_255_255/0.06)] backdrop-blur-xl sm:-mx-6 sm:px-6 lg:static lg:mx-0 lg:bg-transparent lg:p-0 lg:shadow-none lg:backdrop-blur-none">
+            <button type="submit" className="btn btn-whatsapp pop min-h-14 w-full text-base shadow-[0_14px_30px_-12px_#1f7a4d]" disabled={submitting || blocked || !storeNumberOk}>
+              <WhatsappIcon className="size-5" />
+              {submitting ? "جارٍ تجهيز رسالتكِ…" : `أرسلي الطلب عبر واتساب · ${money(cart.total)}`}
+            </button>
+          </div>
           <p id={`${uid}-form-note`} className="text-center text-xs text-muted">
             بالمتابعة سيفتح واتساب وفيه طلبكِ. لن يُخصم أي مبلغ هنا.
           </p>
           <ul className="grid grid-cols-3 gap-2 text-center text-[0.7rem] leading-snug text-muted">
-            <li className="flex flex-col items-center gap-1"><Wallet className="size-4 text-forest" />لا دفع الآن</li>
-            <li className="flex flex-col items-center gap-1"><ShieldCheck className="size-4 text-forest" />نؤكد معكِ قبل التوصيل</li>
-            <li className="flex flex-col items-center gap-1"><RefreshCw className="size-4 text-forest" />إرجاع أو استبدال خلال {daysLabel(data.settings.returnDays)}</li>
+            <li className="flex flex-col items-center gap-1.5 rounded-2xl bg-white/[0.04] p-2.5"><Wallet className="size-4 text-gold-bright" />لا دفع الآن</li>
+            <li className="flex flex-col items-center gap-1.5 rounded-2xl bg-white/[0.04] p-2.5"><ShieldCheck className="size-4 text-gold-bright" />نؤكد معكِ قبل التوصيل</li>
+            <li className="flex flex-col items-center gap-1.5 rounded-2xl bg-white/[0.04] p-2.5"><RefreshCw className="size-4 text-gold-bright" />إرجاع أو استبدال خلال {daysLabel(data.settings.returnDays)}</li>
           </ul>
         </form>
 
         <aside aria-label="ملخص الطلب" className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
-          <div className="card space-y-6 p-6">
-            <h2 className="font-display text-3xl text-ink">طلبكِ</h2>
+          <div className="panel space-y-6 p-5 sm:p-6">
+            <h2 className="reel-title text-2xl">طلبكِ</h2>
             <ul className="space-y-4">
               {cart.lines.map((l) => (
                 <li key={l.key} className="flex items-center gap-3">
                   <div className="relative">
-                    <SmartImage src={l.image} alt="" className="h-20 w-16 rounded-lg" />
+                    <SmartImage src={l.image} alt="" className="h-20 w-16 rounded-xl" />
                     <span className="absolute -top-2 -end-2 grid size-6 place-items-center rounded-full bg-ink text-[0.7rem] font-bold text-ivory">{l.quantity}</span>
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-ink">{l.name}</p>
                     <p className="truncate text-xs text-muted">{[l.color, l.size].filter(Boolean).join(" · ") || (l.kind === "bundle" ? "مجموعة" : "")}</p>
                   </div>
-                  <p className="text-sm font-medium tabular-nums">{money(l.lineTotal)}</p>
+                  <p className="font-display text-sm font-bold text-ink tabular-nums">{money(l.lineTotal)}</p>
                 </li>
               ))}
             </ul>

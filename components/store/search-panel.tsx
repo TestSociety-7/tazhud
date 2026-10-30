@@ -45,7 +45,7 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="ابحثي عن طرح، عبايات، ألوان…"
-          className="field !min-h-14 !rounded-full !ps-12 !text-base"
+          className="field !min-h-14 !rounded-full !border-white/[0.08] !bg-white/[0.07] !ps-12 !text-base"
           autoComplete="off"
         />
       </form>
@@ -54,7 +54,7 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="eyebrow w-full text-muted">الأكثر بحثًا</span>
           {popular.map((p) => (
-            <button key={p} type="button" className="btn btn-sm btn-outline border-line" onClick={() => setQ(p)}>
+            <button key={p} type="button" className="opt-chip" onClick={() => setQ(p)}>
               {p}
             </button>
           ))}
@@ -64,13 +64,13 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
           لا توجد قطع تطابق «{q}». جرّبي لونًا أو نوع قماش.
         </p>
       ) : (
-        <ul className="mt-4 divide-y divide-line" aria-label="نتائج البحث">
+        <ul className="mt-4 space-y-1" aria-label="نتائج البحث">
           {results.map((p) => (
             <li key={p.id}>
-              <Link href={`/product/${p.slug}`} onClick={onNavigate} className="flex items-center gap-4 rounded-xl py-3 transition-colors hover:bg-sand/60">
-                <SmartImage src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl" />
+              <Link href={`/product/${p.slug}`} onClick={onNavigate} className="press flex animate-fade-up items-center gap-4 rounded-2xl p-2 transition-colors hover:bg-white/[0.06]">
+                <SmartImage src={p.images[0]} alt="" className="h-18 w-14 shrink-0 rounded-xl" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-ink">{p.name}</p>
+                  <p className="truncate font-display font-bold text-ink">{p.name}</p>
                   <p className="truncate text-xs text-muted">{p.tagline}</p>
                 </div>
                 <Price price={effectivePrice(p)} compareAt={p.price} size="sm" />
@@ -78,7 +78,7 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
             </li>
           ))}
           <li>
-            <Link href={`/shop?q=${encodeURIComponent(q)}`} onClick={onNavigate} className="flex min-h-12 items-center justify-center gap-2 text-sm font-semibold text-forest">
+            <Link href={`/shop?q=${encodeURIComponent(q)}`} onClick={onNavigate} className="pop mt-2 flex min-h-12 items-center justify-center gap-2 rounded-full bg-white/[0.07] text-sm font-bold text-ink">
               عرض كل النتائج <ArrowLeft className="size-4" />
             </Link>
           </li>

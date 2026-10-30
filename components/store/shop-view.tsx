@@ -119,19 +119,19 @@ export function ShopView() {
   const description = activeCategory?.description ?? "";
 
   const filterControls = (
-    <div className="space-y-8">
+    <div className="space-y-7">
       <fieldset>
         <legend className="eyebrow mb-3 text-muted">القسم</legend>
-        <ul className="space-y-1">
+        <ul className="flex flex-wrap gap-2 lg:block lg:space-y-1">
           <li>
             <button
               type="button"
               onClick={() => setParam({ category: null })}
-              className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${!category ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+              className="opt-chip lg:w-full lg:justify-between"
               aria-pressed={!category}
             >
               كل المنتجات{" "}
-              <span className="text-xs text-muted">{base.length}</span>
+              <span className="text-xs opacity-60">{base.length}</span>
             </button>
           </li>
           {categories.map((c) => {
@@ -142,10 +142,10 @@ export function ShopView() {
                 <button
                   type="button"
                   onClick={() => setParam({ category: c.slug })}
-                  className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${active ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+                  className="opt-chip lg:w-full lg:justify-between"
                   aria-pressed={active}
                 >
-                  {c.name} <span className="text-xs text-muted">{n}</span>
+                  {c.name} <span className="text-xs opacity-60">{n}</span>
                 </button>
               </li>
             );
@@ -155,29 +155,31 @@ export function ShopView() {
 
       <fieldset>
         <legend className="eyebrow mb-3 text-muted">تصفية</legend>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
+        <div className="panel divide-y divide-white/[0.06] px-4">
+        <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 text-sm font-semibold text-ink">
+          عليها خصم
           <input
             type="checkbox"
-            className="size-4 accent-forest"
+            className="switch"
             checked={onlySale}
             onChange={(e) => setParam({ sale: e.target.checked ? "1" : null })}
           />
-          عليها خصم
         </label>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
+        <label className="flex min-h-14 cursor-pointer items-center justify-between gap-3 text-sm font-semibold text-ink">
+          المتوفر فقط
           <input
             type="checkbox"
-            className="size-4 accent-forest"
+            className="switch"
             checked={inStock}
             onChange={(e) => setParam({ stock: e.target.checked ? "1" : null })}
           />
-          المتوفر فقط
         </label>
+        </div>
       </fieldset>
       {allColours.length > 0 && (
         <fieldset>
           <legend className="eyebrow mb-3 text-muted">اللون</legend>
-          <div className="flex flex-wrap gap-2 px-1">
+          <div className="flex flex-wrap gap-2.5 px-1">
             {allColours.map(([name, hex]) => (
               <button
                 key={name}
@@ -188,12 +190,9 @@ export function ShopView() {
                 aria-pressed={colour === name}
                 aria-label={name}
                 title={name}
-                className={`grid size-9 place-items-center rounded-full border transition-shadow ${colour === name ? "border-ink ring-2 ring-gold ring-offset-2 ring-offset-ivory" : "border-line"}`}
+                className="swatch"
               >
-                <span
-                  className="size-6 rounded-full ring-1 ring-black/10"
-                  style={{ background: hex }}
-                />
+                <span style={{ background: hex }} />
               </button>
             ))}
           </div>
@@ -202,10 +201,35 @@ export function ShopView() {
     </div>
   );
 
+  const sortSelect = (
+    <>
+      <label htmlFor="sort" className="sr-only">
+        ترتيب حسب
+      </label>
+      <select
+        id="sort"
+        value={sort}
+        onChange={(e) =>
+          setParam({
+            sort: e.target.value === "featured" ? null : e.target.value,
+          })
+        }
+        className="field !min-h-10 !w-auto !rounded-full !border-white/[0.08] !bg-white/[0.07] !py-1.5 !text-sm font-semibold"
+      >
+        {Object.entries(SORTS).map(([k, v]) => (
+          <option key={k} value={k}>
+            {v}
+          </option>
+        ))}
+      </select>
+    </>
+  );
+
   return (
-    <div>
-      <header className="border-b border-line bg-paper">
-        <div className="container-x py-8 sm:py-10">
+    <div className="tabbar-pad">
+      <header className="relative overflow-hidden">
+        <div className="pointer-events-none absolute -top-24 start-1/2 size-80 -translate-x-1/2 rounded-full bg-gold/20 blur-3xl rtl:translate-x-1/2" aria-hidden />
+        <div className="container-x relative pt-5 pb-4 sm:pt-10 sm:pb-6">
           <nav aria-label="مسار التنقل" className="text-xs text-muted">
             <ol className="flex items-center gap-2">
               <li>
@@ -229,9 +253,11 @@ export function ShopView() {
               )}
             </ol>
           </nav>
-          <h1 className="season-title font-display mt-3 text-4xl text-ink sm:text-5xl">
-            {title}
-          </h1>
+          <div className="mt-2 flex items-end justify-between gap-3">
+            <h1 key={title} className="season-title reel-title animate-fade-up text-[2.6rem] sm:text-6xl">
+              {title}
+            </h1>
+          </div>
           {description && (
             <p className="mt-2 max-w-xl text-sm text-muted sm:text-base">
               {description}
@@ -240,7 +266,7 @@ export function ShopView() {
 
           <form
             role="search"
-            className="relative mt-6 max-w-md"
+            className="relative mt-5 max-w-md"
             onSubmit={(e) => {
               e.preventDefault();
               setParam({ q: query.trim() || null });
@@ -259,31 +285,47 @@ export function ShopView() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="ابحثي بالاسم أو القماش أو اللون"
-              className="field !rounded-full !ps-11"
+              className="field !min-h-12 !rounded-full !border-white/[0.08] !bg-white/[0.07] !ps-11"
             />
           </form>
-          <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 lg:hidden">
-            {[{ id: "", slug: "", name: "الكل" }, ...categories].map((c) => {
-              const active = c.slug === category;
-              return (
-                <button
-                  key={c.id || "all"}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => setParam({ category: c.slug || null })}
-                  className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
-                    active ? "border-ink bg-ink text-ivory" : "border-line bg-ivory text-text"
-                  }`}
-                >
-                  {c.name}
-                </button>
-              );
-            })}
-          </div>
         </div>
       </header>
 
-      <div className="container-x grid gap-10 py-6 sm:py-10 lg:grid-cols-[15rem_1fr]">
+      {/* Phones: category chips and the filter button stay under the header while scrolling. */}
+      <div className="sticky top-[var(--store-bar)] z-20 border-b border-white/[0.06] bg-ivory/80 backdrop-blur-xl lg:hidden">
+        <div role="group" aria-label="الأقسام" className="no-scrollbar flex items-center gap-2 overflow-x-auto px-4 py-2.5">
+          <button
+            type="button"
+            className="pop relative grid size-11 shrink-0 place-items-center rounded-full bg-white/[0.07] text-ink shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)]"
+            onClick={() => setFiltersOpen(true)}
+            aria-label="تصفية"
+          >
+            <SlidersHorizontal className="size-[1.1rem]" />
+            {activeFilters.length > 0 && (
+              <span className="absolute -top-0.5 -end-0.5 grid size-5 place-items-center rounded-full bg-gold font-latin text-[0.65rem] font-bold text-white" aria-hidden>
+                {activeFilters.length}
+              </span>
+            )}
+          </button>
+          <span className="h-6 w-px shrink-0 bg-white/10" aria-hidden />
+          {[{ id: "", slug: "", name: "الكل" }, ...categories].map((c) => {
+            const active = c.slug === category;
+            return (
+              <button
+                key={c.id || "all"}
+                type="button"
+                aria-pressed={active}
+                onClick={() => setParam({ category: c.slug || null })}
+                className="opt-chip shrink-0"
+              >
+                {c.name}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="container-x grid gap-10 pt-4 sm:pt-8 lg:grid-cols-[15rem_1fr]">
         <aside className="hidden lg:block" aria-label="عوامل التصفية">
           <div className="sticky top-[calc(var(--header-h)+1.5rem)]">
             {filterControls}
@@ -291,64 +333,37 @@ export function ShopView() {
         </aside>
 
         <div>
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted" role="status" aria-live="polite">
-              {piecesLabel(results.length)}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <p className="flex items-center gap-2 text-sm font-semibold text-muted" role="status" aria-live="polite">
+              <span key={results.length} className="bump">{piecesLabel(results.length)}</span>
             </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="btn btn-outline btn-sm border-line lg:hidden"
-                onClick={() => setFiltersOpen(true)}
-              >
-                <SlidersHorizontal className="size-4" /> تصفية
-              </button>
-              <label htmlFor="sort" className="sr-only">
-                ترتيب حسب
-              </label>
-              <select
-                id="sort"
-                value={sort}
-                onChange={(e) =>
-                  setParam({
-                    sort: e.target.value === "featured" ? null : e.target.value,
-                  })
-                }
-                className="field !min-h-9 !w-auto !rounded-full !py-1.5 !text-sm"
-              >
-                {Object.entries(SORTS).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="flex items-center gap-2">{sortSelect}</div>
           </div>
 
           {activeFilters.length > 0 && (
             <ul
-              className="mb-6 flex flex-wrap gap-2"
+              className="no-scrollbar -mx-4 mb-5 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-wrap sm:px-0"
               aria-label="عوامل التصفية المفعّلة"
             >
               {activeFilters.map((f) => (
-                <li key={f.key}>
+                <li key={f.key} className="shrink-0">
                   <button
                     type="button"
                     onClick={() => setParam({ [f.key]: null })}
-                    className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-xs font-medium hover:bg-line"
+                    className="pop inline-flex min-h-9 items-center gap-1.5 rounded-full bg-gold/15 px-3 text-xs font-bold text-gold-soft ring-1 ring-gold/30"
                     aria-label={`إزالة ${f.label}`}
                   >
                     {f.label} <X className="size-3.5" />
                   </button>
                 </li>
               ))}
-              <li>
+              <li className="shrink-0">
                 <button
                   type="button"
                   onClick={() =>
                     setParam({ sale: null, stock: null, colour: null, q: null })
                   }
-                  className="inline-flex min-h-9 items-center px-2 text-xs font-semibold text-forest underline-offset-4 hover:underline"
+                  className="inline-flex min-h-9 items-center px-2 text-xs font-bold text-ink underline-offset-4 hover:underline"
                 >
                   مسح الكل
                 </button>
@@ -377,12 +392,12 @@ export function ShopView() {
       <Sheet
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        side="start"
+        side="bottom"
         title="تصفية"
         footer={
           <button
             type="button"
-            className="btn btn-primary w-full"
+            className="btn btn-neon pop min-h-13 w-full text-base"
             onClick={() => setFiltersOpen(false)}
           >
             عرض {piecesLabel(results.length)}

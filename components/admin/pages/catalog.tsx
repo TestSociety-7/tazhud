@@ -61,7 +61,7 @@ export function CategoriesPage() {
       {cats.length === 0 ? (
         <div className="card"><EmptyState icon={<Shapes className="size-6" />} title="لا توجد أقسام" body="أضف أول قسم لترتيب المنتجات." /></div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="card studio-list divide-y divide-line">
           {cats.map((c, i) => (
             <li key={c.id} className="flex items-center gap-3 p-3 sm:gap-4 sm:px-5">
               <div className="flex flex-col">
@@ -184,7 +184,7 @@ export function CouponsPage() {
       />
       <div className="card mb-5 space-y-4 p-4 sm:p-5">
         <div className="flex items-center gap-3">
-          <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${data.settings.couponsEnabled ? "bg-forest text-ivory" : "bg-sand text-muted"}`}>
+          <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${data.settings.couponsEnabled ? "bg-gradient-to-br from-gold to-gold-deep text-white" : "bg-sand text-muted"}`}>
             <TicketPercent className="size-5" />
           </span>
           <div className="min-w-0 flex-1">
@@ -230,7 +230,7 @@ export function CouponsPage() {
       {data.coupons.length === 0 ? (
         <div className="card"><EmptyState icon={<TicketPercent className="size-6" />} title="لا توجد أكواد خصم" body="أنشئ كودًا للافتتاح أو للعيد أو كعرض ترحيبي." /></div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="card studio-list divide-y divide-line">
           {data.coupons.map((c) => {
             const expired = c.expiresOn && new Date(`${c.expiresOn}T23:59:59`) < new Date();
             return (
