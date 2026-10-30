@@ -127,11 +127,11 @@ export function ShopView() {
             <button
               type="button"
               onClick={() => setParam({ category: null })}
-              className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${!category ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+              className={`flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-start text-sm transition-colors duration-300 ${!category ? "stitch-box-soft bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
               aria-pressed={!category}
             >
               كل المنتجات{" "}
-              <span className="text-xs text-muted">{base.length}</span>
+              <span className="font-latin text-xs text-muted">{base.length}</span>
             </button>
           </li>
           {categories.map((c) => {
@@ -142,10 +142,10 @@ export function ShopView() {
                 <button
                   type="button"
                   onClick={() => setParam({ category: c.slug })}
-                  className={`flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-start text-sm ${active ? "bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
+                  className={`flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-start text-sm transition-colors duration-300 ${active ? "stitch-box-soft bg-sand font-semibold text-ink" : "hover:bg-sand/60"}`}
                   aria-pressed={active}
                 >
-                  {c.name} <span className="text-xs text-muted">{n}</span>
+                  {c.name} <span className="font-latin text-xs text-muted">{n}</span>
                 </button>
               </li>
             );
@@ -155,7 +155,7 @@ export function ShopView() {
 
       <fieldset>
         <legend className="eyebrow mb-3 text-muted">تصفية</legend>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 px-3 text-sm">
           <input
             type="checkbox"
             className="size-4 accent-forest"
@@ -164,7 +164,7 @@ export function ShopView() {
           />
           عليها خصم
         </label>
-        <label className="flex min-h-10 cursor-pointer items-center gap-3 px-3 text-sm">
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 px-3 text-sm">
           <input
             type="checkbox"
             className="size-4 accent-forest"
@@ -177,7 +177,7 @@ export function ShopView() {
       {allColours.length > 0 && (
         <fieldset>
           <legend className="eyebrow mb-3 text-muted">اللون</legend>
-          <div className="flex flex-wrap gap-2 px-1">
+          <div className="flex flex-wrap gap-1 px-1">
             {allColours.map(([name, hex]) => (
               <button
                 key={name}
@@ -188,12 +188,13 @@ export function ShopView() {
                 aria-pressed={colour === name}
                 aria-label={name}
                 title={name}
-                className={`grid size-9 place-items-center rounded-full border transition-shadow ${colour === name ? "border-ink ring-2 ring-gold ring-offset-2 ring-offset-ivory" : "border-line"}`}
+                className={`relative grid size-11 place-items-center rounded-md outline-1.5 transition-[outline-color] duration-300 ${colour === name ? "outline-dashed outline-forest" : "outline-transparent"}`}
               >
                 <span
-                  className="size-6 rounded-full ring-1 ring-black/10"
-                  style={{ background: hex }}
+                  className="fabric pinked-all size-9 [--z:3px]"
+                  style={{ backgroundColor: hex }}
                 />
+                {colour === name && <i className="pin-head absolute -top-1 end-0" aria-hidden />}
               </button>
             ))}
           </div>
@@ -204,8 +205,8 @@ export function ShopView() {
 
   return (
     <div>
-      <header className="border-b border-line bg-paper">
-        <div className="container-x py-8 sm:py-10">
+      <header className="pinked bg-paper [--z:7px]">
+        <div className="container-x pt-6 pb-9 sm:pt-10 sm:pb-12">
           <nav aria-label="مسار التنقل" className="text-xs text-muted">
             <ol className="flex items-center gap-2">
               <li>
@@ -229,7 +230,7 @@ export function ShopView() {
               )}
             </ol>
           </nav>
-          <h1 className="season-title font-display mt-3 text-4xl text-ink sm:text-5xl">
+          <h1 className="season-title font-display mt-2 text-4xl text-ink sm:text-5xl">
             {title}
           </h1>
           {description && (
@@ -259,10 +260,10 @@ export function ShopView() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="ابحثي بالاسم أو القماش أو اللون"
-              className="field !rounded-full !ps-11"
+              className="field !ps-11"
             />
           </form>
-          <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 lg:hidden">
+          <div role="group" aria-label="الأقسام" className="no-scrollbar -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 py-1 lg:hidden">
             {[{ id: "", slug: "", name: "الكل" }, ...categories].map((c) => {
               const active = c.slug === category;
               return (
@@ -271,9 +272,7 @@ export function ShopView() {
                   type="button"
                   aria-pressed={active}
                   onClick={() => setParam({ category: c.slug || null })}
-                  className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
-                    active ? "border-ink bg-ink text-ivory" : "border-line bg-ivory text-text"
-                  }`}
+                  className="chip shrink-0"
                 >
                   {c.name}
                 </button>
@@ -298,7 +297,7 @@ export function ShopView() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                className="btn btn-outline btn-sm border-line lg:hidden"
+                className="btn btn-outline btn-sm min-h-11 border-line bg-paper lg:hidden"
                 onClick={() => setFiltersOpen(true)}
               >
                 <SlidersHorizontal className="size-4" /> تصفية
@@ -314,7 +313,7 @@ export function ShopView() {
                     sort: e.target.value === "featured" ? null : e.target.value,
                   })
                 }
-                className="field !min-h-9 !w-auto !rounded-full !py-1.5 !text-sm"
+                className="field !min-h-11 !w-auto !py-1.5 !text-sm"
               >
                 {Object.entries(SORTS).map(([k, v]) => (
                   <option key={k} value={k}>
@@ -335,7 +334,7 @@ export function ShopView() {
                   <button
                     type="button"
                     onClick={() => setParam({ [f.key]: null })}
-                    className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-xs font-medium hover:bg-line"
+                    className="inline-flex min-h-10 items-center gap-1.5 rounded-md border border-dashed border-forest/30 bg-sand px-3 text-xs font-medium transition-colors hover:bg-line"
                     aria-label={`إزالة ${f.label}`}
                   >
                     {f.label} <X className="size-3.5" />

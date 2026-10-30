@@ -40,6 +40,7 @@ export function AnnouncementBar() {
           )}
         </p>
       </div>
+      <span className="stitch absolute inset-x-0 bottom-[3px] h-px opacity-50" aria-hidden />
     </div>
   );
 }

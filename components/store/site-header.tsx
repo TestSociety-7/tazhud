@@ -82,7 +82,7 @@ export function SiteHeader() {
       <header
         className={`sticky top-0 z-40 border-b transition-[background-color,border-color,box-shadow] duration-500 ${
           scrolled
-            ? "border-line bg-ivory/90 shadow-[0_8px_24px_-20px_rgb(15_18_15/0.4)] backdrop-blur-md"
+            ? "border-transparent bg-ivory/92 shadow-[0_10px_24px_-20px_rgb(42_15_29/0.45)] backdrop-blur-md"
             : "border-transparent bg-ivory"
         }`}
       >
@@ -170,7 +170,7 @@ export function SiteHeader() {
             </button>
           </div>
         </div>
-        <span className="scroll-progress" aria-hidden />
+        <span className="tape" aria-hidden />
         <SeasonTrim />
       </header>
 
@@ -194,7 +194,7 @@ export function SiteHeader() {
           className="relative flex min-h-full flex-col overflow-hidden px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
         >
           <div
-            className="pattern-geo pointer-events-none absolute inset-0 opacity-[0.05]"
+            className="pointer-events-none absolute inset-0 opacity-60 [background:var(--weave)] invert"
             aria-hidden
           />
           <div
@@ -241,7 +241,7 @@ export function SiteHeader() {
           </ul>
 
           <div className="relative mt-7 mb-3 flex items-center justify-between">
-            <p className="text-xs font-semibold tracking-wide text-gold">الأقسام</p>
+            <p className="flex items-center gap-2 text-xs font-semibold text-gold"><span className="pin-head size-2.5" aria-hidden />الأقسام</p>
             <Link href="/shop" className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-gold-soft">
               كل المنتجات <ArrowLeft className="size-3.5" />
             </Link>
@@ -256,7 +256,7 @@ export function SiteHeader() {
                     aria-current={active ? "page" : undefined}
                     className="group block text-center"
                   >
-                    <span className={`arch-full relative block aspect-[3/4] overflow-hidden bg-ink-2 ring-1 transition-transform duration-500 group-active:scale-95 ${active ? "ring-2 ring-gold" : "ring-gold/30"}`}>
+                    <span className={`pinked relative block aspect-[3/4] overflow-hidden rounded-t-xl bg-ink-2 transition-transform duration-500 group-active:scale-95 ${active ? "outline-2 outline-gold outline-dashed -outline-offset-4" : ""}`}>
                       <SmartImage src={c.image} alt="" className="absolute inset-0" fallbackLabel={c.name} />
                     </span>
                     <span className={`mt-1.5 block text-[0.8rem] leading-tight font-semibold ${active ? "text-gold" : "text-ivory"}`}>{c.name}</span>

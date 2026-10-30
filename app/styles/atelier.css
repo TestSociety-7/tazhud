@@ -147,7 +147,7 @@
 }
 .cloth-rod {
   position: absolute;
-  inset-inline: -4%;
+  inset-inline: 9%;
   top: 0;
   height: 10px;
   border-radius: 999px;
@@ -178,7 +178,7 @@
 /* Shown until (or instead of) the moving cloth. */
 .cloth-still {
   position: absolute;
-  inset: 6px 4% 5% 4%;
+  inset: 6px 13% 5% 13%;
   border-radius: 0 0 1.2rem 1.2rem;
   overflow: hidden;
   transition: opacity 0.5s var(--ease-soft);
@@ -187,7 +187,7 @@
 .cloth-stage[data-live="true"] .cloth-still { opacity: 0; }
 .cloth-hint {
   position: absolute;
-  bottom: 0.6rem;
+  bottom: 1.6rem;
   inset-inline-start: 50%;
   translate: 50% 0;
   z-index: 3;
@@ -199,6 +199,7 @@
   background: rgb(42 15 29 / 0.62);
   color: var(--color-paper);
   font-size: 0.72rem;
+  white-space: nowrap;
   backdrop-filter: blur(6px);
   pointer-events: none;
   transition: opacity 0.4s, translate 0.4s var(--ease-soft);

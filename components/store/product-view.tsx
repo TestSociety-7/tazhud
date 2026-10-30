@@ -10,7 +10,7 @@ import { discountPercent, effectivePrice, isOnSale, stockState, visibleProducts 
 import { whatsappLink } from "@/lib/whatsapp";
 import type { Product } from "@/lib/types";
 import { SmartImage } from "@/components/ui/smart-image";
-import { Price, useMoney } from "@/components/ui/price";
+import { Price, PriceTag, useMoney } from "@/components/ui/price";
 import { QuantityControl } from "@/components/ui/quantity";
 import { StockBadge } from "@/components/ui/stock-badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -48,7 +48,7 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
       <ul className="hidden flex-col gap-3 lg:flex" aria-label="صور المنتج">
         {images.map((src, i) => (
           <li key={src + i}>
-            <button type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} aria-current={active === i} className={`block overflow-hidden rounded-xl ring-offset-2 ring-offset-ivory transition ${active === i ? "ring-2 ring-gold" : "opacity-70 hover:opacity-100"}`}>
+            <button type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} aria-current={active === i} className={`block overflow-hidden rounded-t-lg rounded-b-sm outline-offset-3 transition duration-300 ${active === i ? "outline-2 outline-dashed outline-gold" : "opacity-60 hover:opacity-100"}`}>
               <SmartImage src={src} alt="" className="aspect-[4/5] w-full" />
             </button>
           </li>
@@ -60,7 +60,7 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
           tabIndex={0}
           role="region"
           aria-label={`صور ${product.name}، اسحبي لرؤية المزيد`}
-          className="no-scrollbar arch flex aspect-[4/5] snap-x snap-mandatory overflow-x-auto bg-sand"
+          className="no-scrollbar pinked flex aspect-[4/5] snap-x snap-mandatory overflow-x-auto rounded-t-[1.4rem] bg-sand [--z:8px]"
           onScroll={(e) => {
             const el = e.currentTarget;
             const i = Math.round(Math.abs(el.scrollLeft) / el.clientWidth);
@@ -98,13 +98,13 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
           ))}
         </div>
         {isOnSale(product) && (
-          <span className="absolute top-[14%] start-4 rounded-full bg-ink px-3 py-1 text-xs font-bold tracking-widest text-gold-soft">−{discountPercent(product)}%</span>
+          <span className="woven-label font-latin absolute top-5 start-0 rounded-s-none !text-sm"><bdi dir="ltr">−{discountPercent(product)}%</bdi></span>
         )}
         {images.length > 1 && (
-          <div className="mt-4 flex justify-center gap-2 lg:hidden">
+          <div className="mt-3 flex justify-center gap-0.5 lg:hidden">
             {images.map((_, i) => (
               <button key={i} type="button" onClick={() => goTo(i)} aria-label={`عرض الصورة ${i + 1}`} className="grid size-6 place-items-center">
-                <span className={`block h-1.5 rounded-full transition-all ${active === i ? "w-6 bg-forest" : "w-1.5 bg-line"}`} />
+                <span className={`block h-0.5 rounded-full transition-all duration-500 ease-[var(--ease-soft)] ${active === i ? "w-5 bg-forest" : "w-2.5 bg-forest/25"}`} />
               </button>
             ))}
           </div>
@@ -116,10 +116,10 @@ function Gallery({ product, focus }: { product: Product; focus?: string }) {
 
 function Disclosure({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   return (
-    <details className="group border-b border-line" open={defaultOpen}>
+    <details className="group border-b border-dashed border-forest/20" open={defaultOpen}>
       <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between text-sm font-semibold text-ink [&::-webkit-details-marker]:hidden">
         {title}
-        <ChevronDown className="size-4 transition-transform duration-300 group-open:rotate-180" />
+        <ChevronDown className="size-4 text-forest transition-transform duration-500 ease-[var(--ease-soft)] group-open:rotate-180" />
       </summary>
       <div className="pb-5 text-sm leading-relaxed text-muted">{children}</div>
     </details>
@@ -170,7 +170,7 @@ export function ProductView({ slug }: { slug: string }) {
     if (!ready) {
       return (
         <div className="container-x grid gap-10 py-10 lg:grid-cols-2" aria-busy="true">
-          <div className="arch skeleton aspect-[4/5]" />
+          <div className="pinked skeleton aspect-[4/5] rounded-t-[1.4rem]" />
           <div className="space-y-4 pt-6">
             <div className="skeleton h-10 w-3/4 rounded" />
             <div className="skeleton h-5 w-1/3 rounded" />
@@ -240,16 +240,17 @@ export function ProductView({ slug }: { slug: string }) {
         <Gallery product={product} focus={product.colors.find((c) => c.name === selectedColor)?.image} />
 
         <div className="lg:pt-4">
-          {product.newArrival && <p className="eyebrow text-gold-deep">وصل حديثًا</p>}
-          <h1 className="font-display mt-2 text-4xl leading-[1.2] text-ink sm:text-5xl">{product.name}</h1>
+          {product.newArrival && <p className="woven-label mb-3">وصل حديثًا</p>}
+          {category && <p className="text-sm text-muted">{category.name}</p>}
+          <h1 className="font-display mt-1 text-4xl leading-[1.25] text-ink sm:text-5xl">{product.name}</h1>
           <p className="mt-2 text-muted">{product.tagline}</p>
-          <div className="mt-5 flex flex-wrap items-center gap-4">
-            <Price price={effectivePrice(product)} compareAt={product.price} size="lg" />
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <PriceTag price={effectivePrice(product)} compareAt={product.price} size="lg" dark className="-rotate-2" />
             <StockBadge stock={product.stock} />
           </div>
-          {isOnSale(product) && <p className="mt-1 text-xs text-success">توفّرين {money(product.price - effectivePrice(product))}</p>}
+          {isOnSale(product) && <p className="mt-2 text-xs font-semibold text-success">توفّرين <span className="font-latin">{money(product.price - effectivePrice(product))}</span></p>}
 
-          <hr className="my-7 border-line" />
+          <span className="stitch my-8" aria-hidden />
 
           <div ref={buyRef} className="space-y-6">
             {product.colors.length > 0 && (
@@ -258,12 +259,13 @@ export function ProductView({ slug }: { slug: string }) {
                   <span className="font-semibold text-ink">اللون</span>
                   {selectedColor && <span className="text-muted">: {selectedColor}</span>}
                 </legend>
-                <div className="flex flex-wrap gap-2.5">
+                <div className="flex flex-wrap gap-2">
                   {product.colors.map((c) => (
                     <label key={c.name} className="cursor-pointer" title={c.name}>
                       <input type="radio" name="color" value={c.name} checked={selectedColor === c.name} onChange={() => { setColor(c.name); setErrors((e) => ({ ...e, color: undefined })); }} className="peer sr-only" />
-                      <span className="grid size-11 place-items-center rounded-full border border-line transition-all peer-checked:border-ink peer-checked:ring-2 peer-checked:ring-gold peer-checked:ring-offset-2 peer-checked:ring-offset-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-4 peer-focus-visible:outline-gold">
-                        <span className="size-8 rounded-full ring-1 ring-black/10" style={{ background: c.hex }} />
+                      <span className="relative grid size-12 place-items-center rounded-md outline-1.5 outline-offset-0 outline-transparent transition-[outline-color,transform] duration-300 ease-[var(--ease-soft)] peer-checked:outline-dashed peer-checked:outline-forest peer-focus-visible:outline-2 peer-focus-visible:outline-solid peer-focus-visible:outline-forest hover:-translate-y-0.5 peer-checked:[&>i]:scale-100 peer-checked:[&>i]:opacity-100">
+                        <span className="fabric pinked-all size-10 [--z:3px]" style={{ backgroundColor: c.hex }} />
+                        <i className="pin-head absolute -top-1 end-0 scale-50 opacity-0 transition duration-300 ease-[var(--ease-soft)]" aria-hidden />
                       </span>
                       <span className="sr-only">{c.name}</span>
                     </label>
@@ -280,7 +282,7 @@ export function ProductView({ slug }: { slug: string }) {
                   {product.sizes.map((s) => (
                     <label key={s} className="cursor-pointer">
                       <input type="radio" name="size" value={s} checked={selectedSize === s} onChange={() => { setSize(s); setErrors((e) => ({ ...e, size: undefined })); }} className="peer sr-only" />
-                      <span className="inline-flex min-h-11 min-w-14 items-center justify-center rounded-full border border-line px-4 text-sm transition-colors peer-checked:border-forest peer-checked:bg-forest peer-checked:text-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gold hover:border-ink">
+                      <span className="chip min-w-14">
                         {s}
                       </span>
                     </label>
@@ -299,12 +301,12 @@ export function ProductView({ slug }: { slug: string }) {
             <a href={whatsappLink(data.settings.whatsappNumber, askText)} target="_blank" rel="noopener noreferrer" className="btn btn-outline w-full border-line">
               <WhatsappIcon className="size-4 text-[#1f7a4d]" /> {soldOut ? "اسألي عن موعد توفرها" : "اسألي عبر واتساب"}
             </a>
-            <p className="flex items-start gap-2 rounded-xl bg-sand/70 p-3 text-xs leading-relaxed text-muted">
+            <p className="stitch-box-soft flex items-start gap-2 rounded-xl bg-sand/60 p-4 text-xs leading-relaxed text-muted">
               <Truck className="mt-0.5 size-4 shrink-0 text-forest" /> {data.settings.deliveryNote}
             </p>
           </div>
 
-          <div className="mt-8 border-t border-line">
+          <div className="mt-10 border-t border-dashed border-forest/20">
             <Disclosure title="الوصف" defaultOpen>
               <p className="text-pretty">{product.description}</p>
             </Disclosure>
@@ -313,7 +315,7 @@ export function ProductView({ slug }: { slug: string }) {
                 <ul className="list-disc space-y-1 ps-5">
                   {product.details.map((d) => <li key={d}>{d}</li>)}
                 </ul>
-                <p className="mt-3 text-xs">رمز المنتج: <span className="ltr inline-block">{product.sku}</span></p>
+                <p className="mt-3 text-xs">رمز المنتج: <span className="font-latin ltr inline-block text-ink">{product.sku}</span></p>
               </Disclosure>
             )}
             <Disclosure title="الطلب والتوصيل">
@@ -324,21 +326,23 @@ export function ProductView({ slug }: { slug: string }) {
       </div>
 
       {related.length > 0 && (
-        <section className="container-x pt-24" aria-labelledby="related-heading">
-          <h2 id="related-heading" className="season-title font-display mb-8 text-4xl text-ink">قد يعجبكِ أيضًا</h2>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-6 lg:grid-cols-4">
+        <section className="container-x pt-16 sm:pt-24" aria-labelledby="related-heading">
+          <span className="stitch-mulberry stitch mb-10" aria-hidden />
+          <h2 id="related-heading" className="season-title font-display mb-8 text-3xl text-ink sm:text-4xl">قد يعجبكِ أيضًا</h2>
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-9 sm:gap-x-6 lg:grid-cols-4">
             {related.map((p) => <li key={p.id}><ProductCard product={p} /></li>)}
           </ul>
         </section>
       )}
 
-      <div className={`fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ivory/95 p-3 backdrop-blur-md transition-transform duration-500 lg:hidden ${showSticky ? "translate-y-0" : "translate-y-full"}`} aria-hidden={!showSticky}>
+      <div className={`fixed inset-x-0 bottom-0 z-30 bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-10px_30px_-18px_rgb(42_15_29/0.45)] backdrop-blur-md lg:hidden ${showSticky ? "translate-y-0 transition-transform duration-500 ease-[var(--ease-soft)]" : "translate-y-full transition-transform duration-300 ease-in"}`} aria-hidden={!showSticky}>
+        <span className="stitch absolute inset-x-4 top-1" aria-hidden />
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold text-ink">{product.name}</p>
             <Price price={effectivePrice(product)} compareAt={product.price} size="sm" />
           </div>
-          <button type="button" onClick={add} disabled={soldOut} tabIndex={showSticky ? 0 : -1} className="btn btn-primary">
+          <button type="button" onClick={add} disabled={soldOut} tabIndex={showSticky ? 0 : -1} className="btn btn-primary min-h-12">
             {soldOut ? "نفدت الكمية" : "أضيفي إلى السلة"}
           </button>
         </div>
@@ -354,16 +358,16 @@ export function ProductView({ slug }: { slug: string }) {
       >
         <div className="p-5">
           <div className="flex items-center gap-4">
-            <SmartImage src={product.images[0]} alt="" className="arch h-24 w-20 shrink-0 bg-sand" />
+            <SmartImage src={product.images[0]} alt="" className="pinked h-24 w-20 shrink-0 rounded-t-lg bg-sand [--z:4px]" />
             <div className="min-w-0 flex-1">
               <p className="font-display text-xl leading-tight text-ink">{product.name}</p>
               {justAdded?.options && <p className="mt-1 text-xs text-muted">{justAdded.options}</p>}
-              <p className="mt-1 text-sm text-ink tabular-nums">{justAdded?.quantity} × {money(effectivePrice(product))}</p>
+              <p className="font-latin mt-1 text-sm text-ink tabular-nums">{justAdded?.quantity} × {money(effectivePrice(product))}</p>
             </div>
           </div>
-          <p className="mt-5 flex items-center justify-between rounded-xl bg-sand/70 px-4 py-3 text-sm">
+          <p className="stitch-box-soft mt-5 flex items-center justify-between rounded-xl bg-sand/60 px-4 py-3.5 text-sm">
             <span className="text-muted">في سلتكِ الآن: {piecesLabel(cart.count)}</span>
-            <strong className="text-ink tabular-nums">{money(cart.subtotal)}</strong>
+            <strong className="font-latin text-ink tabular-nums">{money(cart.subtotal)}</strong>
           </p>
           <div className="mt-5 grid gap-3">
             <button type="button" className="press btn btn-primary min-h-12" onClick={() => { setJustAdded(null); router.push("/checkout"); }}>

@@ -14,9 +14,10 @@ export function PageHeader({
 }) {
   return (
     <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className="font-display text-3xl leading-tight text-ink sm:text-[2.6rem]">{title}</h1>
-        {description && <p className="mt-2 max-w-2xl text-sm text-muted">{description}</p>}
+      <div className="min-w-0">
+        <h1 className="adm-title season-title text-[2rem] sm:text-[2.5rem]">{title}</h1>
+        <span className="adm-title-stitch" aria-hidden />
+        {description && <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted text-pretty">{description}</p>}
       </div>
       {actions && <div className="flex flex-wrap gap-2 [&>*]:flex-1 sm:[&>*]:flex-none">{actions}</div>}
     </div>
@@ -37,12 +38,12 @@ export function Panel({
   className?: string;
 }) {
   return (
-    <section className={`card min-w-0 p-5 sm:p-6 ${className}`}>
+    <section className={`adm-sheet min-w-0 p-5 sm:p-6 ${className}`}>
       {(title || actions) && (
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
+        <div className="mb-5 flex items-start justify-between gap-4 border-b-[1.5px] border-dashed border-line pb-4">
+          <div className="min-w-0">
             {title && <h2 className="text-base font-semibold text-ink">{title}</h2>}
-            {description && <p className="mt-1 text-xs text-muted">{description}</p>}
+            {description && <p className="mt-1 text-xs leading-relaxed text-muted">{description}</p>}
           </div>
           {actions}
         </div>
@@ -105,23 +106,24 @@ export function Toggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-300 disabled:opacity-50 ${checked ? "bg-forest" : "bg-line"}`}
+        className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors duration-300 ease-[var(--ease-soft)] before:absolute before:-inset-2 before:content-[''] disabled:opacity-50 ${checked ? "bg-forest" : "bg-line"}`}
       >
-        <span className={`inline-block size-5 rounded-full bg-white shadow transition-transform duration-300 ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
+        <span className={`inline-block size-5 rounded-full bg-paper shadow-[0_1px_3px_rgb(42_15_29/0.35)] transition-transform duration-300 ease-[var(--ease-soft)] ${checked ? "-translate-x-6" : "-translate-x-1"}`} />
       </button>
     </div>
   );
 }
 
 export function Badge({ tone = "neutral", children }: { tone?: "neutral" | "green" | "gold" | "red" | "blue"; children: React.ReactNode }) {
+  // Sewn-in labels: saffron for "needs you", mulberry for "in progress", green done, red stopped.
   const tones = {
-    neutral: "bg-sand text-muted",
-    green: "bg-sage-soft text-forest",
-    gold: "bg-gold-soft/60 text-[#7a5a22]",
-    red: "bg-danger/10 text-danger",
-    blue: "bg-[#e3e9f2] text-[#2c4a6e]",
+    neutral: "adm-label-neutral",
+    green: "adm-label-green",
+    gold: "adm-label-gold",
+    red: "adm-label-red",
+    blue: "adm-label-mulberry",
   };
-  return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7rem] font-semibold whitespace-nowrap ${tones[tone]}`}>{children}</span>;
+  return <span className={`adm-label ${tones[tone]}`}>{children}</span>;
 }
 
 /** Modal built on <dialog>. */
@@ -159,10 +161,11 @@ export function Modal({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/50 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up`}
+      className={`m-auto mb-0 max-h-[92dvh] w-full sm:mb-auto sm:w-[calc(100%-1.5rem)] ${widths[size]} flex-col overflow-hidden rounded-t-[1.4rem] bg-ivory p-0 text-text shadow-[var(--shadow-lift)] backdrop:bg-ink/55 backdrop:backdrop-blur-[2px] open:flex open:animate-fade-up sm:rounded-[1.25rem]`}
     >
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
-        <h2 className="font-display text-2xl text-ink">{title}</h2>
+      <span className="adm-handle" aria-hidden />
+      <div className="flex items-center justify-between gap-3 border-b-[1.5px] border-dashed border-line px-5 pt-2 pb-3 sm:pt-4">
+        <h2 className="adm-title min-w-0 truncate text-[1.6rem]">{title}</h2>
         <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
@@ -226,13 +229,13 @@ export function StatCard({
   tone?: "default" | "dark";
 }) {
   return (
-    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${tone === "dark" ? "on-dark border-ink bg-ink text-ivory" : "border-line bg-paper"}`}>
+    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${tone === "dark" ? "on-dark adm-cloth-flat border-ink" : "border-line bg-paper"}`}>
       <div className="flex items-start justify-between gap-3">
         <p className={`text-xs font-semibold ${tone === "dark" ? "text-gold" : "text-muted"}`}>{label}</p>
         {icon && <span className={tone === "dark" ? "text-gold" : "text-forest"}>{icon}</span>}
       </div>
       <p
-        className={`font-display mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"} ${tone === "dark" ? "text-ivory" : "text-ink"}`}
+        className={`adm-num mt-3 leading-none break-words tabular-nums ${String(value).length > 6 ? "text-2xl sm:text-3xl" : "text-4xl"} ${tone === "dark" ? "text-ivory" : "text-ink"}`}
       >
         {value}
       </p>

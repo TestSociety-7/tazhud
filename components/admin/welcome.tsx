@@ -65,17 +65,17 @@ export function AdminWelcome() {
     <div
       role="status"
       onClick={() => setPhase("off")}
-      className={`on-dark fixed inset-0 z-[90] grid place-items-center overflow-hidden bg-ink px-4 text-center text-ivory transition-opacity duration-500 ${phase === "leaving" ? "opacity-0" : ""}`}
+      className={`welcome-scene on-dark adm-cloth fixed inset-0 z-[90] grid place-items-center overflow-hidden px-4 text-center transition-opacity duration-500 ease-[var(--ease-soft)] ${phase === "leaving" ? "opacity-0" : ""}`}
     >
-      <div className="pattern-geo absolute inset-0 opacity-[0.07]" aria-hidden />
-      <div className="welcome-glow pointer-events-none absolute top-1/2 left-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/25 blur-3xl" aria-hidden />
+      <div className="welcome-glow pointer-events-none absolute top-1/2 left-1/2 size-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold/20 blur-3xl" aria-hidden />
       <div className="relative">
         <WelcomeMark />
-        <p className="welcome-text mt-8 text-sm text-gold">{greeting(new Date().getHours())}</p>
+        <p className="welcome-text mt-8 text-sm text-gold-bright">{greeting(new Date().getHours())}</p>
         <p className="welcome-text font-display mt-1 text-4xl sm:text-5xl" style={{ animationDelay: "450ms" }}>
           أهلًا بك في {data.settings.storeName}
         </p>
-        <p className="welcome-text mt-3 text-sm text-ivory/70" style={{ animationDelay: "600ms" }}>
+        <span className="intro-thread mt-4" aria-hidden />
+        <p className="welcome-text mt-4 text-sm text-ivory/75" style={{ animationDelay: "600ms" }}>
           {fresh > 0 ? `عندك ${fresh} ${fresh === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك` : "كل شيء جاهز"}
         </p>
         {season !== "original" && (

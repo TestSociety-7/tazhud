@@ -1,0 +1,105 @@
+/*
+ * Atelier pieces used by the store pages (cards, product page, cart, checkout).
+ * Shared stitches, pinked edges and swing tags live in atelier.css.
+ */
+
+@layer components {
+  /* Swing tag sizes (base .swing-tag lives in atelier.css). */
+  .swing-tag-lg {
+    font-size: 1.35rem;
+    padding-block: 0.45rem;
+    padding-inline: 1.9rem 1rem;
+  }
+  [dir="rtl"] .swing-tag-lg {
+    clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 50%, calc(100% - 1rem) 100%, 0 100%);
+    -webkit-mask: radial-gradient(circle at calc(100% - 1.05rem) 50%, #0000 4px, #000 4.5px);
+    mask: radial-gradient(circle at calc(100% - 1.05rem) 50%, #0000 4px, #000 4.5px);
+  }
+  .swing-tag s { font-weight: 400; opacity: 0.6; font-size: 0.85em; }
+
+  /* Card tag: hangs from the photo's corner and swings a little when the card is touched. */
+  .card-tag {
+    position: absolute;
+    inset-inline-start: 0.55rem;
+    bottom: -0.15rem;
+    z-index: 2;
+    transform-origin: calc(100% - 0.75rem) 50%;
+    rotate: -4deg;
+    transition: rotate 0.6s var(--ease-soft);
+  }
+  [dir="ltr"] .card-tag { transform-origin: 0.75rem 50%; }
+  .group:hover .card-tag { rotate: 2deg; }
+
+  /* A square of cloth for colour choices, cut with pinking shears. */
+  .fabric {
+    display: block;
+    background-image:
+      repeating-linear-gradient(0deg, rgb(255 255 255 / 0.05) 0 1px, transparent 1px 4px),
+      repeating-linear-gradient(90deg, rgb(0 0 0 / 0.035) 0 1px, transparent 1px 4px),
+      linear-gradient(135deg, rgb(255 255 255 / 0.25), transparent 50%, rgb(0 0 0 / 0.1));
+    box-shadow: inset 0 0 0 1px rgb(42 15 29 / 0.08);
+  }
+
+  /* Tailor's choice chip (category, size): a soft rectangle; chosen = woven label. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    border-radius: 0.7rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.3s var(--ease-soft), color 0.3s, border-color 0.3s, transform 0.18s var(--ease-soft);
+  }
+  .chip:hover { border-color: #cfb3ba; }
+  .chip:active { transform: scale(0.97); }
+  .chip[aria-pressed="true"],
+  .chip[aria-checked="true"],
+  :checked + .chip {
+    border-color: var(--color-forest);
+    background:
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+      var(--color-forest);
+    color: var(--color-gold-soft);
+    outline: 1px dashed rgb(245 225 176 / 0.5);
+    outline-offset: -5px;
+  }
+  :focus-visible + .chip { outline: 2px solid var(--color-forest); outline-offset: 3px; }
+
+  /* Measuring tape used as a progress bar (free delivery). */
+  .tape-bar {
+    position: relative;
+    height: 0.75rem;
+    border-radius: 2px;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(270deg, rgb(42 15 29 / 0.5) 0 1px, transparent 1px 25%) 0 0 / 100% 60% no-repeat,
+      repeating-linear-gradient(270deg, rgb(42 15 29 / 0.28) 0 1px, transparent 1px 5%) 0 0 / 100% 35% no-repeat,
+      var(--color-gold-soft);
+  }
+  .tape-bar > i {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    background: var(--color-forest);
+    opacity: 0.85;
+    transition: width 0.9s var(--ease-soft);
+  }
+
+  /* Header band of a list page: paper with a pinked foot. */
+  .pinked-band {
+    background: var(--color-paper);
+    --z: 7px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-tag,
+  .group:hover .card-tag { transition: none; rotate: -4deg; }
+  .tape-bar > i { transition: none; }
+}

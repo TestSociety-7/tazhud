@@ -156,7 +156,7 @@ export function SeasonHeroDecor() {
   if (season === "halloween")
     return (
       <>
-        <svg className="pointer-events-none absolute top-0 start-0 z-0 size-40 text-ivory/25 sm:size-56" viewBox="0 0 100 100" aria-hidden>
+        <svg className="pointer-events-none absolute top-0 start-0 z-0 size-40 text-ink/20 sm:size-56" viewBox="0 0 100 100" aria-hidden>
           <g fill="none" stroke="currentColor" strokeWidth="0.7">
             <path d="M0 0 100 0M0 0 0 100M0 0 92 38M0 0 70 70M0 0 38 92" />
             {[18, 34, 52, 72].map((r) => (

@@ -45,7 +45,7 @@ export function WhatsappFab() {
         away ? "pointer-events-none translate-y-24 opacity-0" : ""
       }`}
     >
-      <span className="absolute inset-0 rounded-full bg-[#1f7a4d] opacity-40 motion-safe:animate-ping [animation-duration:2.8s]" aria-hidden />
+      <span className="absolute inset-1 rounded-full border-[1.5px] border-dashed border-white/50 motion-safe:animate-spin-slow" aria-hidden />
       <WhatsappIcon className="relative size-7" />
     </a>
   );

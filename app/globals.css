@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/atelier.css";
+@import "./styles/atelier-store.css";
 
 @theme {
   --color-ivory: #f6eeee;
@@ -461,7 +462,7 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   display: grid;
   place-items: center;
   pointer-events: none;
-  animation: intro-gone 0s linear 1.6s forwards;
+  animation: intro-gone 0s linear 1.9s forwards;
 }
 .no-intro .brand-intro { display: none; }
 .intro-door {
@@ -488,7 +489,7 @@ dialog[open] .menu-stagger > :nth-child(n + 6) { animation-delay: 370ms; }
   display: grid;
   justify-items: center;
   gap: 0.9rem;
-  animation: intro-mark-out 0.3s ease-in 0.7s forwards;
+  animation: intro-mark-out 0.3s ease-in 0.95s forwards;
 }
 .intro-coin {
   display: block;
