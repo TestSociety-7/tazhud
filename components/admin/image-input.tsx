@@ -24,7 +24,7 @@ async function resize(file: File, maxSize: number) {
     canvas.height = Math.round(img.height * scale);
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("هذا المتصفح لا يدعم معالجة الصور.");
-    ctx.fillStyle = "#f7f2e9";
+    ctx.fillStyle = "#fffafa";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     return canvas;

@@ -1,0 +1,279 @@
+/*
+ * Atelier: the tailor's workroom. Shared pieces every page can use:
+ * stitched lines, pinked (zigzag) edges, swing tags, pins and the measuring tape.
+ * See docs/atelier-design.md.
+ */
+
+@layer components {
+  /* A running stitch in saffron thread. Add .stitch-draw inside a [data-reveal] to sew it in. */
+  .stitch {
+    display: block;
+    height: 2px;
+    background: repeating-linear-gradient(270deg, var(--color-gold) 0 10px, transparent 10px 16px);
+    border-radius: 2px;
+  }
+  .stitch-mulberry { background: repeating-linear-gradient(270deg, var(--color-forest) 0 10px, transparent 10px 16px); opacity: 0.55; }
+  .stitch-draw { clip-path: inset(0 0 0 100%); transition: clip-path 1s var(--ease-soft) 0.2s; }
+  [data-reveal="shown"] .stitch-draw,
+  .stitch-draw[data-reveal="shown"] { clip-path: inset(0 0 0 0); }
+
+  /* A dashed stitch running just inside the edge of a panel. */
+  .stitch-box { outline: 1.5px dashed rgb(211 155 42 / 0.6); outline-offset: -7px; }
+  .stitch-box-soft { outline: 1.5px dashed rgb(109 35 71 / 0.22); outline-offset: -7px; }
+
+  /* Pinking-shear edge (zigzag) along the bottom of a swatch. */
+  .pinked {
+    --z: 6px;
+    -webkit-mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--z) + 1px) no-repeat,
+      conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / calc(2 * var(--z)) var(--z) repeat-x;
+    mask:
+      linear-gradient(#000 0 0) top / 100% calc(100% - var(--z) + 1px) no-repeat,
+      conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / calc(2 * var(--z)) var(--z) repeat-x;
+  }
+  .pinked-all {
+    --z: 5px;
+    -webkit-mask:
+      conic-gradient(from 45deg at 0 50%, #000 90deg, #0000 0) left / var(--z) calc(2 * var(--z)) repeat-y,
+      conic-gradient(from 225deg at 100% 50%, #000 90deg, #0000 0) right / var(--z) calc(2 * var(--z)) repeat-y,
+      conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) top / calc(2 * var(--z)) var(--z) repeat-x,
+      conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / calc(2 * var(--z)) var(--z) repeat-x,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--z) + 2px) calc(100% - 2 * var(--z) + 2px) no-repeat;
+    mask:
+      conic-gradient(from 45deg at 0 50%, #000 90deg, #0000 0) left / var(--z) calc(2 * var(--z)) repeat-y,
+      conic-gradient(from 225deg at 100% 50%, #000 90deg, #0000 0) right / var(--z) calc(2 * var(--z)) repeat-y,
+      conic-gradient(from 135deg at 50% 0, #000 90deg, #0000 0) top / calc(2 * var(--z)) var(--z) repeat-x,
+      conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / calc(2 * var(--z)) var(--z) repeat-x,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--z) + 2px) calc(100% - 2 * var(--z) + 2px) no-repeat;
+  }
+
+  /* A paper swing tag with a punched hole, for prices and short labels. */
+  .swing-tag {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem 0.3rem 0.6rem;
+    padding-inline-start: 1.35rem;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-latin);
+    font-weight: 700;
+    font-size: 0.82rem;
+    line-height: 1.2;
+    clip-path: polygon(0.7rem 0, 100% 0, 100% 100%, 0.7rem 100%, 0 50%);
+    filter: drop-shadow(0 4px 6px rgb(42 15 29 / 0.18));
+    -webkit-mask: radial-gradient(circle at 0.75rem 50%, #0000 3px, #000 3.5px);
+    mask: radial-gradient(circle at 0.75rem 50%, #0000 3px, #000 3.5px);
+  }
+  [dir="rtl"] .swing-tag {
+    clip-path: polygon(0 0, calc(100% - 0.7rem) 0, 100% 50%, calc(100% - 0.7rem) 100%, 0 100%);
+    -webkit-mask: radial-gradient(circle at calc(100% - 0.75rem) 50%, #0000 3px, #000 3.5px);
+    mask: radial-gradient(circle at calc(100% - 0.75rem) 50%, #0000 3px, #000 3.5px);
+  }
+  .swing-tag-dark { background: var(--color-ink); color: var(--color-gold-soft); }
+
+  /* A woven brand label: mulberry ribbon with folded ends. */
+  .woven-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.75rem;
+    background:
+      repeating-linear-gradient(90deg, rgb(255 255 255 / 0.06) 0 1px, transparent 1px 3px),
+      var(--color-forest);
+    color: var(--color-gold-soft);
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 2px;
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.15), inset 0 0 0 1px rgb(245 225 176 / 0.18);
+  }
+
+  /* Dressmaker's pin head. */
+  .pin-head {
+    display: inline-block;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 999px;
+    background: radial-gradient(circle at 35% 30%, #fff8 0 18%, transparent 22%), radial-gradient(circle at 50% 55%, var(--pin, var(--color-gold-bright)), color-mix(in oklab, var(--pin, var(--color-gold-bright)), black 35%));
+    box-shadow: 0 2px 4px rgb(42 15 29 / 0.35);
+  }
+
+  /* Swatch card: cloth piece with a zigzag foot and gentle lift. */
+  .swatch {
+    background: var(--color-paper);
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: var(--shadow-soft);
+  }
+
+  /* Handwritten tailor's-chalk heading. */
+  .chalk {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+}
+
+/* Measuring tape that fills under the header as the page is read. */
+.tape {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -7px;
+  height: 7px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(270deg, rgb(42 15 29 / 0.55) 0 1px, transparent 1px 50px),
+    repeating-linear-gradient(270deg, rgb(42 15 29 / 0.35) 0 1px, transparent 1px 10px);
+  background-size: 100% 6px, 100% 3px;
+  background-repeat: no-repeat;
+  background-color: var(--color-gold-soft);
+  transform-origin: right;
+  transform: scaleX(0);
+  box-shadow: 0 2px 4px -2px rgb(42 15 29 / 0.35);
+}
+@supports (animation-timeline: scroll()) {
+  .tape {
+    animation: scroll-progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+/* -------- The hanging cloth in the hero -------- */
+.cloth-stage {
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cloth-rod {
+  position: absolute;
+  inset-inline: -4%;
+  top: 0;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f7d98d, #c48f1f 55%, #7d5508);
+  box-shadow: 0 6px 10px -4px rgb(42 15 29 / 0.5);
+  z-index: 2;
+}
+.cloth-rod::before,
+.cloth-rod::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  translate: 0 -50%;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff6 0 20%, transparent 25%), radial-gradient(circle, #e9b949, #8f6210);
+}
+.cloth-rod::before { inset-inline-start: -6px; }
+.cloth-rod::after { inset-inline-end: -6px; }
+.cloth-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Shown until (or instead of) the moving cloth. */
+.cloth-still {
+  position: absolute;
+  inset: 6px 4% 5% 4%;
+  border-radius: 0 0 1.2rem 1.2rem;
+  overflow: hidden;
+  transition: opacity 0.5s var(--ease-soft);
+  box-shadow: 0 30px 50px -30px rgb(42 15 29 / 0.6);
+}
+.cloth-stage[data-live="true"] .cloth-still { opacity: 0; }
+.cloth-hint {
+  position: absolute;
+  bottom: 0.6rem;
+  inset-inline-start: 50%;
+  translate: 50% 0;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  background: rgb(42 15 29 / 0.62);
+  color: var(--color-paper);
+  font-size: 0.72rem;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+  transition: opacity 0.4s, translate 0.4s var(--ease-soft);
+}
+.cloth-stage[data-touched="true"] .cloth-hint { opacity: 0; translate: 50% 8px; }
+.cloth-hint i {
+  display: block;
+  width: 1.1rem;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  animation: hint-swipe 1.8s var(--ease-soft) infinite;
+}
+@keyframes hint-swipe {
+  0%, 100% { transform: translateX(5px); }
+  50% { transform: translateX(-5px); }
+}
+
+/* Swing tag hanging off the cloth on a thread. */
+.hero-tag {
+  position: absolute;
+  z-index: 3;
+  transform-origin: top center;
+  animation: tag-sway 5s ease-in-out infinite;
+}
+.hero-tag::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: 1px;
+  height: 2.2rem;
+  background: var(--color-ink);
+  opacity: 0.55;
+}
+@keyframes tag-sway {
+  0%, 100% { rotate: -4deg; }
+  50% { rotate: 5deg; }
+}
+
+/* Opening: a sheet of mulberry cloth is lifted away while a thread stitches the name. */
+.intro-cloth {
+  position: absolute;
+  inset: -2% -2% -6%;
+  background:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.05) 0 1px, transparent 1px 3px),
+    radial-gradient(120% 70% at 50% 0%, #85305a, #4a1630 70%, #2a0f1d);
+  transform-origin: 50% 0;
+  animation: intro-lift 0.9s cubic-bezier(0.6, 0, 0.2, 1) 0.95s forwards;
+  -webkit-mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / 20px 10px repeat-x;
+  mask:
+    linear-gradient(#000 0 0) top / 100% calc(100% - 10px) no-repeat,
+    conic-gradient(from -45deg at 50% 100%, #000 90deg, #0000 0) bottom / 20px 10px repeat-x;
+}
+@keyframes intro-lift {
+  0% { transform: none; }
+  35% { transform: translateY(2%) skewY(-1.5deg) scaleY(1.02); }
+  100% { transform: translateY(-112%) skewY(4deg) scaleY(0.9); }
+}
+.intro-thread {
+  display: block;
+  width: 9rem;
+  height: 2px;
+  margin-inline: auto;
+  background: repeating-linear-gradient(270deg, var(--color-gold-bright) 0 9px, transparent 9px 15px);
+  clip-path: inset(0 0 0 100%);
+  animation: intro-sew 0.7s var(--ease-soft) 0.2s forwards;
+}
+@keyframes intro-sew { to { clip-path: inset(0 0 0 0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-tag,
+  .cloth-hint i { animation: none; }
+  .stitch-draw { clip-path: none; }
+}

@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource-variable/el-messiri";
+import "@fontsource-variable/marhey";
 import "@fontsource/ibm-plex-sans-arabic/400.css";
 import "@fontsource/ibm-plex-sans-arabic/500.css";
 import "@fontsource/ibm-plex-sans-arabic/600.css";
 import "@fontsource/ibm-plex-sans-arabic/700.css";
-import "@fontsource/cormorant-garamond/500.css";
-import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/courier-prime/400.css";
+import "@fontsource/courier-prime/700.css";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     template: "%s | تزهّد",
   },
   description: "طرح وعبايات وأزياء محتشمة بأقمشة ناعمة ومختارة بعناية. اطلبي بسهولة عبر واتساب.",
-  appleWebApp: { capable: true, title: "تزهّد", statusBarStyle: "black" },
+  appleWebApp: { capable: true, title: "تزهّد", statusBarStyle: "default" },
   openGraph: {
     type: "website",
     siteName: "تزهّد Tazhud",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f120f",
+  themeColor: "#f6eeee",
   width: "device-width",
   initialScale: 1,
 };

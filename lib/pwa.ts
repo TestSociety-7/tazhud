@@ -20,8 +20,8 @@ export function appManifest(app: "store" | "admin"): MetadataRoute.Manifest {
     orientation: "portrait",
     dir: "rtl",
     lang: "ar",
-    background_color: "#0f120f",
-    theme_color: "#0f120f",
+    background_color: "#f6eeee",
+    theme_color: "#6d2347",
     icons,
   };
 }

@@ -7,7 +7,7 @@ import { Panel } from "./ui";
 import { useSave } from "./use-save";
 
 const OPTIONS: { id: Season; label: string; note: string; swatch: string[]; icon: string }[] = [
-  { id: "original", label: "الأصلي", note: "الذهبي والأخضر المعتاد", swatch: ["#0f120f", "#b8955a", "#1f3a2e"], icon: "✦" },
+  { id: "original", label: "الأصلي", note: "التوتي والزعفراني المعتاد", swatch: ["#2a0f1d", "#d39b2a", "#6d2347"], icon: "✦" },
   { id: "christmas", label: "الكريسماس", note: "ثلج يتساقط وأضواء وزينة", swatch: ["#174030", "#c0303a", "#e9c46a"], icon: "❄" },
   { id: "halloween", label: "الهالوين", note: "خفافيش وقرع وألوان الليل", swatch: ["#120d18", "#f08a24", "#9d5cd6"], icon: "☾" },
 ];
