@@ -86,11 +86,11 @@ export function BundlesPage() {
       />
 
       {homeSection && !homeSection.enabled && data.bundles.length > 0 && (
-        <p className="mb-5 rounded-2xl border border-gold/40 bg-gold-soft/40 p-4 text-sm text-[#5c4519]">قسم المجموعات مخفي من الصفحة الرئيسية. أظهره من «واجهة المتجر» ← ترتيب الصفحة.</p>
+        <p className="stitch-box mb-5 rounded-2xl bg-gold-soft/50 p-4 text-sm text-gold-deep">قسم المجموعات مخفي من الصفحة الرئيسية. أظهره من «واجهة المتجر» ← ترتيب الصفحة.</p>
       )}
 
       {data.bundles.length === 0 ? (
-        <div className="card">
+        <div className="adm-sheet">
           <EmptyState icon={<Gift className="size-6" />} title="لا توجد مجموعات بعد" body="أنشئ أول مجموعة وستظهر للزبائن في الصفحة الرئيسية." />
         </div>
       ) : (
@@ -98,11 +98,11 @@ export function BundlesPage() {
           {data.bundles.map((b) => {
             const d = bundleDetails(b, data.products);
             return (
-              <li key={b.id} className="card flex gap-4 p-4">
+              <li key={b.id} className="adm-sheet flex gap-4 p-4">
                 <div className="relative h-24 w-20 shrink-0">
                   {d.items.slice(0, 3).map((it, i) => (
                     <span key={it.productId} className="absolute" style={{ insetInlineStart: i * 12, top: i * 6, zIndex: 3 - i }}>
-                      <SmartImage src={it.product.images[0]} alt="" className="aspect-[4/5] w-14 rounded-lg ring-2 ring-paper" fallbackLabel=" " />
+                      <SmartImage src={it.product.images[0]} alt="" className="aspect-[4/5] w-14 rounded-md ring-2 ring-paper" fallbackLabel=" " />
                     </span>
                   ))}
                 </div>
@@ -112,15 +112,15 @@ export function BundlesPage() {
                     {!b.active ? <Badge>موقوفة</Badge> : !d.available ? <Badge tone="red">قطعة غير متوفرة</Badge> : <Badge tone="green">ظاهرة</Badge>}
                   </div>
                   <p className="mt-0.5 line-clamp-1 text-xs text-muted">{d.items.map((it) => `${it.product.name}${it.quantity > 1 ? ` ×${it.quantity}` : ""}`).join(" + ")}</p>
-                  <p className="mt-1 text-sm">
-                    <strong className="text-ink tabular-nums">{money(b.price)}</strong>{" "}
-                    {d.savings > 0 && <span className="text-xs text-muted line-through tabular-nums">{money(d.value)}</span>}
+                  <p className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                    <span className="swing-tag !bg-gold-soft">{money(b.price)}</span>
+                    {d.savings > 0 && <span className="adm-num text-xs font-normal text-muted line-through">{money(d.value)}</span>}
                   </p>
                   <div className="mt-2 flex gap-2">
-                    <button type="button" className="btn btn-sm btn-outline border-line" onClick={() => { setErrors({}); setQuery(""); setEditing({ ...b, price: String(b.price) }); }}>
+                    <button type="button" className="btn btn-outline min-h-11 border-line px-4 text-sm" onClick={() => { setErrors({}); setQuery(""); setEditing({ ...b, price: String(b.price) }); }}>
                       <Pencil className="size-3.5" /> تعديل
                     </button>
-                    <button type="button" className="btn btn-sm btn-ghost text-danger" onClick={() => setToDelete(b)}>
+                    <button type="button" className="btn btn-ghost min-h-11 px-3 text-sm text-danger" onClick={() => setToDelete(b)}>
                       <Trash2 className="size-3.5" /> حذف
                     </button>
                   </div>
@@ -166,14 +166,14 @@ export function BundlesPage() {
                         {n > 0 && <span className="absolute top-2 end-2 grid size-7 place-items-center rounded-full bg-forest text-ivory shadow"><Check className="size-4" /></span>}
                         <span className="block p-2">
                           <span className="line-clamp-1 text-xs font-semibold text-ink">{p.name}</span>
-                          <span className="block text-[0.7rem] text-muted">{money(effectivePrice(p))}</span>
+                          <span className="adm-num block text-[0.72rem] font-normal text-muted">{money(effectivePrice(p))}</span>
                         </span>
                       </button>
                       {n > 0 && (
-                        <div className="flex items-center justify-between border-t border-line px-2 py-1">
-                          <button type="button" className="icon-btn size-8" onClick={() => setQty(p.id, n - 1)} aria-label={`أقل من ${p.name}`}><Minus className="size-3.5" /></button>
-                          <span className="text-sm font-semibold tabular-nums">{n}</span>
-                          <button type="button" className="icon-btn size-8" onClick={() => setQty(p.id, Math.min(9, n + 1))} aria-label={`أكثر من ${p.name}`}><Plus className="size-3.5" /></button>
+                        <div className="flex items-center justify-between border-t border-dashed border-line px-1">
+                          <button type="button" className="icon-btn" onClick={() => setQty(p.id, n - 1)} aria-label={`أقل من ${p.name}`}><Minus className="size-3.5" /></button>
+                          <span className="adm-num text-sm">{n}</span>
+                          <button type="button" className="icon-btn" onClick={() => setQty(p.id, Math.min(9, n + 1))} aria-label={`أكثر من ${p.name}`}><Plus className="size-3.5" /></button>
                         </div>
                       )}
                     </li>
@@ -189,7 +189,7 @@ export function BundlesPage() {
                 error={errors.price}
                 hint={value ? `ثمن القطع منفصلة ${money(value)}. مثلًا ${money(Math.round(value * 0.9))} يعني توفير 10%.` : "اختر القطع أولًا."}
               >
-                <input id="b-price" className="field" inputMode="decimal" value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
+                <input id="b-price" className="field ltr font-latin" inputMode="decimal" value={editing.price} onChange={(e) => setEditing({ ...editing, price: e.target.value })} />
               </FormField>
               <FormField label="ملاحظة قصيرة (اختياري)" htmlFor="b-note" hint="مثال: اختاري الألوان على واتساب">
                 <input id="b-note" className="field" value={editing.note} onChange={(e) => setEditing({ ...editing, note: e.target.value })} />

@@ -73,13 +73,13 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
             <table className="w-full text-sm">
               <caption className="sr-only">القطع</caption>
               <thead>
-                <tr className="border-b border-line text-start text-xs text-muted">
+                <tr className="border-b-[1.5px] border-dashed border-line text-start text-xs text-muted">
                   <th className="py-2 font-medium">القطعة</th>
                   <th className="py-2 text-end font-medium">الكمية</th>
                   <th className="py-2 text-end font-medium">المجموع</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-line">
+              <tbody className="divide-y divide-dashed divide-line">
                 {order.lines.map((l, i) => (
                   <tr key={i}>
                     <td className="py-3">
@@ -88,17 +88,17 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
                       {l.kind === "bundle" && bundleText(l.refId) && <span className="block text-xs text-text">{bundleText(l.refId)}</span>}
                       <span className="block text-xs text-muted">{[l.color, l.size, `${money(l.unitPrice)} للقطعة`].filter(Boolean).join(" · ")}</span>
                     </td>
-                    <td className="py-3 text-end tabular-nums">{l.quantity}</td>
-                    <td className="py-3 text-end font-medium tabular-nums">{money(l.unitPrice * l.quantity)}</td>
+                    <td className="adm-num py-3 text-end font-normal">{l.quantity}</td>
+                    <td className="adm-num py-3 text-end">{money(l.unitPrice * l.quantity)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <dl className="ms-auto max-w-xs space-y-1.5 text-sm">
-              <div className="flex justify-between"><dt className="text-muted">المجموع الفرعي</dt><dd className="tabular-nums">{money(order.subtotal)}</dd></div>
-              {order.couponCode && <div className="flex justify-between text-success"><dt>كود {order.couponCode}</dt><dd className="tabular-nums">{order.discount ? `−${money(order.discount)}` : "توصيل مجاني"}</dd></div>}
-              <div className="flex justify-between"><dt className="text-muted">التوصيل</dt><dd className="tabular-nums">{order.delivery ? money(order.delivery) : "مجاني"}</dd></div>
-              <div className="flex justify-between border-t border-line pt-2 font-semibold text-ink"><dt>الإجمالي</dt><dd className="tabular-nums">{money(order.total)}</dd></div>
+            <dl className="stitch-box-soft space-y-1.5 rounded-xl bg-paper p-4 text-sm sm:ms-auto sm:max-w-xs">
+              <div className="flex justify-between"><dt className="text-muted">المجموع الفرعي</dt><dd className="adm-num font-normal">{money(order.subtotal)}</dd></div>
+              {order.couponCode && <div className="flex justify-between text-success"><dt>كود <span className="adm-num ltr inline-block">{order.couponCode}</span></dt><dd className="adm-num font-normal">{order.discount ? `−${money(order.discount)}` : "توصيل مجاني"}</dd></div>}
+              <div className="flex justify-between"><dt className="text-muted">التوصيل</dt><dd className={order.delivery ? "adm-num font-normal" : ""}>{order.delivery ? money(order.delivery) : "مجاني"}</dd></div>
+              <div className="flex items-center justify-between border-t-[1.5px] border-dashed border-line pt-2 font-semibold text-ink"><dt>الإجمالي</dt><dd className="adm-num text-lg">{money(order.total)}</dd></div>
             </dl>
             <FormField label="ملاحظة داخلية" hint="تظهر في لوحة التحكم فقط." htmlFor="admin-note">
               <textarea id="admin-note" className="field" rows={3} value={note} onChange={(e) => setNote(e.target.value)} placeholder="مثال: الدفع بالتحويل، التوصيل يوم الخميس" />
@@ -106,10 +106,10 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
           </div>
 
           <aside className="space-y-5">
-            <div className="rounded-xl bg-sand/60 p-4 text-sm">
+            <div className="stitch-box-soft rounded-xl bg-sand/60 p-4 text-sm">
               <h3 className="mb-2 text-xs font-semibold text-muted">الزبونة</h3>
               <p className="font-semibold text-ink">{order.customer.name}</p>
-              <p><a className="text-forest underline-offset-2 hover:underline" href={`tel:${order.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{order.customer.phone}</span></a></p>
+              <p><a className="text-forest underline-offset-2 hover:underline" href={`tel:${order.customer.phone.replace(/[^\d+]/g, "")}`}><span className="adm-num ltr inline-flex min-h-11 items-center">{order.customer.phone}</span></a></p>
               <p className="mt-2 text-muted">{order.customer.address}{order.customer.city ? `، ${order.customer.city}` : ""}</p>
               {order.customer.notes && <p className="mt-2 rounded-lg bg-paper p-2 text-xs">«{order.customer.notes}»</p>}
             </div>
@@ -122,9 +122,7 @@ function OrderDetail({ order, onClose }: { order: OrderInquiry; onClose: () => v
                     type="button"
                     aria-pressed={order.status === k}
                     onClick={() => order.status !== k && setStatus(k)}
-                    className={`press min-h-10 rounded-full border text-sm transition-colors ${
-                      order.status === k ? "border-ink bg-ink font-semibold text-ivory" : "border-line bg-paper text-text hover:border-gold"
-                    }`}
+                    className="adm-choice"
                   >
                     {STATUS_META[k].label}
                   </button>
@@ -203,10 +201,10 @@ export function OrdersPage() {
               type="button"
               aria-pressed={status === s}
               onClick={() => setStatus(s)}
-              className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm transition-colors ${status === s ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+              className="adm-chip"
             >
               {s === "all" ? "الكل" : STATUS_META[s].label}
-              <span className={`text-xs ${status === s ? "text-gold" : ""}`}>{counts(s)}</span>
+              <span className="adm-chip-count">{counts(s)}</span>
             </button>
           ))}
         </div>
@@ -217,7 +215,7 @@ export function OrdersPage() {
       </div>
 
       {list.length === 0 ? (
-        <div className="card">
+        <div className="adm-sheet">
           <EmptyState icon={<Inbox className="size-6" />} title="لا توجد طلبات هنا" body={data.orders.length ? "جرّب تصفية أخرى." : "عندما يرسل الزبائن طلباتهم ستظهر هنا."} />
         </div>
       ) : (
@@ -228,27 +226,28 @@ export function OrdersPage() {
                 <button
                   type="button"
                   onClick={() => setOpen(o.id)}
-                  className="press card flex w-full flex-col gap-3 p-4 text-start transition-shadow hover:shadow-[var(--shadow-soft)]"
+                  className="adm-ticket flex w-full flex-col gap-3 p-4 text-start"
                 >
                   <span className="flex w-full items-center justify-between gap-3">
-                    <span className="ltr text-xs font-semibold text-muted">{o.number}</span>
+                    <span className="adm-num ltr text-sm text-forest">{o.number}</span>
                     <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
                   </span>
-                  <span className="flex w-full items-end justify-between gap-3">
+                  <span className="adm-perf" aria-hidden />
+                  <span className="flex w-full items-center justify-between gap-3">
                     <span className="min-w-0">
                       <span className="block truncate text-base font-semibold text-ink">{o.customer.name}</span>
                       <span className="block text-xs text-muted">
                         {[o.customer.city, piecesLabel(o.lines.reduce((n, l) => n + l.quantity, 0)), dateFormat(o.createdAt, { day: "numeric", month: "short" })].filter(Boolean).join(" · ")}
                       </span>
                     </span>
-                    <span className="font-display shrink-0 text-2xl leading-none text-ink tabular-nums">{money(o.total)}</span>
+                    <span className="swing-tag shrink-0 !bg-gold-soft text-[0.95rem]">{money(o.total)}</span>
                   </span>
                 </button>
               </li>
             ))}
           </ul>
           <div className="mt-8 text-center">
-            <button type="button" className="press btn btn-sm btn-ghost text-danger" onClick={() => setConfirmBulk(true)}>
+            <button type="button" className="press btn btn-ghost min-h-11 text-sm text-danger" onClick={() => setConfirmBulk(true)}>
               <Trash2 className="size-4" /> {status === "all" ? `حذف كل الطلبات (${list.length})` : `حذف طلبات «${STATUS_META[status].label}» (${list.length})`}
             </button>
           </div>

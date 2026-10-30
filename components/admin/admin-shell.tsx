@@ -245,7 +245,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <AdminWelcome />
       <OrderWatcher />
 
-      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="!bg-ink !text-ivory [&>div:first-child]:border-dashed [&>div:first-child]:border-white/15 [&_h2]:!text-ivory">
+      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="on-dark !bg-ink !text-ivory [&>div:first-child]:border-dashed [&>div:first-child]:border-white/15 [&_h2]:!text-ivory">
         <MoreSheet onNavigate={() => setOpen(false)} />
       </Sheet>
     </div>

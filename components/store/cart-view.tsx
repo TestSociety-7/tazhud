@@ -35,15 +35,15 @@ export function CartView() {
   }
 
   return (
-    <div className="container-x py-10 sm:py-14">
+    <div className="container-x py-8 sm:py-14">
       <Link href="/shop" className="inline-flex min-h-10 items-center gap-2 text-sm text-muted hover:text-ink">
         <ArrowRight className="size-4" /> متابعة التسوق
       </Link>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">سلة التسوق <span className="text-3xl text-muted">({count})</span></h1>
+      <h1 className="season-title font-display mt-2 text-4xl text-ink sm:text-5xl">سلة التسوق <span className="font-latin text-2xl text-muted">({count})</span></h1>
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_24rem] lg:gap-14">
         <section aria-label="القطع في سلتكِ">
-          <ul className="divide-y divide-line border-y border-line">
+          <ul className="divide-y divide-dashed divide-forest/20 border-y border-dashed border-forest/20">
             {lines.map((l) => <CartLineItem key={l.key} line={l} />)}
           </ul>
           <button type="button" className="mt-4 text-xs font-semibold text-muted underline-offset-4 hover:text-danger hover:underline" onClick={clear}>
@@ -52,7 +52,7 @@ export function CartView() {
         </section>
 
         <aside aria-label="ملخص الطلب" className="lg:sticky lg:top-[calc(var(--header-h)+1.5rem)] lg:self-start">
-          <div className="card space-y-6 p-6">
+          <div className="card stitch-box-soft space-y-6 p-6 sm:p-7">
             <h2 className="font-display text-3xl text-ink">الملخص</h2>
             <CouponForm />
             <OrderSummary />

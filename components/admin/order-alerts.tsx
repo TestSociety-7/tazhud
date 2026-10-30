@@ -241,10 +241,10 @@ export function NotificationsPanel() {
             )}
             {state === "on" && (
               <>
-                <button type="button" className="press btn btn-sm btn-outline border-line" disabled={busy} onClick={test}>
+                <button type="button" className="press btn btn-outline min-h-11 border-line px-4 text-sm" disabled={busy} onClick={test}>
                   إرسال إشعار تجريبي
                 </button>
-                <button type="button" className="press btn btn-sm btn-ghost text-danger" disabled={busy} onClick={disable}>
+                <button type="button" className="press btn btn-ghost min-h-11 px-3 text-sm text-danger" disabled={busy} onClick={disable}>
                   إيقاف
                 </button>
               </>

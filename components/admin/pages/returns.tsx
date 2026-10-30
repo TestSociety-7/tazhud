@@ -76,14 +76,14 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
               <span>
                 · الطلب الأصلي{" "}
                 {order ? (
-                  <Link href={`/admin/orders?open=${order.id}`} className="ltr inline-block font-semibold text-forest underline underline-offset-2">{item.orderNumber}</Link>
+                  <Link href={`/admin/orders?open=${order.id}`} className="adm-num ltr inline-flex min-h-11 items-center text-forest underline underline-offset-2">{item.orderNumber}</Link>
                 ) : (
-                  <span className="ltr inline-block">{item.orderNumber}</span>
+                  <span className="adm-num ltr inline-block">{item.orderNumber}</span>
                 )}{" "}
                 قبل {daysSince(item.orderDate, Date.parse(item.createdAt))} يوم
               </span>
             </div>
-            <ul className="divide-y divide-line rounded-xl border border-line bg-paper">
+            <ul className="divide-y divide-dashed divide-line rounded-xl border border-line bg-paper">
               {item.lines.map((l, i) => (
                 <li key={i} className="flex items-center justify-between gap-3 p-3 text-sm">
                   <span>
@@ -92,13 +92,13 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
                   </span>
                   <span className="text-end tabular-nums">
                     × {l.quantity}
-                    <span className="block text-xs text-muted">{money(l.unitPrice * l.quantity)}</span>
+                    <span className="adm-num block text-xs font-normal text-muted">{money(l.unitPrice * l.quantity)}</span>
                   </span>
                 </li>
               ))}
               <li className="flex justify-between p-3 text-sm font-semibold text-ink">
                 <span>قيمة القطع</span>
-                <span className="tabular-nums">{money(total)}</span>
+                <span className="adm-num">{money(total)}</span>
               </li>
             </ul>
             <dl className="grid gap-3 text-sm sm:grid-cols-2">
@@ -112,10 +112,10 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
             </FormField>
           </div>
           <aside className="space-y-5">
-            <div className="rounded-xl bg-sand/60 p-4 text-sm">
+            <div className="stitch-box-soft rounded-xl bg-sand/60 p-4 text-sm">
               <h3 className="mb-2 text-xs font-semibold text-muted">الزبونة</h3>
               <p className="font-semibold text-ink">{item.customer.name}</p>
-              <a className="text-forest underline-offset-2 hover:underline" href={`tel:${item.customer.phone.replace(/[^\d+]/g, "")}`}><span className="ltr inline-block">{item.customer.phone}</span></a>
+              <a className="text-forest underline-offset-2 hover:underline" href={`tel:${item.customer.phone.replace(/[^\d+]/g, "")}`}><span className="adm-num ltr inline-flex min-h-11 items-center">{item.customer.phone}</span></a>
             </div>
             <fieldset>
               <legend className="label">الحالة</legend>
@@ -127,7 +127,7 @@ function ReturnDetail({ item, onClose, onChange, onDelete }: { item: ReturnReque
                     aria-pressed={item.status === k}
                     disabled={busy}
                     onClick={() => item.status !== k && patch({ status: k }, `${item.number}: ${RETURN_STATUS_META[k].label}`)}
-                    className={`press min-h-10 rounded-full border text-sm transition-colors ${item.status === k ? "border-ink bg-ink font-semibold text-ivory" : "border-line bg-paper text-text hover:border-gold"}`}
+                    className="adm-choice"
                   >
                     {RETURN_STATUS_META[k].label}
                   </button>
@@ -220,10 +220,10 @@ export function ReturnsPage() {
                 type="button"
                 aria-pressed={status === s}
                 onClick={() => setStatus(s)}
-                className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm transition-colors ${status === s ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+                className="adm-chip"
               >
                 {s === "all" ? "الكل" : RETURN_STATUS_META[s].label}
-                <span className="tabular-nums opacity-70">{count(s)}</span>
+                <span className="adm-chip-count">{count(s)}</span>
               </button>
             ))}
           </div>
@@ -242,7 +242,7 @@ export function ReturnsPage() {
                 const pieces = r.lines.reduce((n, l) => n + l.quantity, 0);
                 return (
                   <li key={r.id}>
-                    <button type="button" onClick={() => setOpen(r.id)} className="press card flex w-full flex-wrap items-center gap-3 p-4 text-start transition-shadow hover:shadow-[var(--shadow-soft)]">
+                    <button type="button" onClick={() => setOpen(r.id)} className="adm-ticket flex w-full flex-wrap items-center gap-3 p-4 text-start">
                       <span className={`grid size-11 shrink-0 place-items-center rounded-xl ${r.type === "exchange" ? "bg-sand text-forest" : "bg-gold/15 text-gold-deep"}`}>
                         {r.type === "exchange" ? <RefreshCw className="size-5" /> : <Undo2 className="size-5" />}
                       </span>
@@ -256,7 +256,7 @@ export function ReturnsPage() {
                         </span>
                       </span>
                       <span className="text-end text-xs text-muted">
-                        <span className="block font-semibold text-ink tabular-nums">{money(r.lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0))}</span>
+                        <span className="adm-num block text-sm text-ink">{money(r.lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0))}</span>
                         {dateFormat(r.createdAt)}
                       </span>
                     </button>

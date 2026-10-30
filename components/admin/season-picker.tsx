@@ -36,11 +36,11 @@ export function SeasonPicker() {
               role="radio"
               aria-checked={on}
               onClick={() => pick(o.id)}
-              className={`press group relative overflow-hidden rounded-2xl border p-2 text-start transition-all duration-300 sm:p-3 ${
-                on ? "border-gold bg-paper shadow-[0_14px_30px_-18px_rgb(127_98_48/0.8)]" : "border-line bg-paper/60 hover:border-gold/60"
+              className={`press group relative rounded-2xl border p-2 text-start transition-[border-color,box-shadow,background-color] duration-300 ease-[var(--ease-soft)] sm:p-3 ${
+                on ? "border-forest bg-paper shadow-[0_14px_30px_-18px_rgb(109_35_71/0.7)] outline-1 outline-offset-[-5px] outline-dashed outline-forest/30" : "border-line bg-paper/60 hover:border-gold/70"
               }`}
             >
-              <span className="relative block aspect-[4/3] overflow-hidden rounded-xl" style={{ background: o.swatch[0] }} aria-hidden>
+              <span className="pinked relative block aspect-[4/3] overflow-hidden rounded-t-xl lg:aspect-[5/2]" style={{ background: o.swatch[0] }} aria-hidden>
                 <span className="absolute -bottom-3 start-1/2 h-14 w-10 -translate-x-1/2 rounded-t-full rtl:translate-x-1/2" style={{ background: o.swatch[2] }} />
                 <span className="absolute top-2 end-2 grid size-6 place-items-center rounded-full text-xs" style={{ background: o.swatch[1], color: o.swatch[0] }}>
                   {o.icon}
@@ -50,8 +50,8 @@ export function SeasonPicker() {
               <span className="mt-2 flex items-center justify-between gap-1">
                 <span className="text-sm font-semibold text-ink">{o.label}</span>
                 {on && (
-                  <span className="grid size-5 place-items-center rounded-full bg-gold text-ink">
-                    <Check className="size-3.5" />
+                  <span className="grid size-5 place-items-center rounded-[3px] bg-forest text-gold-soft">
+                    <Check className="size-3.5" strokeWidth={2.6} />
                   </span>
                 )}
               </span>

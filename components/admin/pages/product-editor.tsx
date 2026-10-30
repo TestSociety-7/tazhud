@@ -121,7 +121,7 @@ function ColorsEditor({
   return (
     <div className="space-y-3">
       {colors.map((c, i) => (
-        <div key={i} className="rounded-xl border border-line bg-paper/60 p-3">
+        <div key={i} className="stitch-box-soft rounded-xl bg-ivory/60 p-3">
           <div className="flex items-center gap-2">
             <input
               type="color"
@@ -180,7 +180,7 @@ function ColorsEditor({
       ))}
       <button
         type="button"
-        className="btn btn-sm btn-outline border-line"
+        className="btn btn-outline min-h-11 border-line px-4 text-sm"
         onClick={() => onChange([...colors, { name: "", hex: "#9aaa8f" }])}
       >
         <Plus className="size-4" /> إضافة لون
@@ -215,7 +215,7 @@ function SizesEditor({
               <button
                 type="button"
                 onClick={() => onChange(sizes.filter((x) => x !== s))}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-full bg-sand px-3 text-sm hover:bg-line"
+                className="adm-num inline-flex min-h-11 items-center gap-1.5 rounded-md border border-line bg-paper px-3 text-sm font-normal transition-colors hover:border-danger/50 hover:text-danger"
                 aria-label={`حذف المقاس ${s}`}
               >
                 {s} <X className="size-3.5" />
@@ -246,14 +246,14 @@ function SizesEditor({
           إضافة
         </button>
       </div>
-      <div className="flex flex-wrap gap-1.5">
+      <div className="flex flex-wrap items-center gap-1">
         <span className="text-xs text-muted">جاهزة:</span>
         {Object.entries(SIZE_PRESETS).map(([k, v]) => (
           <button
             key={k}
             type="button"
             onClick={() => onChange(v)}
-            className="rounded-full px-2 text-xs font-semibold text-forest underline-offset-2 hover:underline"
+            className="min-h-9 rounded-md px-2 text-xs font-semibold text-forest underline-offset-2 hover:underline"
           >
             {k}
           </button>
@@ -262,7 +262,7 @@ function SizesEditor({
           <button
             type="button"
             onClick={() => onChange([])}
-            className="rounded-full px-2 text-xs text-muted hover:underline"
+            className="min-h-9 rounded-md px-2 text-xs text-muted hover:underline"
           >
             مسح
           </button>
@@ -441,13 +441,13 @@ export function ProductEditor({ productId }: { productId?: string }) {
                 href={`/product/${draft.slug}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-sm btn-outline border-line"
+                className="btn btn-outline min-h-11 border-line px-4 text-sm"
               >
                 <ExternalLink className="size-4" /> عرض
               </a>
               <button
                 type="button"
-                className="btn btn-sm btn-outline border-line"
+                className="btn btn-outline min-h-11 border-line px-4 text-sm"
                 onClick={async () => {
                   if (!existing) return;
                   const copy = await duplicate(existing);
@@ -458,7 +458,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
               </button>
               <button
                 type="button"
-                className="btn btn-sm btn-ghost text-danger"
+                className="btn btn-ghost min-h-11 px-3 text-sm text-danger"
                 onClick={() => setConfirmDelete(true)}
               >
                 <Trash2 className="size-4" /> حذف
@@ -489,7 +489,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
               <FormField label={`السعر (${data.settings.currency})`} htmlFor="f-price" error={errors.price}>
                 <input
                   id="f-price"
-                  className="field"
+                  className="field ltr font-latin"
                   inputMode="decimal"
                   value={draft.price}
                   onChange={(e) => set("price", e.target.value)}
@@ -499,7 +499,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
               <FormField label="الكمية المتوفرة" htmlFor="f-stock" error={errors.stock}>
                 <input
                   id="f-stock"
-                  className="field"
+                  className="field ltr font-latin"
                   inputMode="numeric"
                   value={draft.stock}
                   onChange={(e) => set("stock", e.target.value)}
@@ -515,8 +515,8 @@ export function ProductEditor({ productId }: { productId?: string }) {
                   .map((c) => (
                     <label
                       key={c.id}
-                      className={`press flex min-h-11 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-medium transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-gold ${
-                        draft.categoryId === c.id ? "border-forest bg-forest text-ivory" : "border-line bg-paper text-text hover:border-gold"
+                      className={`press flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 text-sm font-medium transition-colors duration-300 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-forest ${
+                        draft.categoryId === c.id ? "border-forest bg-forest text-paper outline-1 outline-offset-[-4px] outline-dashed outline-gold-soft/60" : "border-line bg-paper text-text hover:border-gold"
                       }`}
                     >
                       <input
@@ -556,7 +556,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
           </div>
         </Panel>
 
-        <details className="card group overflow-hidden" open={errors.salePrice || errors.slug ? true : undefined}>
+        <details className="adm-sheet group overflow-hidden" open={errors.salePrice || errors.slug ? true : undefined}>
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-5 font-semibold text-ink sm:px-6 [&::-webkit-details-marker]:hidden">
             <span>
               وصف وتفاصيل إضافية
@@ -564,7 +564,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
             </span>
             <ChevronDown className="size-5 text-muted transition-transform duration-300 group-open:rotate-180" />
           </summary>
-          <div className="space-y-5 border-t border-line px-5 py-5 sm:px-6">
+          <div className="space-y-5 border-t-[1.5px] border-dashed border-line px-5 py-5 sm:px-6">
             <FormField label="وصف قصير" htmlFor="f-tagline" hint="سطر قصير يظهر تحت الاسم.">
               <input id="f-tagline" className="field" value={draft.tagline} onChange={(e) => set("tagline", e.target.value)} />
             </FormField>
@@ -578,7 +578,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
               <FormField label="سعر التخفيض" htmlFor="f-salePrice" error={errors.salePrice} hint="اتركه فارغًا إن لم يوجد تخفيض.">
                 <input
                   id="f-salePrice"
-                  className="field"
+                  className="field ltr font-latin"
                   inputMode="decimal"
                   value={draft.salePrice}
                   onChange={(e) => set("salePrice", e.target.value)}
@@ -586,7 +586,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
                 />
               </FormField>
               <FormField label="رمز المنتج" htmlFor="f-sku" hint="يُنشأ تلقائيًا.">
-                <input id="f-sku" className="field ltr" value={draft.sku} onChange={(e) => set("sku", e.target.value)} />
+                <input id="f-sku" className="field ltr font-latin" value={draft.sku} onChange={(e) => set("sku", e.target.value)} />
               </FormField>
             </div>
             <FormField
@@ -611,8 +611,9 @@ export function ProductEditor({ productId }: { productId?: string }) {
         </details>
       </div>
 
-      <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
-        <p className="hidden text-sm text-muted sm:block" role="status">
+      <div className="sticky bottom-[calc(4rem+env(safe-area-inset-bottom))] z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t-[1.5px] border-dashed border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(42_15_29/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
+        <p className="hidden items-center gap-2 text-sm text-muted sm:flex" role="status">
+          <span className={`size-2 rounded-full transition-colors duration-300 ${dirty ? "bg-gold" : "bg-success/70"}`} aria-hidden />
           {dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}
         </p>
         {isNew ? (

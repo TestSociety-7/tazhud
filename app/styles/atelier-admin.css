@@ -153,7 +153,7 @@
 
   /* Bottom tab bar on phones. */
   .adm-tabbar {
-    background: rgb(255 250 250 / 0.94);
+    background: rgb(255 250 250 / 0.97);
     border-top: 1px solid var(--color-line);
     box-shadow: 0 -10px 30px -22px rgb(42 15 29 / 0.5);
     backdrop-filter: blur(12px);

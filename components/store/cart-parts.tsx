@@ -16,7 +16,7 @@ export function CartLineItem({ line, compact = false, onNavigate }: { line: Reso
   return (
     <li className="flex gap-4 py-5">
       <Link href={line.href} onClick={onNavigate} className="shrink-0" tabIndex={-1} aria-hidden>
-        <SmartImage src={line.image} alt="" className={`${compact ? "h-28 w-22" : "h-36 w-28"} rounded-xl`} />
+        <SmartImage src={line.image} alt="" className={`${compact ? "h-28 w-22" : "h-36 w-28"} pinked rounded-t-xl [--z:4px]`} />
       </Link>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-3">
@@ -24,7 +24,7 @@ export function CartLineItem({ line, compact = false, onNavigate }: { line: Reso
             <Link href={line.href} onClick={onNavigate} className="font-display text-xl leading-tight text-ink hover:underline">
               {line.name}
             </Link>
-            {line.kind === "bundle" && <p className="eyebrow mt-1 text-gold-deep">مجموعة</p>}
+            {line.kind === "bundle" && <p className="woven-label mt-1.5 !py-0.5">مجموعة</p>}
             {options && <p className="mt-1 text-xs text-muted">{options}</p>}
           </div>
           <button
@@ -69,11 +69,11 @@ export function CouponForm() {
   if (couponCode) {
     const ok = Boolean(coupon?.ok);
     return (
-      <div className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-sm ${ok ? "border-sage bg-sage-soft/60" : "border-[#e2c58f] bg-[#fbf3e2]"}`}>
+      <div className={`pinked-all flex items-center justify-between gap-3 px-4 py-3 text-sm [--z:4px] ${ok ? "bg-gold-soft" : "bg-[#fbf3e2]"}`}>
         <span className="flex min-w-0 items-center gap-2">
           {ok ? <Check className="size-4 shrink-0 text-success" /> : <AlertCircle className="size-4 shrink-0 text-[#855a14]" />}
           <span className="min-w-0">
-            <strong className="font-mono font-semibold tracking-wide">{couponCode}</strong>
+            <strong className="font-latin font-bold text-ink">{couponCode}</strong>
             <span className="block text-xs text-muted">{coupon?.message}</span>
           </span>
         </span>
@@ -107,7 +107,7 @@ export function CouponForm() {
               setCode(e.target.value.toUpperCase());
               setMessage(null);
             }}
-            className="field ltr !ps-9 uppercase"
+            className="field ltr font-latin !ps-9 uppercase"
             placeholder="مثال: WELCOME10"
             autoComplete="off"
             aria-invalid={message ? !message.ok : undefined}
@@ -141,29 +141,29 @@ export function OrderSummary({ className = "" }: { className?: string }) {
     <dl className={`space-y-2.5 text-sm ${className}`}>
       <div className="flex justify-between">
         <dt className="text-muted">المجموع الفرعي</dt>
-        <dd className="font-medium tabular-nums">{money(subtotal)}</dd>
+        <dd className="font-latin font-bold tabular-nums">{money(subtotal)}</dd>
       </div>
       {discount > 0 && (
         <div className="flex justify-between text-success">
           <dt>الخصم{coupon?.coupon ? ` (${coupon.coupon.code})` : ""}</dt>
-          <dd className="font-medium tabular-nums">−{money(discount)}</dd>
+          <dd className="font-latin font-bold tabular-nums">−{money(discount)}</dd>
         </div>
       )}
       <div className="flex justify-between">
         <dt className="text-muted">التوصيل</dt>
-        <dd className="font-medium tabular-nums">{lines.length === 0 ? "—" : delivery === 0 ? "مجاني" : money(delivery)}</dd>
+        <dd className={`font-bold tabular-nums ${delivery === 0 ? "text-success" : "font-latin"}`}>{lines.length === 0 ? "—" : delivery === 0 ? "مجاني" : money(delivery)}</dd>
       </div>
       {lines.length > 0 && remaining > 0 && !freeByCoupon && (
-        <div className="rounded-lg bg-sand px-3 py-2 text-xs text-muted">
-          أضيفي <strong className="text-ink">{money(remaining)}</strong> للحصول على توصيل مجاني.
-          <div className="mt-2 h-1 overflow-hidden rounded-full bg-line" aria-hidden>
-            <div className="h-full rounded-full bg-gold transition-[width] duration-700" style={{ width: `${Math.min(100, ((subtotal - discount) / threshold) * 100)}%` }} />
+        <div className="pt-1 text-xs text-muted">
+          أضيفي <strong className="font-latin text-ink">{money(remaining)}</strong> للحصول على توصيل مجاني.
+          <div className="tape-bar mt-2" aria-hidden>
+            <i style={{ width: `${Math.min(100, ((subtotal - discount) / threshold) * 100)}%` }} />
           </div>
         </div>
       )}
-      <div className="flex items-baseline justify-between border-t border-line pt-3">
+      <div className="flex items-baseline justify-between border-t border-dashed border-forest/25 pt-3.5">
         <dt className="font-semibold text-ink">الإجمالي</dt>
-        <dd className="font-display text-3xl text-ink tabular-nums">{money(total)}</dd>
+        <dd className="font-latin text-2xl font-bold text-ink tabular-nums">{money(total)}</dd>
       </div>
     </dl>
   );

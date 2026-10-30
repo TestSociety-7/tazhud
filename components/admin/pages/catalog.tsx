@@ -59,22 +59,22 @@ export function CategoriesPage() {
         }
       />
       {cats.length === 0 ? (
-        <div className="card"><EmptyState icon={<Shapes className="size-6" />} title="لا توجد أقسام" body="أضف أول قسم لترتيب المنتجات." /></div>
+        <div className="adm-sheet"><EmptyState icon={<Shapes className="size-6" />} title="لا توجد أقسام" body="أضف أول قسم لترتيب المنتجات." /></div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="adm-sheet divide-y divide-dashed divide-line">
           {cats.map((c, i) => (
             <li key={c.id} className="flex items-center gap-3 p-3 sm:gap-4 sm:px-5">
               <div className="flex flex-col">
-                <button type="button" className="icon-btn size-8" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`تقديم ${c.name}`}><ArrowUp className="size-4" /></button>
-                <button type="button" className="icon-btn size-8" disabled={i === cats.length - 1} onClick={() => move(i, 1)} aria-label={`تأخير ${c.name}`}><ArrowDown className="size-4" /></button>
+                <button type="button" className="icon-btn disabled:opacity-30" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`تقديم ${c.name}`}><ArrowUp className="size-4" /></button>
+                <button type="button" className="icon-btn disabled:opacity-30" disabled={i === cats.length - 1} onClick={() => move(i, 1)} aria-label={`تأخير ${c.name}`}><ArrowDown className="size-4" /></button>
               </div>
-              <SmartImage src={c.image} alt="" className="h-16 w-13 shrink-0 rounded-lg" />
+              <SmartImage src={c.image} alt="" className="h-16 w-13 shrink-0 rounded-md" />
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-ink">{c.name}</p>
-                <p className="line-clamp-1 text-xs text-muted">{c.description}</p>
+                <p className="truncate font-semibold text-ink">{c.name}</p>
+                <p className="line-clamp-1 text-xs text-muted max-sm:hidden">{c.description}</p>
+                <p className="mt-1"><Badge>{itemsLabel(count(c.id))}</Badge></p>
               </div>
-              <Badge>{itemsLabel(count(c.id))}</Badge>
-              <button type="button" className="icon-btn" onClick={() => { setErrors({}); setEditing({ ...c }); }} aria-label={`تعديل ${c.name}`}><Pencil className="size-4" /></button>
+              <button type="button" className="icon-btn -me-2 sm:me-0" onClick={() => { setErrors({}); setEditing({ ...c }); }} aria-label={`تعديل ${c.name}`}><Pencil className="size-4" /></button>
               <button type="button" className="icon-btn text-muted hover:text-danger" onClick={() => setToDelete(c)} aria-label={`حذف ${c.name}`}><Trash2 className="size-4" /></button>
             </li>
           ))}
@@ -182,7 +182,7 @@ export function CouponsPage() {
           </button>
         }
       />
-      <div className="card mb-5 space-y-4 p-4 sm:p-5">
+      <div className="adm-sheet mb-5 space-y-4 p-4 sm:p-5">
         <div className="flex items-center gap-3">
           <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${data.settings.couponsEnabled ? "bg-forest text-ivory" : "bg-sand text-muted"}`}>
             <TicketPercent className="size-5" />
@@ -228,22 +228,24 @@ export function CouponsPage() {
         )}
       </div>
       {data.coupons.length === 0 ? (
-        <div className="card"><EmptyState icon={<TicketPercent className="size-6" />} title="لا توجد أكواد خصم" body="أنشئ كودًا للافتتاح أو للعيد أو كعرض ترحيبي." /></div>
+        <div className="adm-sheet"><EmptyState icon={<TicketPercent className="size-6" />} title="لا توجد أكواد خصم" body="أنشئ كودًا للافتتاح أو للعيد أو كعرض ترحيبي." /></div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="adm-sheet divide-y divide-dashed divide-line">
           {data.coupons.map((c) => {
             const expired = c.expiresOn && new Date(`${c.expiresOn}T23:59:59`) < new Date();
             return (
-              <li key={c.id} className="flex flex-wrap items-center gap-3 p-4 sm:px-5">
-                <span className="ltr rounded-lg border border-dashed border-gold px-3 py-1.5 font-mono text-sm tracking-widest text-ink">{c.code}</span>
-                <div className="min-w-0 flex-1">
+              <li key={c.id} className="flex flex-wrap items-center gap-x-4 gap-y-3 p-4 sm:px-5">
+                <span className="adm-code pinked-all ltr">{c.code}</span>
+                <div className="order-last min-w-0 basis-full sm:order-none sm:basis-auto sm:flex-1">
                   <p className="text-sm font-medium text-ink">{describe(c)}{c.minSubtotal > 0 && <span className="text-muted"> · للطلبات فوق {money(c.minSubtotal)}</span>}</p>
                   <p className="text-xs text-muted">{c.description}{c.expiresOn && ` · ${expired ? "انتهى في" : "ينتهي في"} ${dateFormat(`${c.expiresOn}T00:00:00`)}`}</p>
                 </div>
-                {data.homepage.promo.couponCode === c.code && <Badge tone="gold">في الرئيسية</Badge>}
-                <Badge tone={expired ? "red" : c.active ? "green" : "neutral"}>{expired ? "منتهي" : c.active ? "فعّال" : "موقوف"}</Badge>
-                <div className="flex">
-                  <button type="button" className="btn btn-sm btn-ghost" onClick={() => save((d) => ({ ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, active: !x.active } : x)) }), c.active ? `تم إيقاف ${c.code}` : `تم تفعيل ${c.code}`)}>
+                <span className="flex flex-1 flex-wrap items-center gap-1.5 sm:flex-none">
+                  {data.homepage.promo.couponCode === c.code && <Badge tone="gold">في الرئيسية</Badge>}
+                  <Badge tone={expired ? "red" : c.active ? "green" : "neutral"}>{expired ? "منتهي" : c.active ? "فعّال" : "موقوف"}</Badge>
+                </span>
+                <div className="order-last -my-1 ms-auto flex sm:order-none">
+                  <button type="button" className="btn btn-ghost px-3 text-sm" onClick={() => save((d) => ({ ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, active: !x.active } : x)) }), c.active ? `تم إيقاف ${c.code}` : `تم تفعيل ${c.code}`)}>
                     {c.active ? "إيقاف" : "تفعيل"}
                   </button>
                   <button type="button" className="icon-btn" onClick={() => { setErrors({}); setEditing({ ...c, value: String(c.value), minSubtotal: String(c.minSubtotal) }); }} aria-label={`تعديل ${c.code}`}><Pencil className="size-4" /></button>
@@ -264,7 +266,7 @@ export function CouponsPage() {
         >
           <div className="grid gap-5 sm:grid-cols-2">
             <FormField label="الكود" htmlFor="cp-code" error={errors.code}>
-              <input id="cp-code" className="field ltr font-mono uppercase" dir="ltr" value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} aria-invalid={!!errors.code} />
+              <input id="cp-code" className="field ltr font-latin uppercase" dir="ltr" value={editing.code} onChange={(e) => setEditing({ ...editing, code: e.target.value.toUpperCase() })} aria-invalid={!!errors.code} />
             </FormField>
             <FormField label="النوع" htmlFor="cp-type">
               <select id="cp-type" className="field" value={editing.type} onChange={(e) => setEditing({ ...editing, type: e.target.value as CouponType })}>

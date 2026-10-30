@@ -192,7 +192,7 @@ export function ImageListEditor({ images, onChange }: { images: string[]; onChan
             type="button"
             onClick={() => empty.current?.click()}
             disabled={!!busy}
-            className="grid w-full place-items-center rounded-2xl border-2 border-dashed border-gold/50 bg-sand/40 px-4 py-10 text-center text-sm text-muted transition-colors hover:border-gold hover:bg-sand/70"
+            className="press grid w-full place-items-center rounded-2xl border-[1.5px] border-dashed border-gold/70 bg-gold-soft/25 px-4 py-10 text-center text-sm text-muted transition-colors duration-300 hover:border-gold hover:bg-gold-soft/45"
           >
             <ImagePlus className="mb-2 size-8 text-gold-deep" />
             <span className="font-semibold text-ink">{busy ? `جارٍ الرفع ${busy.done}/${busy.total}…` : "اضغط لاختيار صور المنتج"}</span>
@@ -202,9 +202,9 @@ export function ImageListEditor({ images, onChange }: { images: string[]; onChan
       ) : (
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {images.map((src, i) => (
-            <li key={`${i}-${src.slice(0, 40)}`} className="group relative overflow-hidden rounded-xl border border-line bg-paper">
+            <li key={`${i}-${src.slice(0, 40)}`} className="group relative overflow-hidden rounded-t-xl rounded-b-md border border-line bg-paper">
               <SmartImage src={src} alt={`الصورة ${i + 1}`} className="aspect-[4/5]" />
-              {i === 0 && <span className="absolute top-2 start-2 rounded-full bg-ink px-2 py-0.5 text-[0.7rem] font-bold text-gold-soft">الغلاف</span>}
+              {i === 0 && <span className="woven-label absolute top-2 start-2">الغلاف</span>}
               <div className="flex items-center justify-between gap-1 border-t border-line p-1">
                 <button type="button" className="icon-btn size-10" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`تقديم الصورة ${i + 1}`}>
                   <ArrowRight className="size-4" />
@@ -222,7 +222,7 @@ export function ImageListEditor({ images, onChange }: { images: string[]; onChan
       )}
       <UploadButtons onAdd={(urls) => onChange([...images, ...urls])} />
       <details className="text-sm">
-        <summary className="cursor-pointer py-1 text-xs font-semibold text-forest">أو أضف صورة برابط</summary>
+        <summary className="flex min-h-11 cursor-pointer items-center text-xs font-semibold text-forest">أو أضف صورة برابط</summary>
         <div className="mt-2">
           <UrlAdder onAdd={(u) => onChange([...images, u])} />
         </div>

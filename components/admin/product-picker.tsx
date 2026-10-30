@@ -53,9 +53,9 @@ export function ProductPicker({
         )}
         <span className="min-w-0 flex-1">
           <span className="block truncate font-semibold text-ink">{current ? current.name : autoLabel}</span>
-          <span className="block truncate text-xs text-muted">{current ? money(effectivePrice(current)) : autoNote}</span>
+          <span className={`block truncate text-xs text-muted ${current ? "adm-num font-normal" : ""}`}>{current ? money(effectivePrice(current)) : autoNote}</span>
         </span>
-        <span className="shrink-0 rounded-full bg-sand px-3 py-1.5 text-xs font-semibold text-forest">تغيير</span>
+        <span className="shrink-0 rounded-md border border-dashed border-forest/30 px-3 py-1.5 text-xs font-semibold text-forest">تغيير</span>
       </button>
 
       <Modal open={open} onClose={() => setOpen(false)} title={label} size="lg">
@@ -100,7 +100,7 @@ export function ProductPicker({
                   )}
                   <span className="p-2.5">
                     <span className="line-clamp-1 text-sm font-semibold text-ink">{p.name}</span>
-                    <span className="block text-xs text-muted">{money(effectivePrice(p))}</span>
+                    <span className="adm-num block text-xs font-normal text-muted">{money(effectivePrice(p))}</span>
                   </span>
                 </button>
               </li>

@@ -68,7 +68,7 @@ export function useBackToList() {
 export function BackToListButton({ className = "" }: { className?: string }) {
   const back = useBackToList();
   return (
-    <button type="button" onClick={back} className={`press inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-paper/90 px-4 text-sm font-semibold text-ink shadow-[var(--shadow-soft)] backdrop-blur ${className}`}>
+    <button type="button" onClick={back} className={`press inline-flex min-h-11 items-center gap-2 rounded-xl border border-line bg-paper/90 px-4 text-sm font-semibold text-ink shadow-[var(--shadow-soft)] backdrop-blur ${className}`}>
       <ArrowRight className="size-4" /> رجوع
     </button>
   );

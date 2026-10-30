@@ -84,12 +84,14 @@
   }
   .tape-bar > i {
     position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
     background: var(--color-forest);
     opacity: 0.85;
     transition: width 0.9s var(--ease-soft);
   }
+  [dir="ltr"] .tape-bar > i { right: auto; left: 0; }
 
   /* Header band of a list page: paper with a pinked foot. */
   .pinked-band {
@@ -102,4 +104,27 @@
   .card-tag,
   .group:hover .card-tag { transition: none; rotate: -4deg; }
   .tape-bar > i { transition: none; }
+}
+
+/* Upright swing tag (404/error): punched hole at the top, gently swaying. */
+@layer components {
+  .lost-tag {
+    position: relative;
+    clip-path: polygon(22% 0, 78% 0, 100% 16%, 100% 100%, 0 100%, 0 16%);
+    -webkit-mask: radial-gradient(circle at 50% 0.75rem, #0000 4px, #000 4.5px);
+    mask: radial-gradient(circle at 50% 0.75rem, #0000 4px, #000 4.5px);
+    outline: 1.5px dashed rgb(211 155 42 / 0.6);
+    outline-offset: -7px;
+  }
+  .lost-swing {
+    transform-origin: 50% 0.4rem;
+    animation: lost-swing 4.5s ease-in-out infinite;
+  }
+}
+@keyframes lost-swing {
+  0%, 100% { rotate: -5deg; }
+  50% { rotate: 5deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lost-swing { animation: none; }
 }

@@ -168,7 +168,7 @@ function RowMenu({
         </Link>
         <button
           type="button"
-          className={`${item} border-t border-line text-danger hover:bg-danger/5`}
+          className={`${item} border-t border-dashed border-line text-danger hover:bg-danger/5`}
           onClick={(e) => {
             close(e);
             onDelete();
@@ -345,12 +345,10 @@ export function ProductsPage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(f.id)}
-                className={`press inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm transition-colors ${active ? "bg-ink text-ivory" : "bg-paper text-muted ring-1 ring-line hover:text-ink"}`}
+                className="adm-chip"
               >
                 {f.label}
-                <span className={`text-xs ${active ? "text-gold" : ""}`}>
-                  {n}
-                </span>
+                <span className="adm-chip-count">{n}</span>
               </button>
             );
           })}
@@ -359,7 +357,7 @@ export function ProductsPage() {
           type="button"
           aria-pressed={selecting}
           onClick={() => (selecting ? stopSelecting() : setSelecting(true))}
-          className={`press inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-semibold ring-1 transition-colors ${selecting ? "bg-gold-soft text-ink ring-gold" : "bg-paper text-forest ring-line"}`}
+          className={`adm-chip !font-semibold ${selecting ? "!border-gold !bg-gold-soft !text-ink !outline-none" : "!text-forest"}`}
         >
           <ListChecks className="size-4" /> {selecting ? "إلغاء" : "تحديد"}
         </button>
@@ -372,13 +370,13 @@ export function ProductsPage() {
       )}
 
       {filter === "out" && outCount > 0 && !selecting && (
-        <div className="admin-enter mb-4 flex flex-col gap-3 rounded-2xl border border-danger/20 bg-danger/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="admin-enter mb-4 flex flex-col gap-3 rounded-2xl border border-dashed border-danger/35 bg-danger/5 p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-ink">
             {itemsLabel(outCount)} نفدت كميتها. يمكنك حذفها كلها مرة واحدة.
           </p>
           <button
             type="button"
-            className="press btn btn-sm btn-danger"
+            className="press btn btn-danger"
             onClick={() =>
               setToDelete(data.products.filter((p) => matches(p, "out")))
             }
@@ -389,7 +387,7 @@ export function ProductsPage() {
       )}
 
       {list.length === 0 ? (
-        <div className="card">
+        <div className="adm-sheet">
           <EmptyState
             icon={<Package className="size-6" />}
             title="لا توجد منتجات هنا"
@@ -402,13 +400,13 @@ export function ProductsPage() {
           />
         </div>
       ) : (
-        <ul className="card divide-y divide-line">
+        <ul className="adm-sheet divide-y divide-dashed divide-line overflow-hidden">
           {selecting && (
             <li className="flex items-center justify-between gap-3 bg-sand/40 px-4 py-2.5 text-sm sm:px-5">
               <span className="text-muted">اضغط على المنتجات لتحديدها</span>
               <button
                 type="button"
-                className="font-semibold text-forest"
+                className="-my-2 min-h-11 font-semibold text-forest"
                 onClick={() =>
                   setSelected(
                     list.every((p) => selected.has(p.id))
@@ -431,7 +429,7 @@ export function ProductsPage() {
                 <SmartImage
                   src={p.images[0]}
                   alt=""
-                  className={`h-16 w-13 shrink-0 rounded-lg ${p.published ? "" : "opacity-50"}`}
+                  className={`h-16 w-13 shrink-0 rounded-md ${p.published ? "" : "opacity-50 grayscale-[40%]"}`}
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-medium text-ink">
@@ -440,9 +438,9 @@ export function ProductsPage() {
                   <span className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted">
                     <span>{catName(p.categoryId)}</span>
                     <span aria-hidden>·</span>
-                    <span className="tabular-nums">
+                    <span className="adm-num text-[0.8rem] text-ink">
                       {money(effectivePrice(p))}
-                      {isOnSale(p) && <s className="ms-1">{money(p.price)}</s>}
+                      {isOnSale(p) && <s className="ms-1.5 font-normal text-muted">{money(p.price)}</s>}
                     </span>
                   </span>
                   <span className="mt-1.5 flex flex-wrap gap-1.5">
@@ -514,7 +512,7 @@ export function ProductsPage() {
                         <button
                           type="button"
                           onClick={() => soldOut([p])}
-                          className="flex w-20 flex-col items-center justify-center gap-1 bg-gold-soft text-xs font-semibold text-ink"
+                          className="flex w-20 flex-col items-center justify-center gap-1 bg-gold-soft text-xs font-semibold text-ink outline-1 outline-offset-[-5px] outline-dashed outline-gold-deep/40"
                         >
                           <PackageX className="size-5" /> نفدت
                         </button>
@@ -536,7 +534,7 @@ export function ProductsPage() {
       )}
 
       {selecting && (
-        <div className="admin-enter fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-2xl bg-ink p-3 text-ivory shadow-[var(--shadow-lift)] lg:inset-x-auto lg:bottom-6 lg:start-[calc(16.5rem+2rem)] lg:end-8">
+        <div className="on-dark adm-cloth-flat admin-enter fixed inset-x-3 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-30 rounded-2xl p-3 shadow-[var(--shadow-lift)] outline-1 outline-offset-[-6px] outline-dashed outline-gold/40 lg:inset-x-auto lg:bottom-6 lg:start-[calc(16.5rem+2rem)] lg:end-8">
           <p className="mb-2 px-1 text-xs text-ivory/70">
             {picked.length
               ? `${itemsLabel(picked.length)} محدد`

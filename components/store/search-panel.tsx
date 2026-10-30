@@ -45,7 +45,7 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="ابحثي عن طرح، عبايات، ألوان…"
-          className="field !min-h-14 !rounded-full !ps-12 !text-base"
+          className="field !min-h-14 !ps-12 !text-base"
           autoComplete="off"
         />
       </form>
@@ -54,7 +54,7 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
         <div className="mt-5 flex flex-wrap gap-2">
           <span className="eyebrow w-full text-muted">الأكثر بحثًا</span>
           {popular.map((p) => (
-            <button key={p} type="button" className="btn btn-sm btn-outline border-line" onClick={() => setQ(p)}>
+            <button key={p} type="button" className="chip" onClick={() => setQ(p)}>
               {p}
             </button>
           ))}
@@ -64,13 +64,13 @@ export function SearchPanel({ onNavigate, active }: { onNavigate: () => void; ac
           لا توجد قطع تطابق «{q}». جرّبي لونًا أو نوع قماش.
         </p>
       ) : (
-        <ul className="mt-4 divide-y divide-line" aria-label="نتائج البحث">
+        <ul className="mt-4 divide-y divide-dashed divide-forest/20" aria-label="نتائج البحث">
           {results.map((p) => (
             <li key={p.id}>
-              <Link href={`/product/${p.slug}`} onClick={onNavigate} className="flex items-center gap-4 rounded-xl py-3 transition-colors hover:bg-sand/60">
-                <SmartImage src={p.images[0]} alt="" className="size-16 shrink-0 rounded-xl" />
+              <Link href={`/product/${p.slug}`} onClick={onNavigate} className="flex items-center gap-4 rounded-xl px-1 py-3 transition-colors hover:bg-sand/60">
+                <SmartImage src={p.images[0]} alt="" className="h-18 w-15 shrink-0 rounded-t-lg rounded-b-sm" />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-ink">{p.name}</p>
+                  <p className="font-display truncate text-lg leading-snug text-ink">{p.name}</p>
                   <p className="truncate text-xs text-muted">{p.tagline}</p>
                 </div>
                 <Price price={effectivePrice(p)} compareAt={p.price} size="sm" />

@@ -68,9 +68,9 @@ export function MyOrdersView() {
   if (orders === null) return <div className="container-x py-16"><div className="skeleton h-80 rounded-2xl" aria-busy="true" /></div>;
 
   return (
-    <div className="container-x max-w-3xl py-10 sm:py-14">
+    <div className="container-x max-w-3xl py-8 sm:py-14">
       <p className="eyebrow text-gold-deep">حسابي</p>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">طلباتي</h1>
+      <h1 className="season-title font-display mt-1 text-4xl text-ink sm:text-5xl">طلباتي</h1>
       <p className="mt-2 text-sm text-muted">الطلبات التي أرسلتِها من هذا الجهاز.</p>
 
       {orders.length === 0 ? (
@@ -91,29 +91,29 @@ export function MyOrdersView() {
             const canReturn = status !== "cancelled" && daysSince(o.createdAt) <= data.settings.returnDays + 14;
             return (
               <li key={o.number} className="card overflow-hidden">
-                <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-3">
+                <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4">
                   <div>
-                    <p className="ltr text-start font-semibold text-ink" dir="ltr">{o.number}</p>
-                    <p className="text-xs text-muted">{dateFormat(o.createdAt)} · {piecesLabel(pieces)}</p>
+                    <p className="swing-tag swing-tag-dark -ms-1"><bdi dir="ltr">{o.number}</bdi></p>
+                    <p className="mt-2 text-xs text-muted">{dateFormat(o.createdAt)} · {piecesLabel(pieces)}</p>
                   </div>
                   <div className="text-end">
-                    {meta && <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${meta.tone}`}>{meta.label}</span>}
-                    <p className="font-display mt-1 text-2xl text-ink tabular-nums">{money(o.total)}</p>
+                    {meta && <span className={`inline-block rounded-md px-3 py-1 text-xs font-semibold ${meta.tone}`}>{meta.label}</span>}
+                    <p className="font-latin mt-1 text-xl font-bold text-ink tabular-nums">{money(o.total)}</p>
                   </div>
                 </div>
                 <ul className="no-scrollbar flex gap-3 overflow-x-auto px-5 pb-4">
                   {o.lines.map((l, i) => (
                     <li key={i} className="w-20 shrink-0">
                       <div className="relative">
-                        <SmartImage src={image(l.refId)} alt="" className="arch aspect-[4/5] w-20" fallbackLabel=" " />
-                        {l.quantity > 1 && <span className="absolute top-1 end-1 rounded-full bg-ink px-1.5 text-[0.65rem] font-bold text-ivory">×{l.quantity}</span>}
+                        <SmartImage src={image(l.refId)} alt="" className="pinked aspect-[4/5] w-20 rounded-t-lg [--z:3px]" fallbackLabel=" " />
+                        {l.quantity > 1 && <span className="font-latin absolute top-1 end-1 rounded-sm bg-ink px-1.5 text-[0.68rem] font-bold text-gold-soft"><bdi dir="ltr">×{l.quantity}</bdi></span>}
                       </div>
                       <p className="mt-1 line-clamp-2 text-[0.7rem] leading-snug text-text">{l.name}</p>
                       {(l.color || l.size) && <p className="truncate text-[0.65rem] text-muted">{[l.color, l.size].filter(Boolean).join(" · ")}</p>}
                     </li>
                   ))}
                 </ul>
-                <div className="grid grid-cols-3 border-t border-line text-xs font-semibold">
+                <div className="grid grid-cols-3 border-t border-dashed border-forest/20 text-xs font-semibold">
                   {canReturn ? (
                     <Link href={`/returns?n=${encodeURIComponent(o.number)}`} className="press flex min-h-14 flex-col items-center justify-center gap-1 text-forest hover:bg-sand/60">
                       <Undo2 className="size-4" /> إرجاع أو استبدال
@@ -127,7 +127,7 @@ export function MyOrdersView() {
                     href={whatsappLink(data.settings.whatsappNumber, `السلام عليكم ${data.settings.storeName}، لدي سؤال عن طلبي رقم ${o.number}.`)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="press flex min-h-14 flex-col items-center justify-center gap-1 border-x border-line text-forest hover:bg-sand/60"
+                    className="press flex min-h-14 flex-col items-center justify-center gap-1 border-x border-dashed border-forest/20 text-forest hover:bg-sand/60"
                   >
                     <WhatsappIcon className="size-4" /> اسألي عن الطلب
                   </a>
@@ -141,7 +141,7 @@ export function MyOrdersView() {
         </ul>
       )}
 
-      <Link href="/returns" className="card mt-6 flex items-center gap-4 p-5 transition-colors hover:border-gold">
+      <Link href="/returns" className="card stitch-box-soft mt-6 flex items-center gap-4 p-5 transition-colors duration-300 hover:bg-sand/40">
         <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sand text-forest"><PackageSearch className="size-5" /></span>
         <span className="min-w-0 flex-1">
           <span className="block font-semibold text-ink">طلبتِ من هاتف آخر؟</span>

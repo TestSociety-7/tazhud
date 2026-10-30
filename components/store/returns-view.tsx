@@ -113,16 +113,16 @@ export function ReturnsView() {
     const link = whatsappLink(s.whatsappNumber, buildReturnMessage(done, s));
     return (
       <div className="container-x py-14">
-        <div className="card mx-auto max-w-xl px-6 py-12 text-center sm:px-12">
+        <div className="card stitch-box-soft mx-auto max-w-xl px-6 py-12 text-center sm:px-12">
           <CheckCircle2 className="mx-auto size-12 text-success" />
           <h1 className="font-display mt-4 text-4xl text-ink">وصلنا طلبكِ</h1>
           <p className="mx-auto mt-3 max-w-sm text-sm text-muted" role="status">
-            رقم طلب {done.type === "exchange" ? "الاستبدال" : "الإرجاع"} <strong className="ltr inline-block text-ink">{done.number}</strong>. سنتواصل معكِ على واتساب لترتيب استلام القطع.
+            رقم طلب {done.type === "exchange" ? "الاستبدال" : "الإرجاع"} <strong className="font-latin ltr inline-block text-ink">{done.number}</strong>. سنتواصل معكِ على واتساب لترتيب استلام القطع.
           </p>
           <ol className="mx-auto mt-8 max-w-sm space-y-3 text-start text-sm text-text">
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">1</span>أرسلي الطلب على واتساب، ويمكنكِ إضافة صور للقطعة.</li>
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">2</span>جهّزي القطع غير مستخدمة ومعها بطاقاتها.</li>
-            <li className="flex gap-3"><span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs text-ivory">3</span>نرتب معكِ الاستلام، ثم {done.type === "exchange" ? "نرسل لكِ القطعة البديلة" : "نعيد لكِ المبلغ"}.</li>
+            <li className="flex gap-3"><span className="font-latin grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs font-bold text-gold-soft">1</span>أرسلي الطلب على واتساب، ويمكنكِ إضافة صور للقطعة.</li>
+            <li className="flex gap-3"><span className="font-latin grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs font-bold text-gold-soft">2</span>جهّزي القطع غير مستخدمة ومعها بطاقاتها.</li>
+            <li className="flex gap-3"><span className="font-latin grid size-6 shrink-0 place-items-center rounded-full bg-forest text-xs font-bold text-gold-soft">3</span>نرتب معكِ الاستلام، ثم {done.type === "exchange" ? "نرسل لكِ القطعة البديلة" : "نعيد لكِ المبلغ"}.</li>
           </ol>
           <div className="mt-8 grid gap-3">
             <a href={link} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp min-h-12">
@@ -139,9 +139,9 @@ export function ReturnsView() {
   const late = found && found.days > found.returnDays;
 
   return (
-    <div className="container-x max-w-3xl py-10 sm:py-14">
+    <div className="container-x max-w-3xl py-8 sm:py-14">
       <p className="eyebrow text-gold-deep">المساعدة</p>
-      <h1 className="season-title font-display mt-2 text-5xl text-ink">إرجاع أو استبدال</h1>
+      <h1 className="season-title font-display mt-1 text-4xl text-ink sm:text-5xl">إرجاع أو استبدال</h1>
       <p className="mt-2 text-sm text-muted">اختاري القطع من طلبكِ وسنرتب كل شيء معكِ على واتساب.</p>
 
       <ul className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -150,7 +150,7 @@ export function ReturnsView() {
           { icon: Tag, text: "القطع غير مستخدمة ومعها بطاقاتها" },
           { icon: PackageOpen, text: "نرتب استلام القطع من عندكِ" },
         ].map(({ icon: Icon, text }) => (
-          <li key={text} className="flex items-center gap-3 rounded-2xl border border-line bg-paper p-3 text-sm text-text">
+          <li key={text} className="flex items-center gap-3 rounded-xl border border-line bg-paper p-3 text-sm text-text">
             <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-sand text-forest"><Icon className="size-4" /></span>
             {text}
           </li>
@@ -161,12 +161,13 @@ export function ReturnsView() {
       </p>
 
       {!found ? (
-        <form onSubmit={lookup} noValidate className="card mt-8 space-y-5 p-6 sm:p-8">
+        <form onSubmit={lookup} noValidate className="card mt-8 space-y-5 p-5 sm:p-8">
           <p className="font-display text-3xl text-ink">ابحثي عن طلبكِ</p>
+          <span className="stitch !mt-3 w-16" aria-hidden />
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label htmlFor={`${uid}-n`} className="label">رقم الطلب</label>
-              <input id={`${uid}-n`} className="field ltr text-start" dir="ltr" placeholder="TZ-261029-1234" autoCapitalize="characters" value={number} onChange={(e) => setNumber(e.target.value)} />
+              <input id={`${uid}-n`} className="field ltr font-latin text-start" dir="ltr" placeholder="TZ-261029-1234" autoCapitalize="characters" value={number} onChange={(e) => setNumber(e.target.value)} />
               <p className="hint">تجدينه في رسالة الطلب على واتساب.</p>
             </div>
             <div>
@@ -186,10 +187,10 @@ export function ReturnsView() {
         </form>
       ) : (
         <form onSubmit={submit} noValidate className="mt-8 space-y-6">
-          <div className="card flex flex-wrap items-center justify-between gap-3 p-5">
+          <div className="card stitch-box-soft flex flex-wrap items-center justify-between gap-3 p-5">
             <div>
               <p className="text-xs text-muted">طلب {found.order.name}</p>
-              <p className="ltr text-start font-semibold text-ink" dir="ltr">{found.order.number}</p>
+              <p className="font-latin ltr text-start font-bold text-ink" dir="ltr">{found.order.number}</p>
               <p className="text-xs text-muted">{dateFormat(found.order.createdAt)}</p>
             </div>
             <button type="button" className="btn btn-sm btn-ghost" onClick={() => { setFound(null); setError(""); }}>طلب آخر</button>
@@ -204,18 +205,18 @@ export function ReturnsView() {
           <fieldset className="card p-5 sm:p-6">
             <legend className="sr-only">القطع</legend>
             <p aria-hidden className="font-display text-2xl text-ink">أي القطع؟</p>
-            <ul className="mt-4 divide-y divide-line">
+            <ul className="mt-4 divide-y divide-dashed divide-forest/20">
               {found.order.lines.map((l, i) => {
                 const q = qty[i] ?? 0;
                 return (
                   <li key={i} className="flex items-center gap-3 py-3">
                     <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
                       <input type="checkbox" className="size-5 shrink-0 accent-[var(--color-forest)]" checked={q > 0} onChange={(e) => setQty((x) => ({ ...x, [i]: e.target.checked ? l.quantity : 0 }))} />
-                      <SmartImage src={l.image} alt="" className="h-16 w-12 shrink-0 rounded-lg" />
+                      <SmartImage src={l.image} alt="" className="h-16 w-12 shrink-0 rounded-t-md rounded-b-sm" />
                       <span className="min-w-0">
                         <span className="block truncate text-sm font-semibold text-ink">{l.name}</span>
                         <span className="block truncate text-xs text-muted">{[l.color, l.size].filter(Boolean).join(" · ")}{l.quantity > 1 ? ` · طلبتِ ${l.quantity}` : ""}</span>
-                        <span className="block text-xs text-muted">{money(l.unitPrice)}</span>
+                        <span className="font-latin block text-xs text-muted">{money(l.unitPrice)}</span>
                       </span>
                     </label>
                     {q > 0 && l.quantity > 1 && <QuantityControl size="sm" value={q} min={1} max={l.quantity} onChange={(v) => setQty((x) => ({ ...x, [i]: v }))} label={`عدد ${l.name}`} />}
@@ -239,7 +240,7 @@ export function ReturnsView() {
                   role="radio"
                   aria-checked={type === id}
                   onClick={() => setType(id)}
-                  className={`press flex items-center gap-3 rounded-2xl border p-3 text-start transition-colors ${type === id ? "border-forest bg-forest/5 ring-2 ring-forest/30" : "border-line bg-paper"}`}
+                  className={`press flex items-center gap-3 rounded-xl border p-3 text-start transition-colors duration-300 ${type === id ? "border-forest bg-forest/5 outline-1 -outline-offset-6 outline-dashed outline-forest/40" : "border-line bg-paper"}`}
                 >
                   <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${type === id ? "bg-forest text-ivory" : "bg-sand text-forest"}`}><Icon className="size-5" /></span>
                   <span>
@@ -260,7 +261,7 @@ export function ReturnsView() {
                     role="radio"
                     aria-checked={reason === r}
                     onClick={() => setReason(r)}
-                    className={`press min-h-10 rounded-full border px-4 text-sm transition-colors ${reason === r ? "border-ink bg-ink text-ivory" : "border-line bg-paper text-text hover:border-gold"}`}
+                    className="chip"
                   >
                     {r}
                   </button>

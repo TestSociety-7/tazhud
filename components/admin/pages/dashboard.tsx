@@ -8,7 +8,7 @@ import { PLACEHOLDER_WHATSAPP } from "@/lib/seed";
 import { isValidWhatsappNumber } from "@/lib/whatsapp";
 import { SmartImage } from "@/components/ui/smart-image";
 import { Badge, Panel } from "../ui";
-import { CountUp, Tilt } from "@/components/ui/fx";
+import { CountUp } from "@/components/ui/fx";
 import { STATUS_META } from "./orders";
 import { dateFormat, itemsLabel } from "@/lib/arabic";
 import { SeasonPicker } from "../season-picker";
@@ -34,18 +34,22 @@ function Stat({
   dark?: boolean;
 }) {
   return (
-    <Tilt className="rounded-2xl">
-      <Link
-        href={href}
-        className={`press block min-w-0 rounded-2xl border p-4 [transform-style:preserve-3d] sm:p-5 ${dark ? "on-dark sheen border-ink bg-ink text-ivory" : "border-line bg-paper text-ink"}`}
-      >
-        <span className={`tilt-pop grid size-10 place-items-center rounded-xl ${dark ? "bg-gold text-ink" : "bg-sand text-forest"}`}>{icon}</span>
-        <p className="tilt-pop font-display mt-4 text-3xl leading-none tabular-nums break-words sm:text-4xl">
+    <Link
+      href={href}
+      className={`press group block min-w-0 rounded-2xl border p-4 transition-[box-shadow,border-color] duration-300 ease-[var(--ease-soft)] sm:p-5 ${
+        dark ? "on-dark adm-cloth-flat adm-seam border-ink" : "border-line bg-paper text-ink hover:border-[#dcc3ca] hover:shadow-[var(--shadow-soft)]"
+      }`}
+    >
+      <span className="flex items-center justify-between gap-2">
+        <span className={`text-xs font-semibold ${dark ? "text-gold-soft" : "text-muted"}`}>{label}</span>
+        <span className={dark ? "text-gold-bright" : "text-forest/70"}>{icon}</span>
+      </span>
+      <span className={`mt-4 block break-words leading-none ${dark ? "text-ivory" : "text-ink"}`}>
+        <span className="adm-num text-[1.7rem] sm:text-[2.1rem]">
           <CountUp value={value} format={format} />
-        </p>
-        <p className={`mt-2 text-xs font-medium ${dark ? "text-gold-soft" : "text-muted"}`}>{label}</p>
-      </Link>
-    </Tilt>
+        </span>
+      </span>
+    </Link>
   );
 }
 
@@ -64,23 +68,33 @@ export function Dashboard() {
 
   return (
     <>
-      <section className="on-dark relative mb-6 overflow-hidden rounded-3xl bg-ink p-5 text-ivory sm:p-8">
-        <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
-        <div className="pointer-events-none absolute -top-20 -end-16 size-56 rounded-full bg-gold/20 blur-3xl" aria-hidden />
+      {/* The cover of the order book: mulberry cloth, a saffron seam, today's work on a tag. */}
+      <section className="on-dark adm-cloth adm-seam relative mb-6 overflow-hidden rounded-[1.4rem] px-5 pt-6 pb-5 sm:px-8 sm:pt-8 sm:pb-7">
+        <div className="pointer-events-none absolute -top-24 -start-16 size-64 rounded-full bg-gold/15 blur-3xl" aria-hidden />
         <div className="relative flex items-center gap-4 sm:gap-6">
-          <WelcomeMark size="size-14 sm:size-20" pad="p-2.5 sm:p-3" />
-          <div className="min-w-0">
-            <p className="text-sm text-gold">{greeting(ready ? new Date(CLIENT_NOW).getHours() : -1)}</p>
-            <h1 className="font-display mt-0.5 text-3xl leading-tight sm:text-4xl">أهلًا بك في {data.settings.storeName}</h1>
-            <p className="mt-1 text-sm text-ivory/70">
-              {newOrders.length > 0 ? `عندك ${newOrders.length} ${newOrders.length === 1 ? "طلب جديد" : "طلبات جديدة"} بانتظارك.` : "لا توجد طلبات جديدة الآن."}
-            </p>
+          <div className="shrink-0">
+            <WelcomeMark size="size-14 sm:size-20" pad="p-2.5 sm:p-3" />
           </div>
+          <div className="min-w-0">
+            <p className="text-sm text-gold-bright">{greeting(ready ? new Date(CLIENT_NOW).getHours() : -1)}</p>
+            <h1 className="season-title font-display mt-0.5 text-[1.9rem] leading-tight sm:text-[2.6rem]">أهلًا بك في {data.settings.storeName}</h1>
+          </div>
+        </div>
+        <div className="relative mt-6 flex items-center gap-3">
+          <p className="min-w-0 flex-1 text-sm text-ivory/75">
+            {newOrders.length > 0 ? "طلبات بانتظار ردّك." : "لا توجد طلبات جديدة الآن."}
+          </p>
+          {newOrders.length > 0 && (
+            <Link href="/admin/orders" className="swing-tag press min-h-11 shrink-0 !ps-7 !pe-4 text-base">
+              <span className="adm-num">{newOrders.length}</span>
+              <span className="font-sans text-xs font-semibold">{newOrders.length === 1 ? "طلب جديد" : "طلبات جديدة"}</span>
+            </Link>
+          )}
         </div>
       </section>
 
       {needsWhatsapp && (
-        <Link href="/admin/settings" className="press mb-6 flex items-center gap-3 rounded-2xl border border-gold/40 bg-gold-soft/40 p-4 text-sm text-[#5c4519]">
+        <Link href="/admin/settings" className="press stitch-box mb-6 flex min-h-14 items-center gap-3 rounded-2xl bg-gold-soft/50 p-4 text-sm text-gold-deep">
           <AlertTriangle className="size-5 shrink-0" />
           <span className="flex-1">أضف رقم واتساب الحقيقي حتى تصلك طلبات الزبائن.</span>
           <ArrowLeft className="size-4 shrink-0" />
@@ -99,20 +113,24 @@ export function Dashboard() {
       </div>
 
       <div className="stagger mt-6 grid gap-6 lg:grid-cols-2">
-        <Panel title="أحدث الطلبات" actions={<Link href="/admin/orders" className="text-xs font-semibold text-forest">عرض الكل</Link>}>
+        <Panel title="أحدث الطلبات" actions={<Link href="/admin/orders" className="-my-2 inline-flex min-h-11 items-center text-xs font-semibold text-forest">عرض الكل</Link>}>
           {orders.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">لا توجد طلبات بعد. ستظهر هنا عندما يرسل الزبائن طلباتهم.</p>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul className="-my-2 divide-y divide-dashed divide-line">
               {orders.slice(0, 5).map((o) => (
                 <li key={o.id}>
-                  <Link href={`/admin/orders?open=${o.id}`} className="press flex min-h-14 items-center gap-3 py-2 hover:bg-sand/40">
+                  <Link href={`/admin/orders?open=${o.id}`} className="press -mx-2 flex min-h-16 items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-sand/40">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-ink">{o.customer.name}</p>
-                      <p className="text-xs text-muted">{dateFormat(o.createdAt, { month: "short", day: "numeric" })} · {itemsLabel(o.lines.length)}</p>
+                      <p className="truncate text-sm font-semibold text-ink">{o.customer.name}</p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        <span className="adm-num ltr inline-block font-normal">{o.number}</span> · {dateFormat(o.createdAt, { month: "short", day: "numeric" })} · {itemsLabel(o.lines.length)}
+                      </p>
                     </div>
-                    <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
-                    <span className="w-20 text-end text-sm font-semibold tabular-nums">{money(o.total)}</span>
+                    <span className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="adm-num text-sm text-ink">{money(o.total)}</span>
+                      <Badge tone={STATUS_META[o.status].tone}>{STATUS_META[o.status].label}</Badge>
+                    </span>
                   </Link>
                 </li>
               ))}
@@ -120,15 +138,15 @@ export function Dashboard() {
           )}
         </Panel>
 
-        <Panel title="مخزون يحتاج متابعة" actions={<Link href="/admin/products?stock=low" className="text-xs font-semibold text-forest">إدارة</Link>}>
+        <Panel title="مخزون يحتاج متابعة" actions={<Link href="/admin/products?stock=low" className="-my-2 inline-flex min-h-11 items-center text-xs font-semibold text-forest">إدارة</Link>}>
           {low.length === 0 ? (
             <p className="py-6 text-center text-sm text-muted">كل المنتجات متوفرة بكميات جيدة.</p>
           ) : (
-            <ul className="divide-y divide-line">
+            <ul className="-my-2 divide-y divide-dashed divide-line">
               {low.slice(0, 6).map((p) => (
                 <li key={p.id}>
-                  <Link href={`/admin/products/${p.id}`} className="press flex min-h-14 items-center gap-3 py-2 hover:bg-sand/40">
-                    <SmartImage src={p.images[0]} alt="" className="size-11 shrink-0 rounded-lg" />
+                  <Link href={`/admin/products/${p.id}`} className="press -mx-2 flex min-h-16 items-center gap-3 rounded-xl px-2 py-2 transition-colors hover:bg-sand/40">
+                    <SmartImage src={p.images[0]} alt="" className="h-12 w-10 shrink-0 rounded-md" />
                     <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{p.name}</span>
                     <Badge tone={p.stock <= 0 ? "red" : "gold"}>{p.stock <= 0 ? "نفدت" : `بقي ${p.stock}`}</Badge>
                   </Link>

@@ -123,7 +123,7 @@ export function HomepageEditor() {
                 </button>
               </div>
             ))}
-            <button type="button" className="press btn btn-sm btn-outline border-line" onClick={() => patch("announcement", { messages: [...h.announcement.messages, ""] })}>
+            <button type="button" className="press btn btn-outline min-h-11 border-line px-4 text-sm" onClick={() => patch("announcement", { messages: [...h.announcement.messages, ""] })}>
               <Plus className="size-4" /> إضافة رسالة
             </button>
           </div>
@@ -156,14 +156,14 @@ export function HomepageEditor() {
         </Panel>
 
         <Panel title="ترتيب الصفحة" description="أظهر أو أخفِ الأجزاء وغيّر ترتيبها.">
-          <ul className="divide-y divide-line">
+          <ul className="-my-3 divide-y divide-dashed divide-line">
             {sections.map((s, i) => (
               <li key={s.key} className="flex flex-wrap items-center gap-3 py-3">
-                <div className="flex gap-1">
-                  <button type="button" className="icon-btn size-9" disabled={i === 0} onClick={() => moveSection(i, -1)} aria-label={`تقديم ${SECTION_LABEL[s.key]}`}>
+                <div className="flex">
+                  <button type="button" className="icon-btn disabled:opacity-30" disabled={i === 0} onClick={() => moveSection(i, -1)} aria-label={`تقديم ${SECTION_LABEL[s.key]}`}>
                     <ArrowUp className="size-4" />
                   </button>
-                  <button type="button" className="icon-btn size-9" disabled={i === sections.length - 1} onClick={() => moveSection(i, 1)} aria-label={`تأخير ${SECTION_LABEL[s.key]}`}>
+                  <button type="button" className="icon-btn disabled:opacity-30" disabled={i === sections.length - 1} onClick={() => moveSection(i, 1)} aria-label={`تأخير ${SECTION_LABEL[s.key]}`}>
                     <ArrowDown className="size-4" />
                   </button>
                 </div>

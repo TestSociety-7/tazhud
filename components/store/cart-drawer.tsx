@@ -55,7 +55,7 @@ export function CartDrawer() {
           }
         />
       ) : (
-        <ul className="divide-y divide-line px-5">
+        <ul className="divide-y divide-dashed divide-forest/20 px-5">
           {lines.map((l) => (
             <CartLineItem key={l.key} line={l} compact onNavigate={close} />
           ))}
