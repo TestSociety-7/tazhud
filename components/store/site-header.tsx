@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  Menu,
   MessageCircle,
   Package,
   Search,
@@ -26,6 +25,7 @@ import { SearchPanel } from "./search-panel";
 import { whatsappLink } from "@/lib/whatsapp";
 import { readMyOrders } from "@/lib/my-orders";
 import { SeasonTrim } from "./season";
+import { PhoneDock } from "./phone-dock";
 
 export function SiteHeader() {
   const { data } = useStore();
@@ -65,6 +65,18 @@ export function SiteHeader() {
     setSearchOpen(false);
   }
 
+  function openMenu() {
+    setCurrentCategory(new URLSearchParams(location.search).get("category"));
+    setMyOrders(readMyOrders().length);
+    setMenuOpen(true);
+  }
+
+  // The desktop links show which category is open.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- read the query string after navigation without suspending the header
+    setCurrentCategory(new URLSearchParams(location.search).get("category"));
+  }, [pathname]);
+
   const categories = [...data.categories].sort(
     (a, b) => a.sortOrder - b.sortOrder,
   );
@@ -79,100 +91,92 @@ export function SiteHeader() {
 
   return (
     <>
-      <header
-        className={`sticky top-0 z-40 border-b transition-[background-color,border-color,box-shadow] duration-500 ${
-          scrolled
-            ? "border-line bg-ivory/90 shadow-[0_8px_24px_-20px_rgb(15_18_15/0.4)] backdrop-blur-md"
-            : "border-transparent bg-ivory"
-        }`}
-      >
-        <div className="container-x grid h-[var(--header-h)] grid-cols-[1fr_auto_1fr] items-center gap-2 lg:grid-cols-[auto_1fr_auto]">
-          <div className="flex items-center lg:hidden">
-            <button
-              type="button"
-              className="icon-btn -ms-2"
-              onClick={() => {
-                setCurrentCategory(
-                  new URLSearchParams(location.search).get("category"),
-                );
-                setMyOrders(readMyOrders().length);
-                setMenuOpen(true);
-              }}
-              aria-label="فتح القائمة"
-            >
-              <Menu className="size-5" />
-            </button>
-            <button
-              type="button"
-              className="icon-btn"
-              onClick={() => setSearchOpen(true)}
-              aria-label="بحث"
-            >
-              <Search className="size-5" />
-            </button>
-          </div>
-
-          <Logo name={data.settings.storeName} />
-
-          <nav
-            aria-label="القائمة الرئيسية"
-            className="hidden justify-center lg:flex"
-          >
-            <ul className="flex items-center gap-1">
-              {nav.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="relative rounded-full px-4 py-2 text-[0.85rem] font-medium text-text transition-colors after:absolute after:inset-x-4 after:bottom-1 after:h-px after:origin-right after:scale-x-0 after:bg-gold after:transition-transform after:duration-500 hover:text-ink hover:after:scale-x-100"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className="flex items-center justify-end">
-            <button
-              type="button"
-              className="icon-btn hidden lg:inline-grid"
-              onClick={() => setSearchOpen(true)}
-              aria-label="بحث"
-            >
-              <Search className="size-5" />
-            </button>
-            <Link href="/orders" className="icon-btn hidden lg:inline-grid" aria-label="طلباتي">
-              <Package className="size-5" />
-            </Link>
-            <a
-              href={data.settings.instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="icon-btn hidden sm:inline-grid"
-              aria-label={`إنستغرام ${data.settings.instagramHandle} (يفتح في نافذة جديدة)`}
-            >
-              <InstagramIcon className="size-5" />
-            </a>
-            <button
-              type="button"
-              className="icon-btn relative -me-2"
-              onClick={() => setDrawerOpen(true)}
-              aria-label={`فتح السلة، ${count} قطعة`}
-            >
-              <ShoppingBag
-                className={`size-5 transition-transform ${bump ? "scale-125" : ""}`}
-              />
-              {hydrated && count > 0 && (
-                <span className="absolute top-1 end-0.5 grid min-w-[1.15rem] place-items-center rounded-full bg-forest px-1 text-[0.65rem] leading-[1.15rem] font-bold text-ivory">
-                  {count}
-                </span>
+      <header className="sticky top-0 z-40 px-2 pt-2 sm:px-4">
+        <div
+          className={`glass relative mx-auto max-w-[86rem] rounded-[1.4rem] transition-[box-shadow,background-color] duration-500 ${
+            scrolled ? "shadow-[0_18px_40px_-24px_rgb(12_16_36/0.55)]" : ""
+          }`}
+        >
+          <div className="grid h-[3.6rem] grid-cols-[1fr_auto_1fr] items-center gap-2 px-2 sm:h-[var(--header-h)] sm:px-4 lg:grid-cols-[auto_1fr_auto]">
+            <div className="flex items-center lg:hidden">
+              {data.settings.instagramUrl && (
+                <a
+                  href={data.settings.instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="icon-btn"
+                  aria-label={`إنستغرام ${data.settings.instagramHandle} (يفتح في نافذة جديدة)`}
+                >
+                  <InstagramIcon className="size-5" />
+                </a>
               )}
-            </button>
+            </div>
+
+            <Logo name={data.settings.storeName} />
+
+            <nav aria-label="القائمة الرئيسية" className="hidden justify-center lg:flex">
+              <ul className="flex items-center gap-1 rounded-full bg-sand/70 p-1">
+                {nav.map((item) => {
+                  const active = pathname === "/shop" && (item.href === "/shop" ? !currentCategory : item.href.endsWith(`=${currentCategory}`));
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        className="relative block rounded-full px-4 py-2 text-[0.85rem] font-medium text-text transition-all duration-300 hover:bg-paper hover:text-ink hover:shadow-[var(--shadow-soft)] aria-[current=page]:bg-ink aria-[current=page]:text-ivory"
+                      >
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+
+            <div className="flex items-center justify-end">
+              <button type="button" className="icon-btn hidden lg:inline-grid" onClick={() => setSearchOpen(true)} aria-label="بحث">
+                <Search className="size-5" />
+              </button>
+              <Link href="/orders" className="icon-btn hidden lg:inline-grid" aria-label="طلباتي">
+                <Package className="size-5" />
+              </Link>
+              <a
+                href={data.settings.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="icon-btn hidden lg:inline-grid"
+                aria-label={`إنستغرام ${data.settings.instagramHandle} (يفتح في نافذة جديدة)`}
+              >
+                <InstagramIcon className="size-5" />
+              </a>
+              <button
+                type="button"
+                className="icon-btn relative"
+                onClick={() => setDrawerOpen(true)}
+                aria-label={`فتح السلة، ${count} قطعة`}
+              >
+                <ShoppingBag className={`size-5 transition-transform duration-500 ease-[var(--ease-spring)] ${bump ? "scale-125 -rotate-12" : ""}`} />
+                {hydrated && count > 0 && (
+                  <span className="absolute top-1 end-0.5 grid min-w-[1.15rem] place-items-center rounded-full bg-forest px-1 text-[0.65rem] leading-[1.15rem] font-bold text-ivory">
+                    {count}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
+          <span className="scroll-progress mx-6" aria-hidden />
+          <SeasonTrim />
         </div>
-        <span className="scroll-progress" aria-hidden />
-        <SeasonTrim />
       </header>
+
+      <PhoneDock
+        pathname={pathname}
+        count={hydrated ? count : 0}
+        bump={bump}
+        onMenu={openMenu}
+        onSearch={() => setSearchOpen(true)}
+        onCart={() => setDrawerOpen(true)}
+      />
 
       <Sheet
         open={menuOpen}
@@ -194,11 +198,11 @@ export function SiteHeader() {
           className="relative flex min-h-full flex-col overflow-hidden px-5 pt-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]"
         >
           <div
-            className="pattern-geo pointer-events-none absolute inset-0 opacity-[0.05]"
+            className="pointer-events-none absolute -top-24 -end-24 size-72 rounded-full bg-iris/20 blur-3xl"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute -top-24 -end-24 size-72 rounded-full bg-gold/15 blur-3xl"
+            className="pointer-events-none absolute -bottom-24 -start-24 size-72 rounded-full bg-gold/20 blur-3xl"
             aria-hidden
           />
 
@@ -210,7 +214,7 @@ export function SiteHeader() {
             }}
             className="press relative flex min-h-12 w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 text-sm text-ivory/60"
           >
-            <Search className="size-4 text-gold" /> ابحثي عن قطعة…
+            <Search className="size-4 text-gold-bright" /> ابحثي عن قطعة…
           </button>
 
           {/* The things customers come back for, one tap away. */}
@@ -226,9 +230,9 @@ export function SiteHeader() {
                   href={href}
                   {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   aria-current={pathname === href ? "page" : undefined}
-                  className={`press flex h-full flex-col gap-3 rounded-2xl border p-3.5 transition-colors ${pathname === href ? "border-gold/60 bg-gold/15" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"}`}
+                  className={`press flex h-full flex-col gap-3 rounded-[1.4rem] border p-3.5 transition-colors ${pathname === href ? "border-gold-bright/60 bg-gold/15" : "border-white/10 bg-white/[0.05] hover:bg-white/[0.09]"}`}
                 >
-                  <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-gold-bright to-gold-deep text-ink shadow-[0_8px_18px_-8px_rgb(201_162_74/0.7)]">
+                  <span className="grid size-10 place-items-center rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff,#f6dfd5_35%,#ddd6fb_70%,#ecb9a5)] text-ink shadow-[0_8px_18px_-8px_rgb(236_185_165/0.8)]">
                     <Icon className="size-5" />
                   </span>
                   <span>
@@ -241,7 +245,7 @@ export function SiteHeader() {
           </ul>
 
           <div className="relative mt-7 mb-3 flex items-center justify-between">
-            <p className="text-xs font-semibold tracking-wide text-gold">الأقسام</p>
+            <p className="text-xs font-semibold text-gold-bright">الأقسام</p>
             <Link href="/shop" className="inline-flex min-h-9 items-center gap-1 text-xs font-semibold text-gold-soft">
               كل المنتجات <ArrowLeft className="size-3.5" />
             </Link>
@@ -256,7 +260,7 @@ export function SiteHeader() {
                     aria-current={active ? "page" : undefined}
                     className="group block text-center"
                   >
-                    <span className={`arch-full relative block aspect-[3/4] overflow-hidden bg-ink-2 ring-1 transition-transform duration-500 group-active:scale-95 ${active ? "ring-2 ring-gold" : "ring-gold/30"}`}>
+                    <span className={`leaf relative block aspect-[3/4] overflow-hidden bg-ink-2 ring-1 transition-transform duration-500 group-active:scale-95 ${active ? "ring-2 ring-gold-bright" : "ring-white/15"}`}>
                       <SmartImage src={c.image} alt="" className="absolute inset-0" fallbackLabel={c.name} />
                     </span>
                     <span className={`mt-1.5 block text-[0.8rem] leading-tight font-semibold ${active ? "text-gold" : "text-ivory"}`}>{c.name}</span>

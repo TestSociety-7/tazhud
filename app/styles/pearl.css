@@ -1,0 +1,373 @@
+/* ------------------------------------------------------------------------------
+   Pearl & Moon: the shared look of the store and the admin.
+   Shared building blocks only. Page-specific styles live in store-pages.css / admin.css.
+   ------------------------------------------------------------------------------ */
+
+:root {
+  /* Mother-of-pearl: the shimmer used for accents, rings and highlighted text. */
+  --pearl: linear-gradient(115deg, #f7dbe4 0%, #ddd6fb 28%, #cdeeee 52%, #f9e7d3 76%, #f7dbe4 100%);
+  --pearl-dark: linear-gradient(115deg, #ecb9a5 0%, #b9adf6 35%, #9fdcd6 65%, #ecb9a5 100%);
+  --glass-light: rgb(252 251 253 / 0.72);
+  --glass-dark: rgb(22 27 53 / 0.55);
+  --radius-leaf: 2rem 0.75rem 2rem 0.75rem;
+}
+
+/* Glass surfaces: frosted panels that float above the page. */
+.glass {
+  background: var(--glass-light);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.7), 0 12px 32px -18px rgb(35 42 92 / 0.45);
+}
+.glass-dark {
+  background: var(--glass-dark);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1), 0 16px 40px -20px rgb(0 0 0 / 0.7);
+}
+
+/* Shimmering mother-of-pearl text. */
+.pearl-text {
+  background: var(--pearl);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pearl-drift 7s ease-in-out infinite alternate;
+}
+.pearl-text-deep {
+  background: linear-gradient(115deg, var(--color-gold-deep), var(--color-forest-2) 40%, var(--color-gold) 70%, var(--color-gold-deep));
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pearl-drift 7s ease-in-out infinite alternate;
+}
+@keyframes pearl-drift { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+
+/* A thin shimmering pearl outline around any rounded box. */
+.pearl-ring { position: relative; }
+.pearl-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: var(--pearl-dark);
+  background-size: 220% 100%;
+  animation: pearl-drift 6s ease-in-out infinite alternate;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* The pearl button: a glossy pill with light rolling across it. */
+.btn-pearl {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--pearl);
+  background-size: 200% 100%;
+  color: var(--color-ink);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 -2px 6px rgb(140 85 70 / 0.18), 0 14px 30px -14px rgb(236 185 165 / 0.9);
+  animation: pearl-drift 6s ease-in-out infinite alternate;
+}
+.btn-pearl:hover:not(:disabled) { box-shadow: inset 0 1px 0 #fff, inset 0 -2px 6px rgb(140 85 70 / 0.2), 0 18px 36px -12px rgb(236 185 165 / 1); }
+.btn-glass {
+  background: rgb(255 255 255 / 0.08);
+  color: inherit;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+}
+.btn-glass:hover:not(:disabled) { background: rgb(255 255 255 / 0.14); }
+
+/* Leaf frame: soft corners on one diagonal, tighter on the other, like folded fabric. */
+.leaf { border-radius: var(--radius-leaf); }
+/* Tall pill frame used for the hero and highlight photos. */
+.capsule { border-radius: 999px; }
+
+/* A slow-breathing glow (moonlight) behind hero art. */
+.moon-glow {
+  position: absolute;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 45%, rgb(246 223 213 / 0.55), rgb(156 140 242 / 0.25) 45%, transparent 70%);
+  filter: blur(8px);
+  animation: moon-breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes moon-breathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+/* A small glowing pearl bead (admin welcome). */
+.orbit-bead {
+  position: absolute;
+  width: 0.8rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 30%, #fff, #f6dfd5 35%, #b9adf6 80%);
+  box-shadow: 0 0 14px 2px rgb(246 223 213 / 0.7);
+  pointer-events: none;
+}
+
+/* Elements that float slowly in 3D. */
+.float-3d { animation: float-3d 7s ease-in-out infinite; transform-style: preserve-3d; }
+@keyframes float-3d {
+  0%, 100% { transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg); }
+  33% { transform: translate3d(0, -8px, 0) rotateX(4deg) rotateY(-5deg); }
+  66% { transform: translate3d(0, -3px, 0) rotateX(-3deg) rotateY(4deg); }
+}
+
+/* Light that follows the finger/pointer across a card (--mx/--my set from JS). */
+.shine-follow { position: relative; isolation: isolate; }
+.shine-follow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(255 255 255 / 0.35), transparent 45%),
+    linear-gradient(115deg, transparent 30%, rgb(221 214 251 / 0.18) 45%, rgb(205 238 238 / 0.18) 55%, transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: var(--shine, 0);
+  transition: opacity 0.4s var(--ease-soft);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Section index numbers, Latin numerals in a thin pearl outline. */
+.index-num {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  color: var(--color-gold-deep);
+}
+
+/* Silk hero: the WebGL canvas fills its box, with a CSS fallback underneath. */
+.silk {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(120% 70% at 80% 10%, color-mix(in oklab, var(--color-forest-2), transparent 30%), transparent 60%),
+    radial-gradient(90% 60% at 10% 90%, color-mix(in oklab, var(--color-gold), transparent 70%), transparent 60%),
+    linear-gradient(160deg, var(--color-ink-2), var(--color-ink) 60%);
+}
+.silk canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-soft);
+}
+.silk canvas[data-ready="true"] { opacity: 1; }
+
+/* Floating phone dock. */
+.dock {
+  position: fixed;
+  inset-inline: 0.75rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  z-index: 45;
+  transition: translate 0.5s var(--ease-soft), opacity 0.4s;
+}
+.dock[data-away="true"] { translate: 0 140%; opacity: 0; pointer-events: none; }
+.dock-bar {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  height: 4rem;
+  border-radius: 1.6rem;
+  padding-inline: 0.35rem;
+}
+.dock-item {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+  padding-block: 0.4rem;
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: rgb(244 241 246 / 0.6);
+  transition: color 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.dock-item[aria-current="page"] { color: #fff; }
+.dock-item svg { transition: transform 0.45s var(--ease-spring); }
+.dock-item:active svg { transform: scale(0.82); }
+.dock-item[aria-current="page"] svg { transform: translateY(-1px) scale(1.08); }
+.dock-orb {
+  position: relative;
+  margin-top: -1.9rem;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 999px;
+  color: var(--color-ink);
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #f6dfd5 30%, #ddd6fb 62%, #ecb9a5 100%);
+  box-shadow: 0 0 0 5px var(--color-ink), 0 0 0 6px rgb(255 255 255 / 0.12), 0 16px 30px -10px rgb(236 185 165 / 0.85);
+  transition: transform 0.45s var(--ease-spring);
+}
+.dock-orb:active { transform: scale(0.9); }
+.dock-orb[data-bump="true"] { animation: orb-bump 0.6s var(--ease-spring); }
+@keyframes orb-bump { 40% { transform: scale(1.18) rotate(-8deg); } }
+.dock-dot {
+  position: absolute;
+  bottom: 0.42rem;
+  width: 1.1rem;
+  height: 3px;
+  border-radius: 9px;
+  background: var(--pearl-dark);
+  box-shadow: 0 0 10px rgb(236 185 165 / 0.8);
+}
+
+/* Category ring: cards placed around a 3D cylinder you can spin. */
+.cring-stage {
+  position: relative;
+  perspective: 1100px;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.cring {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.9s var(--ease-soft);
+}
+.cring[data-dragging="true"] { transition: none; }
+.cring-floor {
+  position: absolute;
+  left: 50%;
+  bottom: 0.5rem;
+  width: 80%;
+  height: 2.2rem;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(35 42 92 / 0.28), transparent);
+  pointer-events: none;
+}
+.cring-card {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: opacity 0.6s, filter 0.6s;
+}
+
+/* Silk curtain intro: a dark sheet with a wavy hem lifts off the page. */
+.brand-intro .intro-curtain {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(80% 50% at 50% 40%, color-mix(in oklab, var(--color-forest), transparent 40%), transparent 70%),
+    var(--color-ink);
+  animation: curtain-lift 0.95s cubic-bezier(0.7, 0, 0.2, 1) 0.95s forwards;
+}
+.brand-intro .intro-curtain::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  height: 10vh;
+  background: var(--color-ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0h400v24c-40 26-80 26-120 6S200 8 160 28 80 56 40 36 0 24 0 24Z'/%3E%3C/svg%3E") top / 100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 60' preserveAspectRatio='none'%3E%3Cpath d='M0 0h400v24c-40 26-80 26-120 6S200 8 160 28 80 56 40 36 0 24 0 24Z'/%3E%3C/svg%3E") top / 100% 100% no-repeat;
+}
+@keyframes curtain-lift { to { transform: translateY(-115%); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .pearl-text, .pearl-text-deep, .btn-pearl, .pearl-ring::before, .float-3d, .moon-glow { animation: none; }
+  .cring { transition: none; }
+}
+
+/* ----------------------------- Home ----------------------------- */
+.hero-stage {
+  transform: perspective(1000px) translate3d(0, var(--lift, 0px), 0) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.hero-orbit .hero-bead { filter: drop-shadow(0 0 3px #f6dfd5) drop-shadow(0 0 6px #b9adf6); }
+.hero-card { transform: translateZ(60px); animation: float-3d 6s ease-in-out -2s infinite; }
+/* Light gliding over the capsule photo. */
+.hero-glare {
+  background: linear-gradient(115deg, transparent 20%, rgb(255 255 255 / 0.16) 45%, rgb(221 214 251 / 0.1) 55%, transparent 80%);
+  background-size: 250% 100%;
+  animation: glare 7s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+@keyframes glare { 0%, 100% { background-position: 120% 0; } 50% { background-position: -20% 0; } }
+
+/* Hero words rise out of a soft blur, one after the other. */
+.hero-word { animation: word-rise 1s var(--ease-soft) backwards; }
+@keyframes word-rise {
+  from { opacity: 0; transform: translate3d(0, 0.5em, 0) scale(0.96); filter: blur(10px); }
+}
+
+/* Dark cards on the home page share the silk gradient. */
+.promo-card,
+.how-card {
+  background:
+    radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--color-forest-2), transparent 25%), transparent 60%),
+    radial-gradient(90% 70% at 0% 100%, color-mix(in oklab, var(--color-gold-deep), transparent 55%), transparent 60%),
+    linear-gradient(160deg, var(--color-ink-2), var(--color-ink));
+}
+.ticket-stub::before,
+.ticket-stub::after { background: var(--color-ivory); }
+.step-card { animation: float-3d 8s ease-in-out infinite; }
+
+/* Bundle photos fan out in 3D when the card is touched or hovered. */
+.bundle-pic { transition: transform 0.7s var(--ease-spring); }
+.bundle-card:hover .bundle-pic:first-child,
+.bundle-card:active .bundle-pic:first-child { transform: translateX(-14px) rotateY(18deg) rotate(-4deg); }
+.bundle-card:hover .bundle-pic:last-child,
+.bundle-card:active .bundle-pic:last-child { transform: translateX(14px) rotateY(-18deg) rotate(4deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .step-card { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glare, .hero-card { animation: none; }
+  .hero-stage { transform: none; }
+}
+
+/* Intro extras: two pearl orbits around the logo and a line that draws under the name. */
+.intro-rings { position: relative; display: block; perspective: 600px; }
+.intro-rings::before,
+.intro-rings::after {
+  content: "";
+  position: absolute;
+  inset: -0.9rem;
+  border-radius: 999px;
+  border: 1.5px solid rgb(185 173 246 / 0.6);
+  box-shadow: 0 0 18px -4px rgb(236 185 165 / 0.7);
+  animation: orbit-a 2.4s linear infinite;
+}
+.intro-rings::after { inset: -1.6rem; border-color: rgb(236 185 165 / 0.45); animation: orbit-b 3.2s linear infinite; }
+.intro-line {
+  display: block;
+  justify-self: center;
+  width: 7rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--pearl-dark);
+  transform-origin: center;
+  animation: line-grow 0.7s var(--ease-soft) 0.35s both;
+}
+
+.site-footer {
+  background:
+    radial-gradient(90% 60% at 100% 100%, color-mix(in oklab, var(--color-gold-deep), transparent 65%), transparent 60%),
+    linear-gradient(180deg, var(--color-ink-2), var(--color-ink));
+}

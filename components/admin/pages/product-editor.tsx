@@ -611,7 +611,7 @@ export function ProductEditor({ productId }: { productId?: string }) {
         </details>
       </div>
 
-      <div className="sticky bottom-16 z-20 -mx-4 mt-8 flex items-center justify-between gap-3 border-t border-line bg-ivory/95 px-4 py-3 shadow-[0_-8px_24px_-18px_rgb(15_18_15/0.35)] backdrop-blur sm:-mx-8 sm:px-8 lg:bottom-0">
+      <div className="admin-savebar glass">
         <p className="hidden text-sm text-muted sm:block" role="status">
           {dirty ? "تغييرات غير محفوظة" : "كل التغييرات محفوظة"}
         </p>

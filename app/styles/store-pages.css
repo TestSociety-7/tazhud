@@ -1,0 +1,511 @@
+/* ------------------------------------------------------------------------------
+   Pearl & Moon: storefront inner pages (shop, product, cart, checkout, orders,
+   returns, policies, 404) and the shared store UI pieces they use.
+   Transform/opacity motion only; everything calms down under reduced motion.
+   ------------------------------------------------------------------------------ */
+
+/* ----------------------------- Page washes ----------------------------- */
+
+/* Soft iridescent light pooled at the top of an inner page. */
+.page-wash {
+  position: relative;
+  isolation: isolate;
+}
+.page-wash::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(30rem, 70vh);
+  z-index: -1;
+  background:
+    radial-gradient(60% 55% at 85% 0%, rgb(221 214 251 / 0.75), transparent 70%),
+    radial-gradient(50% 45% at 10% 15%, rgb(246 223 213 / 0.7), transparent 70%),
+    radial-gradient(40% 40% at 55% 35%, rgb(205 238 238 / 0.45), transparent 70%);
+  pointer-events: none;
+}
+
+/* Breathing room for the floating phone dock (shown by the layout on these pages). */
+.dock-space { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
+@media (min-width: 1024px) { .dock-space { padding-bottom: 4rem; } }
+/* Pages with their own sticky bottom bar on phones. */
+.bar-space { padding-bottom: calc(7rem + env(safe-area-inset-bottom)); }
+@media (min-width: 1024px) { .bar-space { padding-bottom: 4rem; } }
+
+/* Page entrance: children rise in one after another. */
+.rise > * { animation: rise-in 0.6s var(--ease-soft) backwards; }
+.rise > :nth-child(2) { animation-delay: 70ms; }
+.rise > :nth-child(3) { animation-delay: 140ms; }
+.rise > :nth-child(4) { animation-delay: 210ms; }
+.rise > :nth-child(5) { animation-delay: 280ms; }
+.rise > :nth-child(n + 6) { animation-delay: 340ms; }
+@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } }
+
+/* Glass card used across the inner pages. */
+.glass-card {
+  background: color-mix(in oklab, var(--color-paper) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(1.5);
+  backdrop-filter: blur(16px) saturate(1.5);
+  border-radius: 1.75rem;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.75), 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 18px 40px -26px rgb(35 42 92 / 0.45);
+}
+
+/* Thin pearl line used as a section rule. */
+.pearl-rule {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg, transparent, var(--color-gold-bright) 20%, var(--color-iris) 50%, var(--color-mint) 80%, transparent);
+  opacity: 0.7;
+}
+
+/* ----------------------------- Chips ----------------------------- */
+
+/* Pill chips (categories, sizes, reasons): spring when pressed and when chosen. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding-inline: 1.1rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+  background: color-mix(in oklab, var(--color-paper) 85%, transparent);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  transition: transform 0.45s var(--ease-spring), background-color 0.3s, color 0.3s, box-shadow 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+}
+.chip:hover { box-shadow: inset 0 0 0 1px var(--color-sage); }
+.chip:active { transform: scale(0.92); }
+.chip[aria-pressed="true"],
+.chip[aria-checked="true"],
+input:checked + .chip {
+  color: var(--color-ivory);
+  background: linear-gradient(135deg, var(--color-forest-2), var(--color-forest) 60%, var(--color-ink));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), 0 10px 22px -12px rgb(35 42 92 / 0.8);
+  animation: chip-pop 0.55s var(--ease-spring);
+}
+input:focus-visible + .chip { outline: 2px solid var(--color-iris); outline-offset: 3px; }
+@keyframes chip-pop {
+  0% { transform: scale(0.86); }
+  55% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Colour swatch: a pearl bead; the chosen one wears a shimmering pearl ring. */
+.swatch {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  transition: transform 0.45s var(--ease-spring);
+  -webkit-tap-highlight-color: transparent;
+}
+.swatch:active { transform: scale(0.88); }
+.swatch-bead {
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1), inset -3px -4px 8px rgb(0 0 0 / 0.18), inset 3px 3px 6px rgb(255 255 255 / 0.35), 0 6px 12px -6px rgb(12 16 36 / 0.45);
+  transition: transform 0.45s var(--ease-spring);
+}
+.swatch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--pearl-dark);
+  background-size: 220% 100%;
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  mask: radial-gradient(closest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.3s, transform 0.5s var(--ease-spring);
+  animation: pearl-drift 6s ease-in-out infinite alternate;
+}
+.swatch[aria-pressed="true"]::before,
+input:checked + .swatch::before { opacity: 1; transform: scale(1); }
+.swatch[aria-pressed="true"] .swatch-bead,
+input:checked + .swatch .swatch-bead { transform: scale(0.86); }
+input:checked + .swatch { animation: chip-pop 0.55s var(--ease-spring); }
+input:focus-visible + .swatch { outline: 2px solid var(--color-iris); outline-offset: 3px; }
+
+/* ----------------------------- Badges & small pieces ----------------------------- */
+
+.badge-pearl {
+  background: var(--pearl);
+  background-size: 200% 100%;
+  color: var(--color-ink);
+  box-shadow: inset 0 1px 0 #fff, 0 8px 16px -10px rgb(140 85 70 / 0.7);
+  animation: pearl-drift 6s ease-in-out infinite alternate;
+}
+.badge-ink {
+  background: var(--color-ink);
+  color: var(--color-gold-soft);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12), 0 8px 16px -10px rgb(12 16 36 / 0.8);
+}
+
+/* Little live dot (stock). */
+.live-dot { position: relative; }
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  background: inherit;
+  opacity: 0.35;
+  animation: live-pulse 2.2s var(--ease-soft) infinite;
+}
+@keyframes live-pulse {
+  0% { transform: scale(0.6); opacity: 0.5; }
+  100% { transform: scale(2); opacity: 0; }
+}
+
+/* Quantity number pops when it changes. */
+.qty-pop { animation: qty-pop 0.4s var(--ease-spring); }
+@keyframes qty-pop { 0% { transform: translateY(6px) scale(0.7); opacity: 0.2; } }
+
+/* Pearl shimmer while images load. */
+.skeleton-pearl {
+  background: linear-gradient(100deg, var(--color-sand) 30%, color-mix(in oklab, var(--color-paper), #ddd6fb 25%) 50%, var(--color-sand) 70%);
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
+}
+.img-fallback {
+  background:
+    radial-gradient(60% 50% at 70% 20%, rgb(221 214 251 / 0.7), transparent 70%),
+    radial-gradient(50% 50% at 20% 80%, rgb(246 223 213 / 0.8), transparent 70%),
+    var(--color-sand);
+}
+
+/* ----------------------------- Product card ----------------------------- */
+
+.pcard {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+  transition: transform 0.6s var(--ease-soft);
+  will-change: transform;
+}
+.pcard[data-hover="true"] { --lift: -6px; transition-duration: 0.18s; }
+.pcard-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-leaf);
+  background: var(--color-sand);
+  box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.5s var(--ease-soft), border-radius 0.7s var(--ease-soft);
+  touch-action: pan-y;
+}
+.pcard[data-hover="true"] .pcard-photo { box-shadow: var(--shadow-lift); border-radius: 0.75rem 2rem 0.75rem 2rem; }
+/* A hairline of light around the leaf, like the lip of a shell. */
+.pcard-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.55), inset 0 -40px 50px -40px rgb(12 16 36 / 0.25);
+  pointer-events: none;
+}
+.pcard-photo img { transition: transform 1.2s var(--ease-soft), opacity 0.7s; }
+.pcard[data-hover="true"] .pcard-photo img { transform: scale(1.05); }
+
+.quick-add {
+  position: absolute;
+  inset-inline-end: 0.7rem;
+  bottom: 0.7rem;
+  z-index: 4;
+  display: grid;
+  place-items: center;
+  width: 2.9rem;
+  height: 2.9rem;
+  border-radius: 999px;
+  color: var(--color-ink);
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #f6dfd5 38%, #ddd6fb 75%, #ecb9a5 110%);
+  box-shadow: inset 0 1px 0 #fff, 0 10px 22px -10px rgb(12 16 36 / 0.6);
+  transition: transform 0.5s var(--ease-spring), box-shadow 0.3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.quick-add:hover { transform: scale(1.08) rotate(-6deg); }
+.quick-add:active { transform: scale(0.84); }
+.quick-add svg { transition: transform 0.5s var(--ease-spring); }
+.quick-add[data-pop="true"] { animation: qa-pop 0.7s var(--ease-spring); color: var(--color-ivory); background: radial-gradient(circle at 32% 28%, var(--color-forest-2), var(--color-forest) 60%, var(--color-ink)); }
+.quick-add[data-pop="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 2px var(--color-gold-bright);
+  animation: qa-ring 0.7s var(--ease-soft) forwards;
+}
+@keyframes qa-pop {
+  0% { transform: scale(0.8); }
+  40% { transform: scale(1.22) rotate(-12deg); }
+  100% { transform: scale(1); }
+}
+@keyframes qa-ring { to { transform: scale(1.9); opacity: 0; } }
+.quick-pick {
+  position: absolute;
+  inset-inline-end: 0.7rem;
+  bottom: 0.7rem;
+  z-index: 4;
+}
+
+/* ----------------------------- Shop ----------------------------- */
+
+.shop-bar {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 20;
+}
+.count-chip {
+  font-family: var(--font-latin);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----------------------------- Product gallery ----------------------------- */
+
+.gal-scroller { touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
+.gal-face {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-leaf);
+  transform-origin: center;
+  will-change: transform;
+}
+.gal-dots { display: flex; gap: 0.4rem; padding: 0.4rem 0.6rem; border-radius: 999px; }
+.gal-dot { display: block; height: 0.35rem; width: 0.35rem; border-radius: 999px; background: rgb(255 255 255 / 0.55); transition: width 0.5s var(--ease-spring), background-color 0.3s; }
+.gal-dot[data-on="true"] { width: 1.4rem; background: #fff; }
+
+/* Full screen zoom: the photo follows the finger, no pinching needed. */
+.zoom-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--color-ink);
+  color: var(--color-ivory);
+}
+.zoom-dialog::backdrop { background: var(--color-ink); }
+.zoom-dialog[open] { animation: zoom-in 0.45s var(--ease-soft); }
+@keyframes zoom-in { from { opacity: 0; transform: scale(0.94); } }
+.zoom-stage { touch-action: none; cursor: zoom-in; }
+.zoom-stage[data-zoomed="true"] { cursor: zoom-out; }
+.zoom-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: scale(var(--z, 1));
+  transform-origin: var(--ox, 50%) var(--oy, 50%);
+  transition: transform 0.5s var(--ease-soft);
+}
+.zoom-stage[data-zoomed="true"] .zoom-img { --z: 2.4; transition: transform 0.5s var(--ease-soft), transform-origin 0.12s linear; }
+
+/* ----------------------------- Sticky bottom bars (product, cart, checkout) ----------------------------- */
+
+.buybar {
+  position: fixed;
+  inset-inline: 0.75rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  z-index: 40;
+  border-radius: 1.6rem;
+  transition: translate 0.55s var(--ease-soft), opacity 0.4s;
+}
+.buybar[data-shown="false"] { translate: 0 140%; opacity: 0; pointer-events: none; }
+@media (min-width: 1024px) { .buybar { display: none; } }
+
+/* Checkout: the send button floats in a glass tray on phones while the form is on screen. */
+@media (max-width: 1023.98px) {
+  .submit-dock {
+    padding: 0.5rem;
+    border-radius: 1.6rem;
+    background: var(--glass-light);
+    -webkit-backdrop-filter: blur(18px) saturate(1.6);
+    backdrop-filter: blur(18px) saturate(1.6);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.7), 0 12px 32px -18px rgb(35 42 92 / 0.45);
+  }
+}
+
+/* ----------------------------- Disclosure ----------------------------- */
+
+.disclose > summary .disclose-icon { transition: transform 0.5s var(--ease-spring); }
+.disclose[open] > summary .disclose-icon { transform: rotate(45deg); }
+.disclose[open] > .disclose-body { animation: rise-in 0.45s var(--ease-soft); }
+
+/* ----------------------------- Cart ----------------------------- */
+
+.line-in { animation: line-in 0.5s var(--ease-soft) backwards; }
+@keyframes line-in { from { opacity: 0; transform: translateX(var(--from, -16px)); } }
+[dir="rtl"] .line-in { --from: 16px; }
+
+.free-bar {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+.free-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--pearl-dark);
+  background-size: 200% 100%;
+  animation: pearl-drift 4s ease-in-out infinite alternate;
+  transform-origin: right;
+  transition: transform 0.8s var(--ease-soft);
+}
+[dir="ltr"] .free-bar > span { transform-origin: left; }
+
+/* ----------------------------- Checkout steps ----------------------------- */
+
+.steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); }
+.steps-track {
+  position: absolute;
+  top: 1.1rem;
+  inset-inline: 16.66%;
+  height: 2px;
+  border-radius: 9px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+.steps-fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: var(--pearl-dark);
+  transform-origin: right;
+  transform: scaleX(var(--p, 0));
+  transition: transform 0.8s var(--ease-soft);
+}
+[dir="ltr"] .steps-fill { transform-origin: left; }
+.step { position: relative; display: grid; justify-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--color-muted); }
+.step-dot {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 999px;
+  background: var(--color-paper);
+  box-shadow: inset 0 0 0 1px var(--color-line);
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: transform 0.5s var(--ease-spring), background-color 0.4s, color 0.4s, box-shadow 0.4s;
+}
+.step[data-state="done"] .step-dot { background: linear-gradient(135deg, var(--color-forest-2), var(--color-forest)); color: var(--color-ivory); box-shadow: none; }
+.step[data-state="current"] { color: var(--color-ink); font-weight: 600; }
+.step[data-state="current"] .step-dot {
+  color: var(--color-ink);
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #f6dfd5 35%, #ddd6fb 75%, #ecb9a5 110%);
+  box-shadow: 0 0 0 4px rgb(156 140 242 / 0.18), 0 10px 20px -10px rgb(236 185 165 / 0.9);
+  transform: scale(1.12);
+}
+.step[data-state="done"] .step-dot svg { animation: chip-pop 0.5s var(--ease-spring); }
+
+/* ----------------------------- Success / empty art ----------------------------- */
+
+/* A pearl with an orbit and a soft moon glow. */
+.pearl-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 9rem;
+  height: 9rem;
+  perspective: 600px;
+}
+.pearl-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 999px;
+  color: var(--color-ink);
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #f6dfd5 30%, #ddd6fb 62%, #bfe9e3 85%, #ecb9a5 110%);
+  box-shadow: inset -6px -8px 16px rgb(140 85 70 / 0.18), inset 4px 4px 10px rgb(255 255 255 / 0.9), 0 22px 40px -18px rgb(35 42 92 / 0.55);
+}
+.pearl-halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150%;
+  aspect-ratio: 1;
+  margin: -75% 0 0 -75%;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  background: var(--pearl-dark) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  transform: rotateX(72deg) rotateZ(var(--spin, 0deg));
+  animation: orbit-spin 14s linear infinite;
+  pointer-events: none;
+}
+.pearl-halo.back { clip-path: inset(0 0 50% 0); }
+.pearl-halo.front { clip-path: inset(50% 0 0 0); }
+.pearl-seed {
+  position: absolute;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 30%, #fff, #f6dfd5 40%, #b9adf6 85%);
+  box-shadow: 0 4px 10px -3px rgb(35 42 92 / 0.4);
+  animation: seed-float 5s ease-in-out infinite;
+}
+.pearl-seed:nth-of-type(2) { width: 0.45rem; height: 0.45rem; animation-delay: -1.7s; animation-duration: 6s; }
+.pearl-seed:nth-of-type(3) { width: 0.55rem; height: 0.55rem; animation-delay: -3.1s; animation-duration: 7s; }
+@keyframes seed-float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -10px, 0); }
+}
+.success-pop { animation: success-pop 0.8s var(--ease-spring) both; }
+@keyframes success-pop { from { transform: scale(0.4); opacity: 0; } }
+
+/* 404 number. */
+.big-404 {
+  font-family: var(--font-latin);
+  font-weight: 800;
+  font-size: clamp(5rem, 28vw, 9rem);
+  line-height: 1;
+}
+
+/* ----------------------------- Sheets ----------------------------- */
+
+.sheet-glass {
+  background: color-mix(in oklab, var(--color-ivory) 86%, transparent);
+  -webkit-backdrop-filter: blur(26px) saturate(1.6);
+  backdrop-filter: blur(26px) saturate(1.6);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.6), 0 30px 80px -20px rgb(12 16 36 / 0.55);
+}
+.sheet-grab {
+  position: absolute;
+  top: 0.45rem;
+  left: 50%;
+  translate: -50% 0;
+  width: 2.6rem;
+  height: 0.3rem;
+  border-radius: 9px;
+  background: rgb(12 16 36 / 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcard { transform: none; transition: none; }
+  .gal-face { transform: none !important; opacity: 1 !important; }
+  .rise > *, .line-in, .success-pop, .qty-pop, .quick-add[data-pop="true"], .chip, .swatch, .pearl-seed, .pearl-halo, .badge-pearl, .free-bar > span, .live-dot::after { animation: none; }
+  .swatch::before { animation: none; }
+}
+
+.sheet-close {
+  background: color-mix(in oklab, currentColor 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, currentColor 14%, transparent);
+}

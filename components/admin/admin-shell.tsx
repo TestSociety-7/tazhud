@@ -11,8 +11,8 @@ import {
   Home,
   Inbox,
   LayoutDashboard,
+  LayoutGrid,
   LogOut,
-  Menu,
   Package,
   Plus,
   Settings,
@@ -55,16 +55,17 @@ function NavList() {
             <Link
               href={href}
               aria-current={active ? "page" : undefined}
-              className={`press relative flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm transition-all duration-300 ${
-                active
-                  ? "bg-gradient-to-l from-gold/25 to-white/5 font-semibold text-ivory shadow-[inset_0_0_0_1px_rgb(201_162_74/0.35)]"
-                  : "text-ivory/70 hover:-translate-x-0.5 hover:bg-white/5 hover:text-ivory"
+              className={`side-link press flex min-h-12 items-center gap-3 rounded-2xl px-2 text-sm transition-colors duration-300 ${
+                active ? "font-semibold text-ivory" : "text-ivory/65 hover:text-ivory"
               }`}
             >
-              <Icon className={`size-[1.1rem] ${active ? "text-gold" : ""}`} />
+              <span className="side-bar" aria-hidden />
+              <span className="side-icon">
+                <Icon className="size-[1.1rem]" />
+              </span>
               <span className="flex-1">{label}</span>
               {href === "/admin/orders" && newOrders > 0 && (
-                <span className="rounded-full bg-gold px-2 py-0.5 text-[0.65rem] font-bold text-ink">{newOrders}</span>
+                <span className="btn-pearl rounded-full px-2 py-0.5 text-[0.68rem] font-bold">{newOrders}</span>
               )}
             </Link>
           </li>
@@ -86,23 +87,23 @@ function Sidebar() {
   const router = useRouter();
   const { data } = useStore();
   return (
-    <div className="on-dark flex h-full flex-col bg-ink p-4 text-ivory">
-      <Link href="/admin" className="relative mb-8 flex items-center gap-3 px-2 pt-2 pb-3">
+    <div className="on-dark admin-side flex h-full flex-col p-4 text-ivory">
+      <Link href="/admin" className="relative mb-7 flex items-center gap-3 rounded-2xl px-2 pt-2 pb-3">
         <SeasonTrim />
-        <LogoCoin hat float={false} className="size-11" />
-        <span>
+        <LogoCoin hat float={false} className="size-12" />
+        <span className="min-w-0">
           <span className="font-display block text-2xl leading-none">{data.settings.storeName}</span>
-          <span className="text-xs text-gold">لوحة التحكم</span>
+          <span className="pearl-text mt-1 inline-block text-xs font-semibold">لوحة التحكم</span>
         </span>
       </Link>
-      <nav aria-label="قائمة لوحة التحكم" className="flex-1 overflow-y-auto">
+      <nav aria-label="قائمة لوحة التحكم" className="-mx-1 flex-1 overflow-y-auto px-1">
         <NavList />
       </nav>
       <div className="space-y-1 border-t border-white/10 pt-4">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm text-ivory/65 transition-colors hover:bg-white/5 hover:text-ivory">
           <ExternalLink className="size-[1.1rem]" /> عرض المتجر
         </a>
-        <button type="button" onClick={() => logout(router)} className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 text-sm text-ivory/70 hover:bg-white/5 hover:text-ivory">
+        <button type="button" onClick={() => logout(router)} className="flex min-h-11 w-full items-center gap-3 rounded-2xl px-3 text-sm text-ivory/65 transition-colors hover:bg-white/5 hover:text-ivory">
           <LogOut className="size-[1.1rem]" /> تسجيل الخروج
         </button>
       </div>
@@ -116,8 +117,8 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
   const pathname = usePathname();
   const tiles = NAV.filter((n) => !BOTTOM_HREFS.has(n.href));
   return (
-    <div className="on-dark flex h-full flex-col gap-6 bg-ink p-5 text-ivory">
-      <ul className="stagger grid grid-cols-2 gap-3">
+    <div className="on-dark flex flex-col gap-5 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-ivory">
+      <ul className="more-tiles grid grid-cols-3 gap-3">
         {tiles.map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
           return (
@@ -126,25 +127,25 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
                 href={href}
                 onClick={onNavigate}
                 aria-current={active ? "page" : undefined}
-                className={`press flex aspect-[4/3] flex-col justify-between rounded-2xl border p-4 transition-colors ${
-                  active ? "border-gold/60 bg-gold/15" : "border-white/10 bg-white/[0.04] hover:bg-white/[0.08]"
+                className={`press flex aspect-square flex-col items-center justify-center gap-2.5 rounded-[1.4rem] p-2 text-center transition-colors ${
+                  active ? "bg-white/[0.14] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.25)]" : "bg-white/[0.05] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.08)] hover:bg-white/[0.09]"
                 }`}
               >
-                <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-gold-bright to-gold-deep text-ink shadow-[0_8px_18px_-8px_rgb(201_162_74/0.7)]">
+                <span className="pearl-icon size-12">
                   <Icon className="size-5" />
                 </span>
-                <span className="text-sm font-semibold">{label}</span>
+                <span className="text-[0.78rem] leading-tight font-semibold">{label}</span>
               </Link>
             </li>
           );
         })}
       </ul>
-      <InstallAppButton className="press btn sheen w-full border border-gold/50 bg-gold/10 text-gold-soft" />
-      <div className="mt-auto grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
-        <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-outline border-white/20 text-ivory">
+      <InstallAppButton className="press btn btn-glass w-full" />
+      <div className="grid grid-cols-2 gap-3 border-t border-white/10 pt-5">
+        <a href="/" target="_blank" rel="noopener noreferrer" className="press btn btn-glass">
           <ExternalLink className="size-4" /> عرض المتجر
         </a>
-        <button type="button" onClick={() => logout(router)} className="press btn btn-outline border-white/20 text-ivory/80">
+        <button type="button" onClick={() => logout(router)} className="press btn btn-glass text-ivory/80">
           <LogOut className="size-4" /> خروج
         </button>
       </div>
@@ -152,47 +153,41 @@ function MoreSheet({ onNavigate }: { onNavigate: () => void }) {
   );
 }
 
-/** Thumb-friendly tab bar for phones: the screens used most, plus a quick "add product". */
-function BottomBar({ onMore }: { onMore: () => void }) {
+/** Floating glass tab bar for phones: the screens used most, a quick "add product", and the rest. */
+function BottomBar({ onMore, moreOpen }: { onMore: () => void; moreOpen: boolean }) {
   const pathname = usePathname();
   const { data } = useStore();
   const newOrders = data.orders.filter((o) => o.status === "new").length;
   const tabs = [
     { href: "/admin", label: "الرئيسية", icon: LayoutDashboard, active: pathname === "/admin" },
     { href: "/admin/orders", label: "الطلبات", icon: Inbox, active: pathname.startsWith("/admin/orders"), badge: newOrders },
-    { href: "/admin/products/new", label: "إضافة", icon: Plus, active: pathname === "/admin/products/new", primary: true },
+    { href: "/admin/products/new", label: "إضافة منتج", icon: Plus, active: pathname === "/admin/products/new", primary: true },
     { href: "/admin/products", label: "المنتجات", icon: Package, active: pathname.startsWith("/admin/products") && pathname !== "/admin/products/new" },
   ];
+  const tabIndex = tabs.findIndex((t) => t.active);
+  const index = moreOpen ? 4 : tabIndex >= 0 ? tabIndex : 4;
   return (
-    <nav aria-label="التنقل السريع" className="on-dark fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-ink/95 pb-[env(safe-area-inset-bottom)] text-ivory backdrop-blur-md lg:hidden">
-      <ul className="grid grid-cols-5">
+    <nav aria-label="التنقل السريع" className="atab lg:hidden">
+      <ul className="atab-bar">
+        <li className="atab-pill" data-hide={index === 2} style={{ "--i": index } as React.CSSProperties} aria-hidden />
         {tabs.map(({ href, label, icon: Icon, active, badge, primary }) => (
-          <li key={href}>
-            <Link
-              href={href}
-              aria-current={active ? "page" : undefined}
-              className={`press relative flex min-h-16 flex-col items-center justify-center gap-1 text-[0.7rem] transition-colors ${active ? "text-gold" : "text-ivory/70"}`}
-            >
+          <li key={href} className="grid">
+            <Link href={href} aria-current={active ? "page" : undefined} className="atab-item">
               {primary ? (
-                <span className="sheen -mt-6 grid size-14 place-items-center rounded-full bg-gradient-to-br from-gold-bright via-gold to-gold-deep text-ink shadow-[0_10px_24px_-8px_rgb(201_162_74/0.8),inset_0_-3px_0_rgb(0_0_0/0.15)] ring-4 ring-ink">
-                  <Icon className="size-6" strokeWidth={2.5} />
+                <span className="atab-orb">
+                  <Icon className="size-6" strokeWidth={2.4} />
                 </span>
               ) : (
-                <>
-                  <span className={`absolute top-1.5 h-1 rounded-full bg-gold transition-all duration-300 ${active ? "w-6 opacity-100" : "w-0 opacity-0"}`} />
-                  <Icon className={`size-5 transition-transform duration-300 ${active ? "-translate-y-0.5 scale-110" : ""}`} />
-                </>
+                <Icon className="size-[1.35rem]" strokeWidth={active ? 2.3 : 1.9} />
               )}
               <span className={primary ? "sr-only" : ""}>{label}</span>
-              {badge ? (
-                <span className="absolute top-2 start-[calc(50%+0.4rem)] min-w-4 rounded-full bg-gold px-1 text-center text-[0.6rem] leading-4 font-bold text-ink">{badge}</span>
-              ) : null}
+              {badge ? <span className="atab-badge" key={badge}>{badge}</span> : null}
             </Link>
           </li>
         ))}
-        <li>
-          <button type="button" onClick={onMore} className="flex min-h-16 w-full flex-col items-center justify-center gap-1 text-[0.7rem] text-ivory/70">
-            <Menu className="size-5" />
+        <li className="grid">
+          <button type="button" onClick={onMore} aria-expanded={moreOpen} aria-current={!moreOpen && tabIndex < 0 ? "page" : undefined} className="atab-item">
+            <LayoutGrid className="size-[1.35rem]" strokeWidth={1.9} />
             المزيد
           </button>
         </li>
@@ -213,24 +208,28 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div data-season={season} className="admin-season min-h-dvh bg-ivory lg:grid lg:grid-cols-[16.5rem_1fr]">
+    <div data-season={season} className="admin-season admin-app min-h-dvh lg:grid lg:grid-cols-[17rem_1fr]">
+      <div className="admin-backdrop" aria-hidden />
       <aside className="sticky top-0 hidden h-dvh lg:block">
         <Sidebar />
       </aside>
 
       <div className="min-w-0">
-        <header className="on-dark sticky top-0 z-30 flex h-14 items-center justify-center bg-ink/95 px-3 text-ivory backdrop-blur-md lg:hidden">
-          <Link href="/admin" className="flex items-center gap-2.5">
-            <LogoCoin hat float={false} className="size-8" />
-            <span className="font-display text-xl">{data.settings.storeName}</span>
-            <span className="rounded-full border border-gold/40 px-2 py-0.5 text-[0.65rem] text-gold">الإدارة</span>
+        <header className="on-dark admin-topbar flex items-center justify-between px-4 text-ivory lg:hidden">
+          <Link href="/admin" className="press flex items-center gap-2.5">
+            <LogoCoin hat float={false} className="size-9" />
+            <span className="font-display text-xl leading-none">{data.settings.storeName}</span>
           </Link>
+          <span className="flex items-center gap-2 rounded-full bg-white/[0.07] px-3 py-1.5 text-[0.7rem] font-semibold text-ivory/80 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.1)]">
+            <span className="live-pulse" aria-hidden />
+            لوحة التحكم
+          </span>
           <SeasonTrim />
         </header>
 
-        <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-6 pb-28 sm:px-8 sm:py-10 lg:pb-10">
+        <main id="main" className="mx-auto w-full max-w-6xl px-4 pt-5 pb-32 sm:px-8 sm:pt-10 lg:pb-12">
           {/* Admin screens read the current time and browser storage, so they render on request. */}
-          <Suspense fallback={<div className="skeleton h-96 rounded-2xl" aria-busy="true" />}>
+          <Suspense fallback={<div className="skeleton h-96 rounded-[1.75rem]" aria-busy="true" />}>
             <div key={pathname} className="admin-enter">
               {children}
             </div>
@@ -238,12 +237,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      <BottomBar onMore={() => setOpen(true)} />
+      <BottomBar onMore={() => setOpen(true)} moreOpen={open} />
       <SeasonSky season={season} />
       <AdminWelcome />
       <OrderWatcher />
 
-      <Sheet open={open} onClose={() => setOpen(false)} side="start" title="المزيد" className="!bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory">
+      <Sheet
+        open={open}
+        onClose={() => setOpen(false)}
+        side="bottom"
+        title="المزيد"
+        className="more-sheet !bg-ink !text-ivory [&>div:first-child]:border-white/10 [&_h2]:!text-ivory [&_.icon-btn:hover]:bg-white/10"
+      >
         <MoreSheet onNavigate={() => setOpen(false)} />
       </Sheet>
     </div>

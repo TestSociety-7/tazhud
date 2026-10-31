@@ -20,7 +20,7 @@ export function Sheet({
   open: boolean;
   onClose: () => void;
   /** "start" opens from the reading side (right in Arabic), "end" from the other. */
-  side?: "start" | "end" | "top" | "bottom";
+  side?: "start" | "end" | "top" | "bottom" | "responsive";
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
@@ -48,11 +48,15 @@ export function Sheet({
   }, []);
 
   const position = {
-    end: "ms-auto h-full max-h-none w-full max-w-md starting:ltr:translate-x-full starting:rtl:-translate-x-full",
-    start: "me-auto h-full max-h-none w-[88%] max-w-sm starting:ltr:-translate-x-full starting:rtl:translate-x-full",
-    top: "mx-auto mb-auto w-full max-w-none starting:-translate-y-full",
-    bottom: "mx-auto mt-auto w-full max-w-lg rounded-t-3xl max-h-[88dvh] starting:translate-y-full sm:mb-auto sm:rounded-3xl",
+    end: "ms-auto h-full max-h-none w-full max-w-md sm:rounded-s-[2rem] starting:ltr:translate-x-full starting:rtl:-translate-x-full",
+    start: "me-auto h-full max-h-none w-[88%] max-w-sm rounded-e-[2rem] starting:ltr:-translate-x-full starting:rtl:translate-x-full",
+    top: "mx-auto mb-auto w-full max-w-none rounded-b-[2rem] starting:-translate-y-full",
+    bottom: "mx-auto mt-auto w-full max-w-lg rounded-t-[2rem] max-h-[88dvh] starting:translate-y-full sm:mb-auto sm:rounded-[2rem]",
+    // A glass sheet rising from the bottom on phones, a side drawer on larger screens.
+    responsive:
+      "mx-auto mt-auto w-full max-w-none max-h-[90dvh] rounded-t-[2rem] starting:translate-y-full sm:ms-auto sm:me-0 sm:mt-0 sm:h-full sm:max-h-none sm:max-w-md sm:rounded-none sm:rounded-s-[2rem] sm:starting:translate-y-0 sm:starting:ltr:translate-x-full sm:starting:rtl:-translate-x-full",
   }[side];
+  const grab = side === "bottom" || side === "responsive";
 
   return (
     <dialog
@@ -66,16 +70,17 @@ export function Sheet({
       onClick={(e) => {
         if (e.target === ref.current) onClose();
       }}
-      className={`fixed inset-0 m-0 flex max-h-dvh flex-col overflow-hidden bg-ivory p-0 text-text shadow-[var(--shadow-lift)] transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/45 backdrop:backdrop-blur-[2px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
+      className={`sheet-glass fixed inset-0 m-0 flex max-h-dvh flex-col overflow-hidden p-0 text-text transition-transform duration-500 ease-[var(--ease-soft)] backdrop:bg-ink/40 backdrop:backdrop-blur-[3px] backdrop:transition-opacity backdrop:duration-500 starting:backdrop:opacity-0 ${position} ${className} [&:not([open])]:hidden`}
     >
-      <div className="flex items-center justify-between border-b border-line px-5 py-4">
+      <div className={`relative flex items-center justify-between border-b border-line/70 px-5 ${grab ? "pt-5 pb-3.5" : "py-4"}`}>
+        {grab && <span className="sheet-grab sm:hidden" aria-hidden />}
         {heading ?? <h2 className="font-display text-2xl text-ink">{title}</h2>}
-        <button type="button" className="icon-btn -me-2" onClick={onClose} aria-label="إغلاق">
+        <button type="button" className="sheet-close icon-btn press -me-2" onClick={onClose} aria-label="إغلاق">
           <X className="size-5" />
         </button>
       </div>
       <div className="flex-1 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain">{children}</div>
-      {footer && <div className="border-t border-line bg-paper px-5 py-4">{footer}</div>}
+      {footer && <div className="border-t border-line/70 bg-paper/70 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">{footer}</div>}
     </dialog>
   );
 }

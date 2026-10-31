@@ -10,8 +10,8 @@ import { useCart } from "@/components/providers/cart-provider";
 import { useStore } from "@/components/providers/store-provider";
 import { Reveal } from "@/components/ui/reveal";
 import { SmartImage } from "@/components/ui/smart-image";
-import { Mandala, Star8 } from "@/components/ui/mandala";
 import { Tilt } from "@/components/ui/fx";
+import { CategoryRing } from "./category-ring";
 import { bundleDetails, formatMoney, visibleProducts } from "@/lib/commerce";
 import { piecesLabel } from "@/lib/arabic";
 import type { Bundle, HomeSection, Product } from "@/lib/types";
@@ -22,11 +22,11 @@ export function SectionHeading({ title, href, linkLabel = "عرض الكل" }: {
   return (
     <Reveal className="mb-8 flex items-end justify-between gap-4">
       <div>
-        <h2 className="font-display text-3xl leading-tight text-ink sm:text-[2.75rem]">{title}</h2>
-        <span className="reveal-line season-rule mt-3 block h-0.5 w-14 rounded-full bg-gold" aria-hidden />
+        <h2 className="font-display text-[2rem] leading-tight text-ink sm:text-[2.75rem]">{title}</h2>
+        <span className="reveal-line season-rule mt-2 block h-[3px] w-16 rounded-full bg-[image:var(--pearl-dark)]" aria-hidden />
       </div>
       {href && (
-        <Link href={href} className="group inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-forest">
+        <Link href={href} className="press group glass inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-full px-4 text-[0.8rem] font-semibold text-forest">
           {linkLabel}
           <ArrowLeft className="size-4 transition-transform duration-300 group-hover:-translate-x-1" />
         </Link>
@@ -40,29 +40,35 @@ export function CategoriesSection({ section }: { section: HomeSection }) {
   const cats = [...data.categories].sort((a, b) => a.sortOrder - b.sortOrder);
   const counts = (id: string) => visibleProducts(data).filter((p) => p.categoryId === id).length;
   return (
-    <section className="container-x pt-16 sm:pt-24">
-      <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
-      <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-7 lg:gap-5" style={{ "--cf-pad": "29vw" } as React.CSSProperties}>
-        {cats.map((c, i) => (
-          <Reveal as="li" key={c.id} delay={i * 80} className="w-[42vw] shrink-0 snap-center sm:w-auto">
-            <Link href={`/shop?category=${c.slug}`} className="press group block text-center">
-              <Tilt max={8} className="rounded-t-full">
-                <div className="arch-full relative aspect-[3/4] overflow-hidden bg-sand ring-1 ring-line transition-shadow duration-500 group-hover:shadow-[var(--shadow-lift)] group-hover:ring-gold/60">
-                  <SmartImage
-                    src={c.image}
-                    alt=""
-                    className="absolute inset-0"
-                    imgClassName="transition-transform duration-[1.2s] ease-[var(--ease-soft)] group-hover:scale-[1.07]"
-                    fallbackLabel={c.name}
-                  />
-                </div>
-              </Tilt>
-              <p className="font-display mt-3 text-xl text-ink transition-colors group-hover:text-gold-deep lg:text-lg">{c.name}</p>
-              <p className="text-xs text-muted">{piecesLabel(counts(c.id))}</p>
-            </Link>
+    <section className="relative overflow-hidden pt-16 sm:pt-24">
+      <div className="pointer-events-none absolute top-24 left-1/2 -z-10 size-[36rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(221_214_251/0.55),transparent)]" aria-hidden />
+      <div className="container-x">
+        <SectionHeading title={section.title} href="/shop" linkLabel="كل المنتجات" />
+        {cats.length >= 5 ? (
+          <Reveal>
+            <CategoryRing cats={cats} counts={counts} />
           </Reveal>
-        ))}
-      </ul>
+        ) : (
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-6">
+            {cats.map((c, i) => (
+              <Reveal as="li" key={c.id} delay={i * 80}>
+                <Link href={`/shop?category=${c.slug}`} className="press group block">
+                  <Tilt max={8} className="leaf">
+                    <span className="leaf pearl-ring relative block aspect-[3/4] overflow-hidden bg-sand shadow-[var(--shadow-soft)]">
+                      <SmartImage src={c.image} alt="" className="absolute inset-0" imgClassName="transition-transform duration-[1.2s] ease-[var(--ease-soft)] group-hover:scale-[1.07]" fallbackLabel={c.name} />
+                      <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/70 to-transparent" aria-hidden />
+                      <span className="absolute inset-x-0 bottom-3 px-3 text-center text-ivory">
+                        <span className="font-display block text-xl leading-tight">{c.name}</span>
+                        <span className="block text-xs text-ivory/75">{piecesLabel(counts(c.id))}</span>
+                      </span>
+                    </span>
+                  </Tilt>
+                </Link>
+              </Reveal>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
@@ -74,7 +80,7 @@ export function ProductRail({ section, products, href }: { section: HomeSection;
       <SectionHeading title={section.title} href={href} />
       <ul className="coverflow no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pt-2 pb-4 sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {products.slice(0, 8).map((p, i) => (
-          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className={`w-[62vw] shrink-0 snap-center sm:w-auto ${i >= 4 ? "lg:hidden" : ""}`}>
+          <Reveal as="li" key={p.id} delay={(i % 4) * 90} className={`w-[60vw] shrink-0 snap-center sm:w-auto ${i >= 4 ? "lg:hidden" : ""}`}>
             <ProductCard product={p} />
           </Reveal>
         ))}
@@ -109,20 +115,20 @@ export function PromoSection() {
 
   return (
     <section className="container-x pt-16 sm:pt-24">
-      <Reveal className="ticket on-dark relative mx-auto flex max-w-4xl flex-col overflow-hidden rounded-[1.75rem] bg-ink text-ivory shadow-[var(--shadow-lift)] sm:flex-row">
-        <div className="pointer-events-none absolute -bottom-24 start-10 size-72 rounded-full bg-gold/20 blur-3xl" aria-hidden />
-        <Mandala className="pointer-events-none absolute -top-24 -start-24 size-72 text-gold/10 motion-safe:animate-spin-slow" />
+      <Reveal className="ticket promo-card pearl-ring on-dark relative mx-auto flex max-w-4xl flex-col overflow-hidden rounded-[2rem] text-ivory shadow-[0_40px_80px_-40px_rgb(12_16_36/0.9)] sm:flex-row">
+        <div className="pointer-events-none absolute -bottom-24 start-10 size-72 rounded-full bg-gold/25 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute -top-28 -end-20 size-72 rounded-full bg-iris/25 blur-3xl" aria-hidden />
         <div className="relative flex-1 px-7 py-9 sm:px-10 sm:py-12">
-          <p className="eyebrow text-gold-bright">{promo.eyebrow || "عرض خاص"}</p>
+          <p className="eyebrow glass-dark inline-flex rounded-full px-3 py-1 text-gold-soft">{promo.eyebrow || "عرض خاص"}</p>
           <h2 className="font-display mt-2 text-3xl leading-tight text-balance sm:text-[2.6rem]">{title}</h2>
           {promo.body && <p className="mt-3 max-w-md text-sm text-ivory/70 sm:text-base">{promo.body}</p>}
           {coupon.minSubtotal ? <p className="mt-3 text-xs text-ivory/60">للطلبات فوق {money(coupon.minSubtotal)}</p> : null}
         </div>
         <div className="ticket-stub relative flex shrink-0 flex-col items-center justify-center gap-3 px-7 py-8 text-center sm:w-64 sm:py-10">
           {big ? (
-            <p className="font-display text-6xl leading-none text-gold-bright tabular-nums sm:text-7xl" dir="ltr">
+            <p className="pearl-text font-latin text-7xl leading-none font-extrabold tabular-nums sm:text-8xl" dir="ltr">
               {big}
-              <span className="block pt-1 text-base text-ivory/70" dir="rtl">{small}</span>
+              <span className="font-display block pt-1 text-base font-normal text-ivory/70" dir="rtl">{small}</span>
             </p>
           ) : (
             <p className="font-display text-3xl text-gold-bright">{small}</p>
@@ -130,7 +136,7 @@ export function PromoSection() {
           <button
             type="button"
             onClick={copy}
-            className="press sheen ltr inline-flex min-h-12 items-center gap-3 rounded-full bg-gold-bright px-6 font-mono text-base font-bold tracking-[0.18em] text-ink transition-colors hover:bg-gold-soft"
+            className="press btn-pearl ltr inline-flex min-h-12 items-center gap-3 rounded-full px-6 font-mono text-base font-bold tracking-[0.18em]"
             aria-label={`نسخ الكود ${coupon.code}`}
           >
             {coupon.code}
@@ -166,9 +172,8 @@ export function BundlesSection({ section }: { section: HomeSection }) {
           const pieces = d.items.reduce((n, it) => n + it.quantity, 0);
           return (
             <Reveal as="li" key={b.id} delay={i * 80} id={`bundle-${b.slug}`} className={`${list.length === 1 ? "w-full" : "w-[82vw]"} max-w-sm shrink-0 snap-center scroll-mt-24 sm:w-[calc(50%-0.75rem)] sm:max-w-md lg:w-[calc(33.333%-1rem)]`}>
-              <article className="flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-line bg-paper shadow-[var(--shadow-soft)]">
-                <div className="relative flex h-56 items-end justify-center overflow-hidden bg-sand pt-6">
-                  <Star8 className="pointer-events-none absolute -top-10 -end-10 size-40 text-gold/15" />
+              <article className="bundle-card group flex h-full flex-col overflow-hidden rounded-[2rem] border border-white bg-paper shadow-[var(--shadow-soft)]">
+                <div className="relative flex h-56 items-end justify-center overflow-hidden bg-[linear-gradient(160deg,#ebe6f0,#f6dfd5_60%,#ddd6fb)] pt-6 [perspective:800px]">
                   {pics.length === 1 ? (
                     <SmartImage src={pics[0]} alt="" className="arch h-full w-40" fallbackLabel=" " />
                   ) : (
@@ -179,26 +184,26 @@ export function BundlesSection({ section }: { section: HomeSection }) {
                         return (
                           <span
                             key={k}
-                            className="absolute bottom-0 h-[88%] w-32 origin-bottom"
+                            className="bundle-pic absolute bottom-0 h-[88%] w-32 origin-bottom"
                             style={{ insetInlineStart: `calc(50% - 4rem + ${offset * 1.6}px)`, rotate: `${offset / 5}deg`, zIndex: 3 - Math.abs(Math.round(k - (n - 1) / 2)) }}
                           >
-                            <SmartImage src={src} alt="" fallbackLabel=" " className="arch h-full w-full shadow-[var(--shadow-soft)] ring-4 ring-sand" />
+                            <SmartImage src={src} alt="" fallbackLabel=" " className="leaf h-full w-full shadow-[0_18px_30px_-16px_rgb(12_16_36/0.6)] ring-4 ring-white/80" />
                           </span>
                         );
                       })}
                     </div>
                   )}
                   {d.savings > 0 && (
-                    <span className="absolute top-4 start-4 z-10 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-gold-bright">وفّري {money(d.savings)}</span>
+                    <span className="absolute top-4 start-4 z-10 rounded-full bg-ink px-3 py-1.5 text-xs font-bold text-gold-soft shadow-[0_8px_20px_-8px_rgb(12_16_36/0.8)]">وفّري {money(d.savings)}</span>
                   )}
-                  <span className="absolute top-4 end-4 z-10 rounded-full bg-paper/90 px-3 py-1.5 text-xs font-semibold text-forest backdrop-blur">{piecesLabel(pieces)}</span>
+                  <span className="glass absolute top-4 end-4 z-10 rounded-full px-3 py-1.5 text-xs font-semibold text-forest">{piecesLabel(pieces)}</span>
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="font-display text-2xl leading-tight text-ink">{b.name}</h3>
                   {b.description && <p className="mt-1 text-sm text-muted">{b.description}</p>}
                   <ul className="mt-3 flex flex-wrap gap-1.5">
                     {d.items.map((it) => (
-                      <li key={it.productId} className="rounded-full border border-line bg-ivory px-2.5 py-1 text-xs text-text">
+                      <li key={it.productId} className="rounded-full bg-sand px-2.5 py-1 text-xs text-text">
                         {it.product.name}
                         {it.quantity > 1 && <span className="ms-1 font-semibold text-gold-deep">×{it.quantity}</span>}
                       </li>
@@ -262,7 +267,7 @@ export function AllProductsSection() {
                 setLimit(8);
               }}
               className={`press min-h-10 shrink-0 rounded-full border px-4 text-sm font-medium transition-all duration-300 ${
-                active ? "border-ink bg-ink text-ivory shadow-[0_8px_18px_-10px_rgb(15_18_15/0.6)]" : "border-line bg-paper text-text hover:border-gold"
+                active ? "border-transparent bg-ink text-ivory shadow-[0_10px_22px_-10px_rgb(12_16_36/0.7)]" : "border-white bg-paper/80 text-text shadow-[var(--shadow-soft)] hover:border-gold-soft"
               }`}
             >
               {t.name}
@@ -279,7 +284,7 @@ export function AllProductsSection() {
       </ul>
       {list.length > limit && (
         <div className="mt-10 text-center">
-          <button type="button" className="press btn btn-outline border-line" onClick={() => setLimit((n) => n + 8)}>
+          <button type="button" className="press btn btn-primary" onClick={() => setLimit((n) => n + 8)}>
             عرض المزيد ({list.length - limit})
           </button>
         </div>
@@ -305,14 +310,14 @@ export function TrustBand() {
     <ul className="flex shrink-0 items-center" aria-hidden={hidden || undefined}>
       {items.map((t) => (
         <li key={t} className="flex items-center gap-6 px-6 whitespace-nowrap">
-          {season === "original" ? <Star8 className="size-3 text-gold" /> : <SeasonIcon season={season} className="size-3.5 text-gold" />}
+          {season === "original" ? <span className="size-2 rounded-full bg-[image:var(--pearl-dark)] shadow-[0_0_8px_rgb(236_185_165/0.8)]" /> : <SeasonIcon season={season} className="size-3.5 text-gold" />}
           {t}
         </li>
       ))}
     </ul>
   );
   return (
-    <section aria-label="لماذا تزهّد" className="season-band on-dark relative overflow-hidden border-y border-gold/25 bg-ink-2 py-3.5 text-sm text-gold-soft">
+    <section id="after-hero" aria-label="لماذا تزهّد" className="season-band on-dark relative overflow-hidden border-y border-white/10 bg-ink py-3.5 text-sm text-ivory/80">
       <div className="marquee flex w-max">
         {row(false)}
         {row(true)}
@@ -331,19 +336,18 @@ const STEPS = [
 export function HowToOrder() {
   return (
     <section className="container-x pt-16 sm:pt-24">
-      <Reveal className="on-dark relative overflow-hidden rounded-[2rem] bg-ink px-5 py-10 text-ivory sm:px-12 sm:py-14">
-        <div className="pattern-geo absolute inset-0 opacity-[0.06]" aria-hidden />
-        <Mandala className="pointer-events-none absolute -top-32 -start-32 size-80 text-gold/15 motion-safe:animate-spin-slow" />
+      <Reveal className="how-card on-dark relative overflow-hidden rounded-[2.25rem] px-5 py-10 text-ivory sm:px-12 sm:py-14">
+        <div className="pointer-events-none absolute -top-32 -start-24 size-80 rounded-full bg-iris/25 blur-3xl" aria-hidden />
+        <div className="pointer-events-none absolute -bottom-32 -end-24 size-80 rounded-full bg-gold/25 blur-3xl" aria-hidden />
         <div className="relative">
-          <p className="text-sm font-semibold text-gold">بدون تعقيد</p>
-          <h2 className="font-display mt-1 text-3xl leading-tight sm:text-[2.6rem]">كيف تطلبين؟</h2>
-          <ol className="relative mt-10 grid gap-8 sm:grid-cols-3 sm:gap-6">
-            <span className="reveal-line absolute inset-x-[16%] top-8 hidden h-px bg-gradient-to-l from-gold/0 via-gold/70 to-gold/0 sm:block" aria-hidden />
+          <p className="glass-dark inline-flex rounded-full px-3 py-1 text-xs font-semibold text-gold-soft">بدون تعقيد</p>
+          <h2 className="font-display mt-3 text-[2rem] leading-tight sm:text-[2.6rem]">كيف تطلبين؟</h2>
+          <ol className="relative mt-8 grid gap-4 sm:grid-cols-3 sm:gap-5">
             {STEPS.map(({ icon: Icon, title, body }, i) => (
-              <li key={title} className="relative flex gap-4 sm:flex-col sm:items-center sm:text-center">
-                <span className="relative grid size-16 shrink-0 place-items-center rounded-t-full rounded-b-2xl bg-gradient-to-b from-gold-bright to-gold-deep text-ink shadow-[0_18px_30px_-16px_rgb(212_178_106/0.8)]">
+              <li key={title} className="step-card glass-dark relative flex gap-4 rounded-[1.6rem] p-4 sm:flex-col sm:p-6" style={{ animationDelay: `${i * -1.2}s` }}>
+                <span className="relative grid size-14 shrink-0 place-items-center rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff,#f6dfd5_35%,#ddd6fb_70%,#ecb9a5)] text-ink shadow-[0_14px_26px_-10px_rgb(236_185_165/0.8)]">
                   <Icon className="size-6" />
-                  <span className="absolute -top-2 -end-2 grid size-6 place-items-center rounded-full bg-ivory text-xs font-bold text-ink">{i + 1}</span>
+                  <span className="font-latin absolute -top-1 -end-1 grid size-6 place-items-center rounded-full bg-ink text-[0.7rem] font-bold text-ivory ring-2 ring-white/20">{i + 1}</span>
                 </span>
                 <div>
                   <h3 className="font-display text-xl text-ivory">{title}</h3>

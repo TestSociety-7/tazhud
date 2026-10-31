@@ -68,12 +68,12 @@ export function CategoriesPage() {
                 <button type="button" className="icon-btn size-8" disabled={i === 0} onClick={() => move(i, -1)} aria-label={`تقديم ${c.name}`}><ArrowUp className="size-4" /></button>
                 <button type="button" className="icon-btn size-8" disabled={i === cats.length - 1} onClick={() => move(i, 1)} aria-label={`تأخير ${c.name}`}><ArrowDown className="size-4" /></button>
               </div>
-              <SmartImage src={c.image} alt="" className="h-16 w-13 shrink-0 rounded-lg" />
+              <SmartImage src={c.image} alt="" className="leaf h-16 w-13 shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="font-medium text-ink">{c.name}</p>
+                <p className="truncate font-medium text-ink">{c.name}</p>
                 <p className="line-clamp-1 text-xs text-muted">{c.description}</p>
+                <span className="mt-1.5 inline-block"><Badge>{itemsLabel(count(c.id))}</Badge></span>
               </div>
-              <Badge>{itemsLabel(count(c.id))}</Badge>
               <button type="button" className="icon-btn" onClick={() => { setErrors({}); setEditing({ ...c }); }} aria-label={`تعديل ${c.name}`}><Pencil className="size-4" /></button>
               <button type="button" className="icon-btn text-muted hover:text-danger" onClick={() => setToDelete(c)} aria-label={`حذف ${c.name}`}><Trash2 className="size-4" /></button>
             </li>
@@ -234,20 +234,25 @@ export function CouponsPage() {
           {data.coupons.map((c) => {
             const expired = c.expiresOn && new Date(`${c.expiresOn}T23:59:59`) < new Date();
             return (
-              <li key={c.id} className="flex flex-wrap items-center gap-3 p-4 sm:px-5">
-                <span className="ltr rounded-lg border border-dashed border-gold px-3 py-1.5 font-mono text-sm tracking-widest text-ink">{c.code}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-ink">{describe(c)}{c.minSubtotal > 0 && <span className="text-muted"> · للطلبات فوق {money(c.minSubtotal)}</span>}</p>
-                  <p className="text-xs text-muted">{c.description}{c.expiresOn && ` · ${expired ? "انتهى في" : "ينتهي في"} ${dateFormat(`${c.expiresOn}T00:00:00`)}`}</p>
+              <li key={c.id} className="p-4 sm:px-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="ltr rounded-xl border border-dashed border-gold bg-gold-soft/40 px-3 py-1.5 font-mono text-sm tracking-widest text-ink">{c.code}</span>
+                  <span className="flex-1" />
+                  {data.homepage.promo.couponCode === c.code && <Badge tone="gold">في الرئيسية</Badge>}
+                  <Badge tone={expired ? "red" : c.active ? "green" : "neutral"}>{expired ? "منتهي" : c.active ? "فعّال" : "موقوف"}</Badge>
                 </div>
-                {data.homepage.promo.couponCode === c.code && <Badge tone="gold">في الرئيسية</Badge>}
-                <Badge tone={expired ? "red" : c.active ? "green" : "neutral"}>{expired ? "منتهي" : c.active ? "فعّال" : "موقوف"}</Badge>
-                <div className="flex">
-                  <button type="button" className="btn btn-sm btn-ghost" onClick={() => save((d) => ({ ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, active: !x.active } : x)) }), c.active ? `تم إيقاف ${c.code}` : `تم تفعيل ${c.code}`)}>
-                    {c.active ? "إيقاف" : "تفعيل"}
-                  </button>
-                  <button type="button" className="icon-btn" onClick={() => { setErrors({}); setEditing({ ...c, value: String(c.value), minSubtotal: String(c.minSubtotal) }); }} aria-label={`تعديل ${c.code}`}><Pencil className="size-4" /></button>
-                  <button type="button" className="icon-btn text-muted hover:text-danger" onClick={() => setToDelete(c)} aria-label={`حذف ${c.code}`}><Trash2 className="size-4" /></button>
+                <div className="mt-2.5 flex items-end gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-ink">{describe(c)}{c.minSubtotal > 0 && <span className="text-muted"> · للطلبات فوق {money(c.minSubtotal)}</span>}</p>
+                    <p className="text-xs text-muted">{c.description}{c.expiresOn && ` · ${expired ? "انتهى في" : "ينتهي في"} ${dateFormat(`${c.expiresOn}T00:00:00`)}`}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center">
+                    <button type="button" className="btn btn-sm btn-ghost" onClick={() => save((d) => ({ ...d, coupons: d.coupons.map((x) => (x.id === c.id ? { ...x, active: !x.active } : x)) }), c.active ? `تم إيقاف ${c.code}` : `تم تفعيل ${c.code}`)}>
+                      {c.active ? "إيقاف" : "تفعيل"}
+                    </button>
+                    <button type="button" className="icon-btn" onClick={() => { setErrors({}); setEditing({ ...c, value: String(c.value), minSubtotal: String(c.minSubtotal) }); }} aria-label={`تعديل ${c.code}`}><Pencil className="size-4" /></button>
+                    <button type="button" className="icon-btn text-muted hover:text-danger" onClick={() => setToDelete(c)} aria-label={`حذف ${c.code}`}><Trash2 className="size-4" /></button>
+                  </div>
                 </div>
               </li>
             );
